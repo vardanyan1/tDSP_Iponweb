@@ -1,3 +1,2 @@
-from django.db import models
-
-# Create your models here.
+from .models.admin_model import AdminModel # noqa
+from .models.ad_ops_model import AdOpsModel # noqa
