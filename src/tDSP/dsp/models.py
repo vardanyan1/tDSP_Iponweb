@@ -1,3 +1,1 @@
-from django.db import models
-
-# Create your models here.
+from .models.game_config_model import ConfigModel  # noqa
