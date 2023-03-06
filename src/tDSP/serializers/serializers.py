@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 
 from rest_framework import serializers
 
+from ..dsp.models.game_config_model import ConfigModel
+
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -29,3 +31,15 @@ class UserCreateSerializer(UserSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'password', 'is_staff']
+
+
+class ConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConfigModel
+        fields = '__all__'
+
+
+class ConfigCreateSerializer(ConfigSerializer):
+    class Meta:
+        model = ConfigModel
+        exclude = ('current',)

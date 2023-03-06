@@ -18,10 +18,12 @@ from django.urls import include, path
 
 from rest_framework import routers
 
-from .api.user_group import UserViewSet
+from .api.user_group_api import UserViewSet
+from .api.game_config_api import ConfigViewSet
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
+router.register(r'game/configure', ConfigViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
