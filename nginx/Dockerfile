@@ -1,1 +1,1 @@
-FROM nginx:stable-alpinea
+FROM nginx:stable-alpine
