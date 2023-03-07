@@ -25,7 +25,14 @@ services:
     tty: true
     env_file: .env
     restart: always
-    command: bash -c 'python3 src/manage.py runserver 0.0.0.0:8000'
+    command: >
+      /bin/bash -c '
+      if [ ! -f /data/initiated.txt ]; then
+        python3 src/manage.py import_categories categories/Content-Taxonomy-1.0.xlsx
+        touch /data/initiated.txt
+      fi;
+      python3 src/manage.py runserver 0.0.0.0:8000'
+
     networks:
       pgnet:
   nginx:

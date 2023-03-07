@@ -20,3 +20,4 @@ django-environ
 psycopg2-binary
 PyJWT
 djangorestframework
+pandas
