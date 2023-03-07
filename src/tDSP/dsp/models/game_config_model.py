@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 class ConfigModel(models.Model):
@@ -9,11 +10,12 @@ class ConfigModel(models.Model):
     impressions_total = models.IntegerField(blank=True, null=True)
     auction_type = models.IntegerField(choices=IMPRESSIONS_CHOICES)
     mode = models.CharField(choices=MODE_CHOICES, max_length=10)
-    budget = models.IntegerField()
-    impression_revenue = models.IntegerField()
-    click_revenue = models.IntegerField()
-    conversion_revenue = models.IntegerField()
+    budget = models.DecimalField(max_digits=10, decimal_places=2)
+    impression_revenue = models.DecimalField(max_digits=10, decimal_places=2)
+    click_revenue = models.DecimalField(max_digits=10, decimal_places=2)
+    conversion_revenue = models.DecimalField(max_digits=10, decimal_places=2)
     frequency_capping = models.IntegerField(blank=True, null=True)
+    created_at = models.DateTimeField(timezone.now)
 
     def __str__(self):
         return f"{self.mode} type config with id {self.id}"
