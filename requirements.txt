@@ -20,4 +20,5 @@ django-environ
 psycopg2-binary
 PyJWT
 djangorestframework
+openpyxl
 pandas
