@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from ..dsp.models.game_config_model import ConfigModel
+from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
+from ..dsp.models.creative_model import CreativeModel
+from ..dsp.models.campaign_model import CampaignModel
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -43,3 +46,54 @@ class ConfigCreateSerializer(ConfigSerializer):
     class Meta:
         model = ConfigModel
         exclude = ('current',)
+
+
+class SubcategorySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = SubcategoryModel
+        fields = '__all__'
+
+
+class CategorySerializer(serializers.HyperlinkedModelSerializer):
+    subcategories = SubcategorySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = CategoryModel
+        fields = '__all__'
+
+
+class CreativeSerializer(serializers.ModelSerializer):
+    categories = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CreativeModel
+        fields = ('id', 'external_id', 'name', 'categories', 'campaign', 'image_url')
+
+    def get_categories(self, obj):
+        """
+        Serialize categories and their corresponding subcategories.
+        """
+        categories = obj.categories.all()
+        serialized_subcategories = []
+        for category in categories:
+            serialized_subcategories.append({'id': category.id, 'name': category.IAB_Subcategory})
+            # serialized_categories.append({'id': category.id, 'name': category.IAB_Category,
+            #                               'subcategories': serialized_subcategories})
+        return serialized_subcategories
+
+
+class CampaignSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CampaignModel
+        fields = ['id', 'name', 'budget']
+
+    def create(self, validated_data):
+        # Get the current game configuration
+        current_config = ConfigModel.objects.get(current=True)
+
+        # Set the 'config' field to the current game configuration
+        validated_data['config'] = current_config
+
+        # Create the campaign object
+        campaign = CampaignModel.objects.create(**validated_data)
+        return campaign
