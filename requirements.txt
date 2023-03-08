@@ -22,3 +22,5 @@ PyJWT
 djangorestframework
 openpyxl
 pandas
+requests
+tzdata
