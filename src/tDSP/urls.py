@@ -20,10 +20,23 @@ from rest_framework import routers
 
 from .api.user_group_api import UserViewSet
 from .api.game_config_api import ConfigViewSet
+from .api.categories_api import CategoryViewSet, SubcategoryViewSet
+from .api.creative_api import CreativeViewSet
+from .api.campaign_api import CampaignViewSet
+
 
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+
+# Main functionality
 router.register(r'game/configure', ConfigViewSet)
+router.register(r'api/creatives', CreativeViewSet)
+router.register(r'api/campaigns', CampaignViewSet)
+
+# Additional
+router.register(r'users', UserViewSet)
+router.register(r'categories', CategoryViewSet)
+router.register(r'subcategories', SubcategoryViewSet)
+
 
 urlpatterns = [
     path('', include(router.urls)),
