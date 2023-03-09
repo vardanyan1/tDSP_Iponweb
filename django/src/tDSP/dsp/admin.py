@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models.bid_request_model import BidRequestModel
+from .models.bid_response_model import BidResponseModel
 from .models.game_config_model import ConfigModel
 from .models.categories_model import CategoryModel, SubcategoryModel
 from .models.campaign_model import CampaignModel
@@ -66,3 +67,11 @@ class BidRequestModelAdmin(admin.ModelAdmin):
     list_filter = ('config',)
     search_fields = ('id', 'site_domain', 'ssp_id', 'user_id')
     filter_horizontal = ('blocked_categories',)
+
+
+@admin.register(BidResponseModel)
+class BidResponseModelAdmin(admin.ModelAdmin):
+    list_display = ('external_id', 'price', 'image_url', 'bid_request')
+    list_filter = ('bid_request',)
+    search_fields = ('external_id', 'bid_request__bid_id')
+    filter_horizontal = ('cat',)

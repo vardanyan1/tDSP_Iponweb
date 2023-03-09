@@ -8,6 +8,7 @@ from ..dsp.models.game_config_model import ConfigModel
 from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
 from ..dsp.models.creative_model import CreativeModel
 from ..dsp.models.campaign_model import CampaignModel
+from ..dsp.models.notification_model import Notification
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -114,6 +115,33 @@ class CreativeSerializer(serializers.ModelSerializer):
         return serialized_subcategories
 
 
+class AdSerializer(serializers.Serializer):
+    id = serializers.CharField(max_length=255)
+    imp = serializers.DictField(
+        child=serializers.DictField(
+            child=serializers.IntegerField()
+        )
+    )
+    click = serializers.DictField(
+        child=serializers.FloatField()
+    )
+    conv = serializers.DictField(
+        child=serializers.FloatField()
+    )
+    site = serializers.DictField(
+        child=serializers.CharField(max_length=255)
+    )
+    ssp = serializers.DictField(
+        child=serializers.CharField(max_length=255)
+    )
+    user = serializers.DictField(
+        child=serializers.CharField(max_length=255)
+    )
+    bcat = serializers.ListField(
+        child=serializers.CharField(max_length=255)
+    )
+
+
 class BidRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = BidRequestModel
@@ -129,3 +157,9 @@ class BidResponseSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         bid_request = validated_data.pop('bid_request')
         return BidResponseModel.objects.create(bid_request=bid_request, **validated_data)
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'
