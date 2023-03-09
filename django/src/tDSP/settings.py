@@ -12,11 +12,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
-# import environ
-#
-# env = environ.Env()
-# environ.Env.read_env()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,7 +25,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -144,10 +139,23 @@ REST_FRAMEWORK = {
 
 }
 LOGIN_REDIRECT_URL = '/'
+#
+# CORS_ORIGIN_WHITELIST = (
+#     "http://localhost:3000",
+#     "http://localhost:8000",
+# )
+#
+# CSRF_TRUSTED_ORIGINS = ["http://localhost:5555"]
 
-CORS_ORIGIN_WHITELIST = (
-    "http://localhost:3000",
-    "http://localhost:8000",
-)
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
+CSRF_COOKIE_HTTPONLY = True
