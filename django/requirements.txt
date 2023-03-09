@@ -24,3 +24,4 @@ openpyxl
 pandas
 requests
 tzdata
+boto3
