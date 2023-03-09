@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 
 from rest_framework import serializers
 
+from ..dsp.models.bid_request_model import BidRequestModel
+from ..dsp.models.bid_response_model import BidResponseModel
 from ..dsp.models.game_config_model import ConfigModel
 from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
 from ..dsp.models.creative_model import CreativeModel
@@ -112,3 +114,18 @@ class CreativeSerializer(serializers.ModelSerializer):
         return serialized_subcategories
 
 
+class BidRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BidRequestModel
+        fields = ('id', 'bid_id', 'banner_width', 'banner_height', 'click_probability', 'conversion_probability',
+                  'site_domain', 'ssp_id', 'user_id', 'blocked_categories')
+
+
+class BidResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BidResponseModel
+        fields = ['external_id', 'price', 'image_url', 'cat', 'bid_request']
+
+    def create(self, validated_data):
+        bid_request = validated_data.pop('bid_request')
+        return BidResponseModel.objects.create(bid_request=bid_request, **validated_data)

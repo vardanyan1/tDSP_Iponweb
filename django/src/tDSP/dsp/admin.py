@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from .models.bid_request_model import BidRequestModel
 from .models.game_config_model import ConfigModel
 from .models.categories_model import CategoryModel, SubcategoryModel
 from .models.campaign_model import CampaignModel
@@ -56,3 +57,12 @@ class CreativeAdmin(admin.ModelAdmin):
     category_names.short_description = 'Categories'
 
     campaign_id.short_description = 'Campaign'
+
+
+@admin.register(BidRequestModel)
+class BidRequestModelAdmin(admin.ModelAdmin):
+    list_display = ('bid_id', 'banner_width', 'banner_height', 'click_probability', 'conversion_probability',
+                    'site_domain', 'ssp_id', 'user_id', 'config')
+    list_filter = ('config',)
+    search_fields = ('id', 'site_domain', 'ssp_id', 'user_id')
+    filter_horizontal = ('blocked_categories',)

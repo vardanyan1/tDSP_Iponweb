@@ -18,6 +18,7 @@ from django.urls import include, path
 
 from rest_framework import routers
 
+from .api.bid_request_api import BidViewSet
 from .api.user_group_api import UserViewSet
 from .api.game_config_api import ConfigViewSet
 from .api.categories_api import CategoryViewSet, SubcategoryViewSet
@@ -31,6 +32,8 @@ router = routers.DefaultRouter()
 router.register(r'game/configure', ConfigViewSet)
 router.register(r'api/creatives', CreativeViewSet)
 router.register(r'api/campaigns', CampaignViewSet)
+router.register(r'rtb/bid', BidViewSet, basename='rtb-bid')
+
 
 # Additional
 router.register(r'users', UserViewSet)

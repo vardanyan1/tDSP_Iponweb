@@ -2,12 +2,15 @@ from PIL import Image as pil
 from io import BytesIO
 import json
 
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 
+from .models.bid_request_model import BidRequestModel
+from .models.bid_response_model import BidResponseModel
 from ..dsp.models.campaign_model import CampaignModel
 from ..dsp.models.creative_model import CreativeModel
 from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
@@ -78,3 +81,44 @@ class CreativeViewSetTestCase(APITestCase):
             'url': creative.url,
         }
         self.assertEqual(response.data, expected_data)
+
+
+class BidViewSetTests(APITestCase):
+    def setUp(self):
+        self.url = reverse('rtb-bid-list')
+        self.user = User.objects.create_user('testuser', password='password')
+        self.client.force_authenticate(user=self.user)
+
+    def test_create_bid_with_valid_data(self):
+        category = CategoryModel.objects.create(code='test', tier='tier 1', category="test category")
+        subcategory = SubcategoryModel.objects.create(code='test-1', tier='tier 1',
+                                                      subcategory="test subcategory", category=category)
+        config = ConfigModel.objects.create(impressions_total=1000, auction_type=1, mode='free', budget=5000.00,
+                                            impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
+                                            frequency_capping=5)
+
+        data = {
+            'bid_id': 'test_bid_id',
+            'banner_width': 300,
+            'banner_height': 250,
+            'click_probability': 0.5,
+            'conversion_probability': 0.2,
+            'site_domain': 'testsite.com',
+            'ssp_id': 1,
+            'user_id': 'test_user_id',
+            'blocked_categories': [subcategory.id],
+            'config': config,
+        }
+        response = self.client.post(self.url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(BidRequestModel.objects.count(), 1)
+        self.assertEqual(BidResponseModel.objects.count(), 1)
+        self.assertEqual(BidResponseModel.objects.first().external_id, 'test_bid_id')
+        self.assertEqual(BidResponseModel.objects.first().price, 2.50)
+        self.assertEqual(BidResponseModel.objects.first().image_url,
+                         'http://localhost:8001/media/Vek8fPqd8mop5UBpaD7TClRg25kcbflB.jpg')
+        self.assertEqual(BidResponseModel.objects.first().bid_request.banner_width, 300)
+        self.assertEqual(BidResponseModel.objects.first().bid_request.blocked_categories.first().subcategory,
+                         subcategory.subcategory)
