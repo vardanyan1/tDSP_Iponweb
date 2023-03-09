@@ -25,7 +25,7 @@ from .api.game_config_api import ConfigViewSet
 from .api.categories_api import CategoryViewSet, SubcategoryViewSet
 from .api.creative_api import CreativeViewSet
 from .api.campaign_api import CampaignViewSet
-
+from .api import csrf
 
 router = routers.DefaultRouter()
 
@@ -46,5 +46,6 @@ router.register(r'subcategories', SubcategoryViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
+    path('csrf/', csrf.csrf, name='csrf'),
     path("", include("rest_framework.urls")),
 ]
