@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -73,7 +71,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'tDSP.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -86,7 +83,6 @@ DATABASES = {
         'HOST': os.environ.get('POSTGRES_HOST'),
         'PORT': os.environ.get('POSTGRES_PORT'),
     }}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -106,7 +102,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -117,7 +112,6 @@ TIME_ZONE = 'Asia/Yerevan'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -139,16 +133,25 @@ REST_FRAMEWORK = {
 }
 LOGIN_REDIRECT_URL = '/'
 #
-# CORS_ORIGIN_WHITELIST = (
-#     "http://localhost:3000",
-#     "http://localhost:8000",
-# )
-#
-# CSRF_TRUSTED_ORIGINS = ["http://localhost:5555"]
+CORS_ORIGIN_WHITELIST = (
+    "http://localhost:3000",
+    "http://localhost:8000",
+)
 
+CSRF_TRUSTED_ORIGINS = ["http://localhost:5555", "http://localhost:3000"]
 
-CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken'  # Add X-CSRFToken to the list of allowed headers
+]
+
 CORS_ALLOW_METHODS = [
     "DELETE",
     "GET",
@@ -158,3 +161,4 @@ CORS_ALLOW_METHODS = [
     "PUT",
 ]
 CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = True
