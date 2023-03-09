@@ -22,21 +22,14 @@ class CreativeViewSet(viewsets.ModelViewSet):
 
         campaign_dict = json.loads(campaign_str)
         campaign_id = campaign_dict['id']
-        # campaign_id = request.data.get('campaign')['id']  # Need do consult for campaign object in multipart/form-data
-        # campaign_id = request.data.get('campaign')
         image_file = request.FILES.get('file')
-        print(image_file)
 
         # Save image to separate service and get url
         image_url = save_image(image_file)
 
         # Create creative
-        creative = CreativeModel.objects.create(
-            external_id=external_id,
-            name=name,
-            campaign_id=campaign_id,
-            image_url=image_url
-        )
+        creative = CreativeModel.objects.create(external_id=external_id, name=name,
+                                                campaign_id=campaign_id, url=image_url)
 
         # Add categories to creative
         for category in categories:

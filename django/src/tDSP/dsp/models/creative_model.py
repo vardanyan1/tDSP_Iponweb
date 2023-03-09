@@ -7,7 +7,7 @@ class CreativeModel(models.Model):
 
     external_id = models.CharField(max_length=100, unique=True)
     name = models.CharField(max_length=100)
-    image_url = models.URLField(max_length=500)
+    url = models.URLField(max_length=500)
     categories = models.ManyToManyField(SubcategoryModel)
     campaign = models.ForeignKey(CampaignModel, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

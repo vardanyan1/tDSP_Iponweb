@@ -44,8 +44,8 @@ class CampaignModelAdmin(admin.ModelAdmin):
 
 @admin.register(CreativeModel)
 class CreativeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'external_id', 'name', 'campaign', 'image_url', 'category_names')
-    search_fields = ('external_id', 'name', 'campaign', 'image_url')
+    list_display = ('id', 'external_id', 'name', 'campaign', 'url', 'category_names')
+    search_fields = ('external_id', 'name', 'campaign', 'url')
 
     def campaign_id(self, obj):
         return obj.campaign.name
