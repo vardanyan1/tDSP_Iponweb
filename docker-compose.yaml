@@ -4,7 +4,7 @@ services:
     image: src:latest
     build:
       context: ./django
-      dockerfile: django/Dockerfile
+      dockerfile: Dockerfile
     expose:
       - 8000
     ports:
@@ -86,14 +86,6 @@ services:
     command: -p 5433
     networks:
       pgnet:
-  redis:
-    image: "redis:5.0-alpine"
-    volumes:
-      - "redis:/data"
-    expose:
-      - "6379"
-    networks:
-      - pgnet
   image_server: # add new service definition
     image: image_server:latest  # replace with the image name
     build:
@@ -114,6 +106,15 @@ services:
     command: /bin/bash -c 'python3 src/manage.py runserver 0.0.0.0:8001'
     networks:
       pgnet:
+
+  ui:
+    build: ./ui
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./ui:/ui
+
+
 volumes:
   redis:
   web:
