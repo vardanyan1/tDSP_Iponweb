@@ -36,10 +36,10 @@ class CreativeViewSet(viewsets.ModelViewSet):
             code = category['code']
             code = "".join([i for i in code if i != "_"])
             if '-' in code:
-                sub_category_obj = SubcategoryModel.objects.get(IAB_Code=code)
+                sub_category_obj = SubcategoryModel.objects.get(code=code)
                 creative.categories.add(sub_category_obj)
             else:
-                category = CategoryModel.objects.get(IAB_Code=code)
+                category = CategoryModel.objects.get(code=code)
                 sub_categories = SubcategoryModel.objects.filter(category=category)
                 for sub_category in sub_categories:
                     creative.categories.add(sub_category)

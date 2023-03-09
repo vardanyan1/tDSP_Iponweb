@@ -39,16 +39,16 @@ class CreativeViewSetTestCase(APITestCase):
                                             frequency_capping=5)
 
         campaign = CampaignModel.objects.create(name='Test Campaign', config=config, budget=500)
-        category = CategoryModel.objects.create(IAB_Code='test', Tier='Tier 1', IAB_Category="test category")
-        subcategory = SubcategoryModel.objects.create(IAB_Code='test-1', Tier='Tier 1',
-                                                      IAB_Subcategory="test subcategory", category=category)
+        category = CategoryModel.objects.create(code='test', tier='tier 1', category="test category")
+        subcategory = SubcategoryModel.objects.create(code='test-1', tier='tier 1',
+                                                      subcategory="test subcategory", category=category)
 
         image = SimpleUploadedFile("test_image.jpg", self.create_test_image(), content_type="image/jpg")
 
         data = {
             'external_id': '123',
             'name': 'Test Creative',
-            'categories': json.dumps([{'code': category.IAB_Code}]),
+            'categories': json.dumps([{'code': category.code}]),
             'campaign': json.dumps({'id': campaign.id}),
             'file': image,
         }
@@ -73,7 +73,7 @@ class CreativeViewSetTestCase(APITestCase):
             'id': creative.id,
             'external_id': '123',
             'name': 'Test Creative',
-            'categories': [{'id': subcategory.id, 'code': subcategory.IAB_Code}],
+            'categories': [{'id': subcategory.id, 'code': subcategory.code}],
             'campaign': {'id': campaign.id, 'name': campaign.name},
             'url': creative.url,
         }

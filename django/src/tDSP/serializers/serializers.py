@@ -108,7 +108,7 @@ class CreativeSerializer(serializers.ModelSerializer):
         categories = obj.categories.all()
         serialized_subcategories = []
         for category in categories:
-            serialized_subcategories.append({'id': category.id, 'code': category.IAB_Code})
+            serialized_subcategories.append({'id': category.id, 'code': category.code})
         return serialized_subcategories
 
 

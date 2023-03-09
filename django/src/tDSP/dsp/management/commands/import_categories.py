@@ -11,21 +11,21 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         file_path = options['file_path']
-        categories_df = pd.read_excel(file_path, sheet_name="Sheet1", engine='openpyxl', usecols=['IAB Code', 'Tier', 'IAB Category'])
+        categories_df = pd.read_excel(file_path, sheet_name="Sheet1", engine='openpyxl', usecols=['IAB Code', 'tier', 'IAB Category'])
         categories_df.dropna(inplace=True)
 
         for _, row in categories_df.iterrows():
-            iab_code, tier, iab_category = row.values
-            if '-' not in iab_code:
-                category, _ = CategoryModel.objects.get_or_create(IAB_Code=iab_code,
-                                                                  Tier=tier, IAB_Category=iab_category)
+            code, tier, category = row.values
+            if '-' not in code:
+                category, _ = CategoryModel.objects.get_or_create(code=code,
+                                                                  tier=tier, category=category)
 
-            if '-' in iab_code:
-                parent_iab_code, _ = iab_code.split('-')
-                parent_category = CategoryModel.objects.get(IAB_Code=parent_iab_code)
+            if '-' in code:
+                parent_code, _ = code.split('-')
+                parent_category = CategoryModel.objects.get(code=parent_code)
 
                 subcategory, _ = SubcategoryModel.objects.get_or_create(
-                    IAB_Code=iab_code, Tier=tier, IAB_Subcategory=iab_category, category=parent_category)
+                    code=code, tier=tier, subcategory=category, category=parent_category)
 
         self.stdout.write(self.style.SUCCESS('Successfully imported categories and subcategories'))
 

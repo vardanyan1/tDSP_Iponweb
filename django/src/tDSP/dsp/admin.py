@@ -21,15 +21,15 @@ class SubcategoryInline(admin.StackedInline):
 
 @admin.register(CategoryModel)
 class CategoryModelAdmin(admin.ModelAdmin):
-    list_display = ('IAB_Code', 'Tier', 'IAB_Category')
-    search_fields = ('IAB_Code', 'IAB_Category')
+    list_display = ('code', 'tier', 'category')
+    search_fields = ('code', 'category')
     inlines = [SubcategoryInline]
 
 
 @admin.register(SubcategoryModel)
 class SubcategoryModelAdmin(admin.ModelAdmin):
-    list_display = ('IAB_Code', 'Tier', 'IAB_Subcategory', 'category')
-    search_fields = ('IAB_Code', 'IAB_Subcategory', 'category__IAB_Category')
+    list_display = ('code', 'tier', 'subcategory', 'category')
+    search_fields = ('code', 'subcategory', 'category__category')
     list_filter = ('category',)
 
 
@@ -51,7 +51,7 @@ class CreativeAdmin(admin.ModelAdmin):
         return obj.campaign.name
 
     def category_names(self, obj):
-        return ', '.join([category.IAB_Subcategory for category in obj.categories.all()])
+        return ', '.join([category.subcategory for category in obj.categories.all()])
 
     category_names.short_description = 'Categories'
 
