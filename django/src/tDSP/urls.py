@@ -31,8 +31,8 @@ router = routers.DefaultRouter()
 
 # Main functionality
 router.register(r'game/configure', ConfigViewSet, basename='game-configure')
-router.register(r'api/creatives', CreativeViewSet)
-router.register(r'api/campaigns', CampaignViewSet)
+router.register(r'api/campaigns', CampaignViewSet, basename='api-campaign')
+router.register(r'api/creatives', CreativeViewSet, basename='api-creative')
 router.register(r'rtb/bid', BidViewSet, basename='rtb-bid')
 router.register(r'rtb/notify', NotificationViewSet, basename='rtb-notify')
 
