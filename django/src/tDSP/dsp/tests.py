@@ -1,3 +1,5 @@
+import base64
+
 from PIL import Image as pil
 from io import BytesIO
 import json
@@ -35,10 +37,6 @@ class GameConfigTestCase(APITestCase):
             "conversion_revenue": 30,
             "frequency_capping": None,
         }
-        # config = ConfigModel.objects.create(
-        #     impressions_total=data['impressions_total'], auction_type=data['impressions_total'], mode=data['mode'],
-        #     budget=data['budget'], impression_revenue=data['impression_revenue'], click_revenue=data['click_revenue'],
-        #     conversion_revenue=data['conversion_revenue'], frequency_capping=data['frequency_capping'])
 
         response = self.client.post(url, data, format='json')
 
@@ -50,73 +48,107 @@ class GameConfigTestCase(APITestCase):
         self.assertEqual(config.budget, data['budget'])
 
 
+class CampaignTestCase(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_create_campaign(self):
+        url = reverse("api-campaign-list")
+
+        # Create config to associate campaign with current config
+        config = ConfigModel.objects.create(impressions_total=1000, auction_type=1, mode='free', budget=5000.00,
+                                            impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
+                                            frequency_capping=5)
+        data = {
+            "name": "test campaign",
+            "budget": 100,
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # check if campaign is created with the correct data
+        creative = CampaignModel.objects.get(name=data['name'])
+        self.assertEqual(creative.budget, data['budget'])
+        self.assertEqual(creative.config, config)
 
 
-# class CreativeViewSetTestCase(APITestCase):
-#
-#     def setUp(self):
-#         self.client = APIClient()
-#         self.user = User.objects.create_user('testuser', password='password')
-#         self.client.force_authenticate(user=self.user)
-#
-#     @staticmethod
-#     def create_test_image():
-#         # Create a 100x100 pixel RGB image with a red background
-#         img = pil.new('RGB', (100, 100), color='red')
-#         # Save the image to a byte stream
-#         stream = BytesIO()
-#         img.save(stream, format='PNG')
-#         # Return the byte stream content as bytes
-#         return stream.getvalue()
-#
-#     def test_create_creative(self):
-#         url = 'http://localhost:8000/api/creatives/'
-#         # create a campaign and some categories/subcategories for testing
-#         config = ConfigModel.objects.create(impressions_total=1000, auction_type=1, mode='free', budget=5000.00,
-#                                             impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
-#                                             frequency_capping=5)
-#
-#         campaign = CampaignModel.objects.create(name='Test Campaign', config=config, budget=500)
-#         category = CategoryModel.objects.create(code='test', tier='tier 1', category="test category")
-#         subcategory = SubcategoryModel.objects.create(code='test-1', tier='tier 1',
-#                                                       subcategory="test subcategory", category=category)
-#
-#         image = SimpleUploadedFile("test_image.jpg", self.create_test_image(), content_type="image/jpg")
-#
-#         data = {
-#             'external_id': '123',
-#             'name': 'Test Creative',
-#             'categories': json.dumps([{'code': category.code}]),
-#             'campaign': json.dumps({'id': campaign.id}),
-#             'file': image,
-#         }
-#
-#         response = self.client.post(url, data, format='multipart')
-#
-#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-#
-#         # check if creative is created with the correct data
-#         creative = CreativeModel.objects.get(external_id='123')
-#         self.assertEqual(creative.name, 'Test Creative')
-#         self.assertEqual(creative.campaign_id, campaign.id)
-#
-#         # check if categories are added to creative
-#         self.assertIn(subcategory, creative.categories.all())
-#
-#         # check if image is saved to separate service and image_url is added to creative
-#         self.assertTrue(creative.url)
-#
-#         # check if created creative data is returned in the response
-#         expected_data = {
-#             'id': creative.id,
-#             'external_id': '123',
-#             'name': 'Test Creative',
-#             'categories': [{'id': subcategory.id, 'code': subcategory.code}],
-#             'campaign': {'id': campaign.id, 'name': campaign.name},
-#             'url': creative.url,
-#         }
-#         self.assertEqual(response.data, expected_data)
+class CreativeTestCase(APITestCase):
 
+    def setUp(self):
+        self.client = APIClient()
+
+    @staticmethod
+    def create_test_image():
+        # Create a 100x100 pixel RGB image with a red background
+        img = pil.new('RGB', (100, 100), color='red')
+
+        # Encode the image as PNG and get the bytes
+        img_bytes = BytesIO()
+        img.save(img_bytes, format='PNG')
+        img_bytes = img_bytes.getvalue()
+
+        # Encode the image bytes as base64
+        encoded_image = base64.b64encode(img_bytes)
+
+        return encoded_image
+
+    def test_create_creative(self):
+        url = reverse("api-creative-list")
+
+        # create a campaign and some categories/subcategories for testing
+        config = ConfigModel.objects.create(impressions_total=1000, auction_type=1, mode='free', budget=5000.00,
+                                            impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
+                                            frequency_capping=5)
+
+        campaign = CampaignModel.objects.create(name='Test Campaign', config=config, budget=500)
+
+        category1 = CategoryModel.objects.create(code='test', tier='tier 1', category="test category")
+        category2 = CategoryModel.objects.create(code='test7', tier='tier 1', category="test category")
+        subcategory1 = SubcategoryModel.objects.create(code='test2-1', tier='tier 2',
+                                                       subcategory="test subcategory", category=category1)
+        subcategory2 = SubcategoryModel.objects.create(code='test7-7', tier='tier 2',
+                                                       subcategory="test subcategory 2", category=category2)
+
+        image = self.create_test_image()
+
+        data = {
+            'external_id': 'external_id',
+            'name': 'name',
+            'categories': json.dumps([{"code": category1.code}, {"code": subcategory2.code}]),
+            'campaign': json.dumps({'id': campaign.id}),
+            'file': image,
+        }
+
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # check if creative is created with the correct data
+        creative = CreativeModel.objects.get(external_id=data['external_id'])
+        self.assertEqual(creative.name, data['name'])
+        self.assertEqual(creative.campaign_id, campaign.id)
+
+        # check if categories are added to creative
+        self.assertIn(subcategory1, creative.categories.all())
+        self.assertIn(subcategory2, creative.categories.all())
+
+        # check if image is saved to separate service and image_url is added to creative
+        self.assertTrue(creative.url)
+
+        # creative_url_response = self.client.get(creative.url)
+        # self.assertIn('image', creative_url_response['Content-Type']) # TODO: Discuss
+
+        # check if created creative data is returned in the response
+        expected_data = {
+            'id': creative.id,
+            'external_id': data['external_id'],
+            'name': data['name'],
+            'categories': [{"id": subcategory1.id, "code": subcategory1.code},
+                           {"id": subcategory2.id, "code": subcategory2.code}],
+            'campaign': {'id': campaign.id, 'name': campaign.name},
+            'url': creative.url,
+        }
+
+        self.assertEqual(response.data, expected_data)
 
 # class BidViewSetTests(APITestCase):
 #     def setUp(self):
