@@ -5,8 +5,6 @@ from io import BytesIO
 import json
 
 from django.urls import reverse
-from django.contrib.auth.models import User
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
@@ -150,101 +148,159 @@ class CreativeTestCase(APITestCase):
 
         self.assertEqual(response.data, expected_data)
 
-# class BidViewSetTests(APITestCase):
-#     def setUp(self):
-#         self.url = reverse('rtb-bid-list')
-#         self.user = User.objects.create_user('testuser', password='password')
-#         self.client.force_authenticate(user=self.user)
-#
-#     def test_create_bid_with_valid_data(self):
-#         category = CategoryModel.objects.create(code='test', tier='tier 1', category="test category")
-#         subcategory = SubcategoryModel.objects.create(code='test-1', tier='tier 1',
-#                                                       subcategory="test subcategory", category=category)
-#         config = ConfigModel.objects.create(impressions_total=1000, auction_type=1, mode='free', budget=5000.00,
-#                                             impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
-#                                             frequency_capping=5)
-#
-#         data = {
-#             'bid_id': 'test_bid_id',
-#             'banner_width': 300,
-#             'banner_height': 250,
-#             'click_probability': 0.5,
-#             'conversion_probability': 0.2,
-#             'site_domain': 'testsite.com',
-#             'ssp_id': 1,
-#             'user_id': 'test_user_id',
-#             'blocked_categories': [subcategory.id],
-#             'config': config,
-#         }
-#         response = self.client.post(self.url, data)
-#
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
-#
-#         self.assertEqual(BidRequestModel.objects.count(), 1)
-#         self.assertEqual(BidResponseModel.objects.count(), 1)
-#         self.assertEqual(BidResponseModel.objects.first().external_id, 'test_bid_id')
-#         self.assertEqual(BidResponseModel.objects.first().price, 2.50)
-#         self.assertEqual(BidResponseModel.objects.first().image_url,
-#                          'http://localhost:8001/media/Vek8fPqd8mop5UBpaD7TClRg25kcbflB.jpg')
-#         self.assertEqual(BidResponseModel.objects.first().bid_request.banner_width, 300)
-#         self.assertEqual(BidResponseModel.objects.first().bid_request.blocked_categories.first().subcategory,
-#                          subcategory.subcategory)
 
+class BidRequestTests(APITestCase):
+    def setUp(self):
+        self.url = reverse('rtb-bid-list')
 
-# class BidRequestAPITestCase(APITestCase):
-#     def setUp(self):
-#         self.client = APIClient()
-#         self.user = User.objects.create_user('testuser', password='password')
-#         self.client.force_authenticate(user=self.user)
-#
-#         self.bid_request_data = {
-#             "bid_id": "1234",
-#             "banner_width": 100,
-#             "banner_height": 200,
-#             "click_probability": 0.5,
-#             "conversion_probability": 0.3,
-#             "site_domain": "example.com",
-#             "ssp_id": "1234",
-#             "user_id": "5678",
-#             "blocked_categories": [],
-#         }
-#         config = ConfigModel.objects.create(impressions_total=1000, auction_type=1, mode='free', budget=5000.00,
-#                                             impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
-#                                             frequency_capping=5)
-#
-#         category = CategoryModel.objects.create(code='test', tier='tier 1', category="test category")
-#         subcategory = SubcategoryModel.objects.create(code='test-1', tier='tier 1',
-#                                                       subcategory="test subcategory", category=category)
-#         self.bid_request = BidRequestModel.objects.create(
-#             bid_id="1234", banner_width=100, banner_height=200, click_probability=0.5, conversion_probability=0.3,
-#             site_domain="example.com", ssp_id="1234", user_id="5678", config=config)
-#
-#         url = reverse("rtb-bid-list")
-#         response = self.client.post(url, self.bid_request_data, format="json")
-#         self.bid_response = BidResponseModel.objects.last()
-#
-#     def test_create_bid_request(self):
-#
-#         url = reverse("rtb-bid-list")
-#         response = self.client.post(url, self.bid_request_data, format="json")
-#         self.bid_response = BidResponseModel.objects.last()
-#
-#         self.assertEqual(response.status_code, status.HTTP_200_OK)
-#         self.assertEqual(response.data["price"], 2.50)
-#         self.assertEqual(response.data["image_url"], "http://localhost:8001/media/Vek8fPqd8mop5UBpaD7TClRg25kcbflB.jpg")
-#
-#     def test_create_notification(self):
-#         url = reverse("rtb-notify-list")
-#         notification_data = {
-#             "bid_id": "1234",
-#             "price": 2.50,
-#             "win": True,
-#             "click": False,
-#             "conversion": False,
-#             "revenue": 0,
-#             "bid_request": self.bid_request.id,
-#             "bid_response": self.bid_response.id,
-#         }
-#         response = self.client.post(url, notification_data, format="json")
-#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-#         self.assertEqual(Notification.objects.count(), 1)
+    def test_create_bid_with_valid_data(self):
+        config = ConfigModel.objects.create(impressions_total=1000, auction_type=1, mode='free', budget=5000.00,
+                                            impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
+                                            frequency_capping=5)
+
+        campaign = CampaignModel.objects.create(name='Test Campaign', config=config, budget=500)
+
+        category1 = CategoryModel.objects.create(code='test', tier='tier 1', category="test category")
+        category2 = CategoryModel.objects.create(code='test7', tier='tier 1', category="test category")
+        subcategory1 = SubcategoryModel.objects.create(code='test2-1', tier='tier 2',
+                                                       subcategory="test subcategory", category=category1)
+        subcategory2 = SubcategoryModel.objects.create(code='test7-7', tier='tier 2',
+                                                       subcategory="test subcategory 2", category=category2)
+
+        data = {
+            "id": "some_id",
+            "imp": {
+                "banner": {
+                    "w": 300,
+                    "h": 250
+                },
+            },
+            "click": {
+                "prob": "0.1"
+            },
+            "conv": {
+                "prob": "0.89"
+            },
+            "site": {
+
+                "domain": "www.example.com",
+            },
+            "ssp": {
+                "id": "0938831"
+            },
+
+            "user": {
+                "id": "u_cq_001_87311"
+            },
+
+            "bcat": [
+                str(category1.code),
+                str(subcategory2.code)
+            ],
+        }
+
+        response = self.client.post(self.url, data, format='json')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Check that request model created
+        self.assertEqual(BidRequestModel.objects.count(), 1)
+        # Check that response model created
+        self.assertEqual(BidResponseModel.objects.count(), 1)
+        # TODO: after creating logic for price change to comparing with real price
+        self.assertEqual(BidResponseModel.objects.first().price, 2.50)
+
+        self.assertEqual(BidResponseModel.objects.first().image_url,
+                         response.data['image_url'])
+
+        # TODO: add tests for No Bid
+
+    def test_create_notification(self):
+        config = ConfigModel.objects.create(impressions_total=1000, auction_type=1, mode='free', budget=5000.00,
+                                            impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
+                                            frequency_capping=5)
+
+        campaign = CampaignModel.objects.create(name='Test Campaign', config=config, budget=500)
+
+        category1 = CategoryModel.objects.create(code='test', tier='tier 1', category="test category")
+        category2 = CategoryModel.objects.create(code='test7', tier='tier 1', category="test category")
+        subcategory1 = SubcategoryModel.objects.create(code='test2-1', tier='tier 2',
+                                                       subcategory="test subcategory", category=category1)
+        subcategory2 = SubcategoryModel.objects.create(code='test7-7', tier='tier 2',
+                                                       subcategory="test subcategory 2", category=category2)
+
+        creative_url = reverse("api-creative-list")
+        creative_data = {
+            'external_id': 'external_id',
+            'name': 'name',
+            'categories': json.dumps([{"code": category1.code}, {"code": subcategory2.code}]),
+            'campaign': json.dumps({'id': campaign.id}),
+            'file': self.create_test_image(),
+        }
+        creative_response = self.client.post(creative_url, creative_data, format='json')
+        print("CREATIVE: ", creative_response.data)
+
+        bid_url = reverse("rtb-bid-list")
+        bid_data = {
+            "id": "some_id",
+            "imp": {
+                "banner": {
+                    "w": 300,
+                    "h": 250
+                },
+            },
+            "click": {
+                "prob": "0.1"
+            },
+            "conv": {
+                "prob": "0.89"
+            },
+            "site": {
+
+                "domain": "www.example.com",
+            },
+            "ssp": {
+                "id": "0938831"
+            },
+
+            "user": {
+                "id": "u_cq_001_87311"
+            },
+
+            "bcat": [
+                str(category1.code),
+                str(subcategory2.code)
+            ],
+        }
+        bid_response = self.client.post(bid_url, bid_data, format='json')
+        print("BID: ", bid_response.data)
+
+        notif_url = reverse("rtb-notify-list")
+        notif_data = {
+            "id": "some_id",
+            "win": True,
+            "price": "2.5",
+            "click": False,
+            "conversion": False,
+            "revenue": "5.7"
+        }
+
+        notif_response = self.client.post(notif_url, notif_data, format="json")
+        print("NOTIF: ", notif_response.data)
+        self.assertEqual(notif_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Notification.objects.count(), 1)
+
+    @staticmethod
+    def create_test_image():
+        # Create a 100x100 pixel RGB image with a red background
+        img = pil.new('RGB', (100, 100), color='red')
+
+        # Encode the image as PNG and get the bytes
+        img_bytes = BytesIO()
+        img.save(img_bytes, format='PNG')
+        img_bytes = img_bytes.getvalue()
+
+        # Encode the image bytes as base64
+        encoded_image = base64.b64encode(img_bytes)
+
+        return encoded_image
