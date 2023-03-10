@@ -76,4 +76,6 @@ def calculate_bid_price(banner_width, banner_height, click_probability,
     cat = "category"
     creative_external_id = "external_id"
 
+    # TODO CREATE CREATIVE IN FREE MODE
+
     return price, image_url, cat, creative_external_id
