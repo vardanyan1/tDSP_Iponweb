@@ -3,14 +3,14 @@ services:
   web:
     image: src:latest
     build:
-      context: .
+      context: ./django
       dockerfile: Dockerfile
     expose:
       - 8000
     ports:
       - 8000:8000
     volumes:
-    - .:/data
+    - ./django:/data
     - /var/run/docker.sock:/var/run/docker.sock
     environment:
       DEPLOYMENT: api
@@ -21,23 +21,33 @@ services:
       DEBUG: "True"
     depends_on:
     - postgres
+    - image_server
     stdin_open: true
     tty: true
     env_file: .env
     restart: always
-    command: bash -c 'python3 src/manage.py runserver 0.0.0.0:8000'
+    command: >
+      /bin/bash -c '
+      if [ ! -f /data/categories/initiated.txt ]; then
+        python3 src/manage.py migrate
+        python3 src/manage.py import_categories categories/Content-Taxonomy-1.0.xlsx
+        touch /data/categories/initiated.txt
+      fi;
+      python3 src/manage.py runserver 0.0.0.0:8000'
+
     networks:
       pgnet:
   nginx:
     build: ./nginx/
     volumes:
-      - ./src:/data/src
+      - ./django/src:/data/src
       - ./nginx/sites-enabled:/etc/nginx/conf.d
       - ./nginx/passwd:/etc/nginx/passwd
     environment:
       COMPOSE_HTTP_TIMEOUT: 3600
     links:
       - web:web
+      - image_server:image_server
     networks:
       pgnet:
   postgres:
@@ -57,17 +67,59 @@ services:
       - 5432:5432
     networks:
       pgnet:
-  redis:
-    image: "redis:5.0-alpine"
+  image_postgres:
+    image: postgres:alpine
     volumes:
-      - "redis:/data"
+      - image_pgdata:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_IMAGE_SERVER_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PORT: 5433
+      COMPOSE_HTTP_TIMEOUT: 3600
     expose:
-      - "6379"
+      - "5433"
+    ports:
+      - "5433:5433"
+    command: -p 5433
     networks:
-      - pgnet
+      pgnet:
+  image_server: # add new service definition
+    image: image_server:latest  # replace with the image name
+    build:
+      context: ./image_server
+      dockerfile: Dockerfile
+    expose:
+      - 8001
+    ports:
+      - 8001:8001  # map the port to host
+    volumes:
+      - ./image_server:/data  # mount the application directory
+    environment:
+      DEBUG: "True"
+    depends_on:
+      - image_postgres
+    env_file: .env
+    restart: always
+    command: /bin/bash -c 'python3 src/manage.py runserver 0.0.0.0:8001'
+    networks:
+      pgnet:
+
+  ui:
+    build: ./ui
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./ui:/ui
+
+
 volumes:
   redis:
   web:
   pgdata:
+  image_pgdata:
 networks:
   pgnet:
+
