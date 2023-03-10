@@ -16,6 +16,7 @@ from ..dsp.models.campaign_model import CampaignModel
 from ..dsp.models.creative_model import CreativeModel
 from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
 from ..dsp.models.game_config_model import ConfigModel
+import os
 
 
 class GameConfigTestCase(APITestCase):
@@ -238,7 +239,6 @@ class BidRequestTests(APITestCase):
             'file': self.create_test_image(),
         }
         creative_response = self.client.post(creative_url, creative_data, format='json')
-        print("CREATIVE: ", creative_response.data)
 
         bid_url = reverse("rtb-bid-list")
         bid_data = {
@@ -273,7 +273,6 @@ class BidRequestTests(APITestCase):
             ],
         }
         bid_response = self.client.post(bid_url, bid_data, format='json')
-        print("BID: ", bid_response.data)
 
         notif_url = reverse("rtb-notify-list")
         notif_data = {
@@ -286,7 +285,6 @@ class BidRequestTests(APITestCase):
         }
 
         notif_response = self.client.post(notif_url, notif_data, format="json")
-        print("NOTIF: ", notif_response.data)
         self.assertEqual(notif_response.status_code, status.HTTP_200_OK)
         self.assertEqual(Notification.objects.count(), 1)
 
