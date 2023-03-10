@@ -9,7 +9,7 @@ from ..serializers.serializers import ConfigSerializer, ConfigCreateSerializer
 class ConfigViewSet(viewsets.ModelViewSet):
     queryset = ConfigModel.objects.all()
     serializer_class = ConfigSerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [permissions.AllowAny]
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -28,4 +28,4 @@ class ConfigViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=201, headers=headers)
+        return Response(serializer.data, status=200, headers=headers)
