@@ -165,6 +165,22 @@ class BidResponseSerializer(serializers.ModelSerializer):
 
 
 class NotificationSerializer(serializers.ModelSerializer):
+    bid_request = serializers.PrimaryKeyRelatedField(queryset=BidRequestModel.objects.all())
+    bid_response = serializers.PrimaryKeyRelatedField(queryset=BidResponseModel.objects.all())
+    config = serializers.SerializerMethodField()
+
     class Meta:
         model = Notification
         fields = '__all__'
+
+    def get_config(self, obj):
+        config = obj.bid_request.config.filter(current=True).first()
+        if config:
+            return config.id
+        return None
+
+    def to_internal_value(self, data):
+        bid_id = data.get('id', None)
+        if bid_id:
+            data['bid_id'] = bid_id
+        return super().to_internal_value(data)
