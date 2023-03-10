@@ -81,6 +81,11 @@ class CampaignSerializer(serializers.ModelSerializer):
         campaign = CampaignModel.objects.create(**validated_data)
         return campaign
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['budget'] = int(float(representation['budget']))
+        return representation
+
 
 class CampaignCreativeSerializer(serializers.ModelSerializer):
     class Meta:
