@@ -1,4 +1,5 @@
 import json
+import requests
 import os
 import logging
 import boto3
@@ -9,7 +10,7 @@ from rest_framework.response import Response
 from ..dsp.models.creative_model import CreativeModel
 from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
 from ..serializers.serializers import CreativeSerializer
-import requests
+from ..tools.image_server_tools import save_image_to_minio
 
 
 class CreativeViewSet(viewsets.ModelViewSet):
@@ -25,7 +26,8 @@ class CreativeViewSet(viewsets.ModelViewSet):
         categories = json.loads(request.data.get('categories'))
 
         # Save image to separate service and get url
-        image_url = save_image(encoded_image)
+        # image_url = save_image(encoded_image)
+        image_url = save_image_to_minio(encoded_image)
 
         # Create creative
         creative = CreativeModel.objects.create(external_id=external_id, name=name,

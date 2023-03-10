@@ -1,7 +1,7 @@
 import React from "react";
 
 const CreativesPage = () => {
-  return <div></div>;
+  return <div>Creatives</div>;
 };
 
 export default CreativesPage;
