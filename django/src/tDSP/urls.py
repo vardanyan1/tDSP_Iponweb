@@ -30,7 +30,7 @@ from .api import csrf
 router = routers.DefaultRouter()
 
 # Main functionality
-router.register(r'game/configure', ConfigViewSet)
+router.register(r'game/configure', ConfigViewSet, basename='game-configure')
 router.register(r'api/creatives', CreativeViewSet)
 router.register(r'api/campaigns', CampaignViewSet)
 router.register(r'rtb/bid', BidViewSet, basename='rtb-bid')
