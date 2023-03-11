@@ -1,0 +1,45 @@
+name: Test Docker Compose
+
+on:
+  push:
+    branches: [vzgo_branch_new]
+  pull_request:
+    branches: [development]
+
+jobs:
+  ## lint
+  ## build -> export artifact
+  ## test
+
+  test:
+    runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY  }}
+
+      POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+
+      MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
+      MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build images
+        run: docker-compose -f docker-compose.test.yml build
+
+      - name: Start services
+        run: docker-compose -f docker-compose.test.yml up -d
+
+      - name: Wait for services to start
+        run: docker-compose -f docker-compose.test.yml ps
+
+      - name: Run tests
+        run: docker-compose -f docker-compose.test.yml run --rm web python3 src/manage.py test tDSP.dsp.tests
+
+      - name: Stop services
+        run: docker-compose -f docker-compose.test.yml down
