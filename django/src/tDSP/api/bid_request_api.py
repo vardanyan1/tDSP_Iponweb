@@ -6,6 +6,7 @@ from ..dsp.models.bid_response_model import BidResponseModel
 from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
 from ..dsp.models.game_config_model import ConfigModel
 from ..serializers.serializers import BidRequestSerializer, BidResponseSerializer, AdSerializer
+from ..tools.calculator import calculate_bid_price
 
 
 class BidViewSet(ViewSet):
@@ -67,15 +68,3 @@ class BidViewSet(ViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-def calculate_bid_price(banner_width, banner_height, click_probability,
-                        conversion_probability, blocked_categories, user_id):
-    # TODO: Implement logic to determine bid price based on bid request data
-    price = 2.50
-    image_url = 'http://localhost:8001/media/Vek8fPqd8mop5UBpaD7TClRg25kcbflB.jpg'
-    cat = "category"
-    creative_external_id = "external_id"
-
-    # TODO CREATE CREATIVE IN FREE MODE
-
-    return price, image_url, cat, creative_external_id
