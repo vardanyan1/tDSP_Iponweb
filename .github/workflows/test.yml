@@ -7,9 +7,28 @@ on:
     branches: [development]
 
 jobs:
-  ## lint
-  ## build -> export artifact
-  ## test
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        working-directory: django
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint pytest pytest-cov pylint-django
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Lint
+        working-directory: django/src
+        run: PYTHONPATH="." DJANGO_SETTINGS_MODULE=tDSP.settings pylint --load-plugins pylint_django **/*.py
 
   test:
     runs-on: ubuntu-latest
