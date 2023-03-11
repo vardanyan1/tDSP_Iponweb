@@ -16,7 +16,6 @@ from ..dsp.models.campaign_model import CampaignModel
 from ..dsp.models.creative_model import CreativeModel
 from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
 from ..dsp.models.game_config_model import ConfigModel
-import os
 
 
 class GameConfigTestCase(APITestCase):

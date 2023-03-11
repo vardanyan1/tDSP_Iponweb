@@ -28,7 +28,7 @@ jobs:
 
       - name: Lint
         working-directory: django/src
-        run: PYTHONPATH="." DJANGO_SETTINGS_MODULE=tDSP.settings pylint --load-plugins pylint_django **/*.py
+        run: PYTHONPATH="." DJANGO_SETTINGS_MODULE=tdsp.settings pylint --load-plugins pylint_django **/*.py
 
   test:
     runs-on: ubuntu-latest
@@ -58,7 +58,7 @@ jobs:
         run: docker-compose -f docker-compose.test.yml ps
 
       - name: Run tests
-        run: docker-compose -f docker-compose.test.yml run --rm web python3 src/manage.py test tDSP.dsp.tests
+        run: docker-compose -f docker-compose.test.yml run --rm web python3 src/manage.py test tdsp.dsp.tests
 
       - name: Stop services
         run: docker-compose -f docker-compose.test.yml down

@@ -6,6 +6,8 @@ from ...models.categories_model import CategoryModel, SubcategoryModel
 class Command(BaseCommand):
     help = 'Imports categories and subcategories from an xlsx file'
 
+    # TODO: add logic to check if already migrated skip this part
+
     def add_arguments(self, parser):
         parser.add_argument('file_path', help='Path to the xlsx file')
 
