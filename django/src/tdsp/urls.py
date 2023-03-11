@@ -26,6 +26,7 @@ from .api.categories_api import CategoryViewSet, SubcategoryViewSet
 from .api.creative_api import CreativeViewSet
 from .api.campaign_api import CampaignViewSet
 from .api import csrf
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 router = routers.DefaultRouter()
 
@@ -49,3 +50,5 @@ urlpatterns = [
     path('csrf/', csrf.csrf, name='csrf'),
     path("", include("rest_framework.urls")),
 ]
+
+urlpatterns += staticfiles_urlpatterns()

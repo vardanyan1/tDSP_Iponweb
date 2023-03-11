@@ -8,7 +8,6 @@ done
 
 echo "PostgreSQL started"
 
-#python manage.py flush --no-input
 python src/manage.py migrate
 
 if [ ! -f categories/initiated.txt ]; then
