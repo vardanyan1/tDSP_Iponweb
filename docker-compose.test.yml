@@ -16,6 +16,8 @@ services:
       - POSTGRES_PORT=${POSTGRES_PORT}
       - SECRET_KEY=${SECRET_KEY}
       - DEBUG=${DEBUG}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
     ports:
       - "8000:8000"
     depends_on:
@@ -47,4 +49,6 @@ services:
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
 
