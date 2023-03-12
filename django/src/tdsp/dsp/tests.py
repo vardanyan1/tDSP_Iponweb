@@ -86,7 +86,7 @@ class CreativeTestCase(APITestCase):
         img_bytes = img_bytes.getvalue()
 
         # Encode the image bytes as base64
-        encoded_image = base64.b64encode(img_bytes)
+        encoded_image = base64.b64encode(img_bytes).decode('utf-8')
 
         return encoded_image
 
@@ -110,11 +110,11 @@ class CreativeTestCase(APITestCase):
         image = self.create_test_image()
 
         data = {
-            'external_id': 'external_id',
-            'name': 'name',
-            'categories': json.dumps([{"code": category1.code}, {"code": subcategory2.code}]),
-            'campaign': json.dumps({'id': campaign.id}),
-            'file': image,
+            "external_id": "external_id",
+            "name": "name",
+            "categories": [{"code": category1.code}, {"code": subcategory2.code}],
+            "campaign": {"id": campaign.id},
+            "file": image,
         }
 
         response = self.client.post(url, data, format='json')
@@ -230,13 +230,15 @@ class BidRequestTests(APITestCase):
                                                        subcategory="test subcategory 2", category=category2)
 
         creative_url = reverse("api-creative-list")
+        image = self.create_test_image()
         creative_data = {
-            'external_id': 'external_id',
-            'name': 'name',
-            'categories': json.dumps([{"code": category1.code}, {"code": subcategory2.code}]),
-            'campaign': json.dumps({'id': campaign.id}),
-            'file': self.create_test_image(),
+            "external_id": "external_id",
+            "name": "name",
+            "categories": [{"code": category1.code}, {"code": subcategory2.code}],
+            "campaign": {"id": campaign.id},
+            "file": image,
         }
+
         creative_response = self.client.post(creative_url, creative_data, format='json')
 
         bid_url = reverse("rtb-bid-list")
@@ -298,6 +300,6 @@ class BidRequestTests(APITestCase):
         img_bytes = img_bytes.getvalue()
 
         # Encode the image bytes as base64
-        encoded_image = base64.b64encode(img_bytes)
+        encoded_image = base64.b64encode(img_bytes).decode('utf-8')
 
         return encoded_image

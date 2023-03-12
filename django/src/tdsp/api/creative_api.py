@@ -21,9 +21,9 @@ class CreativeViewSet(viewsets.ModelViewSet):
         # Get data from request
         external_id = request.data.get('external_id')
         name = request.data.get('name')
-        campaign_id = json.loads(request.data.get('campaign'))['id']
+        campaign_id = request.data.get('campaign')['id']
         encoded_image = request.data.get('file')
-        categories = json.loads(request.data.get('categories'))
+        categories = request.data.get('categories')
 
         # Save image to separate service and get url
         image_url = save_image_to_minio(encoded_image)

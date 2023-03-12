@@ -7,6 +7,7 @@ import os
 
 from django.core.files.base import ContentFile
 
+
 # TODO: revisit return types
 
 def generate_image_name(decoded_img):
@@ -32,11 +33,12 @@ def get_content_type_from_ext(ext):
 
     return content_type
 
+
 ## TODO: example unit test
 # describe('get_content_type_from_ext', () => {
 #     it('should return default content type if invalid extension was provided', () => {
-    # result = get_content_type_from_ext('asdasd')
-    # assert(res)
+# result = get_content_type_from_ext('asdasd')
+# assert(res)
 # })
 # })
 
@@ -50,8 +52,8 @@ def save_image_to_minio(base64_image):
     img_file = ContentFile(decoded_img, name=name)
 
     # Credentials
-    minio_user = os.environ.get('MINIO_ACCESS_KEY')
-    minio_password = os.environ.get('MINIO_SECRET_KEY')
+    minio_user = os.environ.get('MINIO_ROOT_USER')
+    minio_password = os.environ.get('MINIO_ROOT_PASSWORD')
 
     # Connect to the MinIO server
     s3 = boto3.client('s3',
@@ -91,7 +93,7 @@ def save_image_to_minio(base64_image):
                       })
 
     # Generate a public URL for the image
-    url = f'/{bucket_name}/{name}'
+    url = f'http://localhost/{bucket_name}/{name}'
 
     # Return the URL to the Django application
     return url
