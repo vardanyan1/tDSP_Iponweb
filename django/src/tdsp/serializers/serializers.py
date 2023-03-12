@@ -114,10 +114,15 @@ class CreativeSerializer(serializers.ModelSerializer):
         Serialize categories and their corresponding subcategories.
         """
         categories = obj.categories.all()
-        serialized_subcategories = []
-        for category in categories:
-            serialized_subcategories.append({'id': category.id, 'code': category.code})
-        return serialized_subcategories
+        subcategories = obj.subcategories.all()
+
+        # Merge categories and subcategories
+        all_categories = list(categories) + list(subcategories)
+
+        # Serialize each category and subcategory
+        serialized_categories = [{'id': c.id, 'code': c.code} for c in all_categories]
+
+        return serialized_categories
 
 
 class AdSerializer(serializers.Serializer):

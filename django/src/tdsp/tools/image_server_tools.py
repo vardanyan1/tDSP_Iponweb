@@ -93,7 +93,7 @@ def save_image_to_minio(base64_image):
                       })
 
     # Generate a public URL for the image
-    url = f'http://localhost/{bucket_name}/{name}'
+    url = f'http://localhost:9000/{bucket_name}/{name}'
 
     # Return the URL to the Django application
     return url
