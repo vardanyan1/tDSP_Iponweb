@@ -11,11 +11,11 @@ const LoginPage = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
 
-    const apiUrl = "http://localhost:8000/login/";
+    const apiUrl = "http://localhost/login/";
 
     // Get CSRF token from the server
     axios
-      .get("http://localhost:8000/csrf/", { withCredentials: true })
+      .get("http://localhost/csrf/", { withCredentials: true })
       .then((response) => {
         const csrfToken = response?.data?.csrfToken;
 

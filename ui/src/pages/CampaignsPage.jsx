@@ -13,7 +13,7 @@ const CampaignsPage = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/campaigns").then((response) => {
+    axios.get("http://localhost/api/campaigns").then((response) => {
       setCampaigns(response.data);
     });
   }, []);

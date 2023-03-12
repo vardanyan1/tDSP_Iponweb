@@ -16,7 +16,6 @@ from ..dsp.models.campaign_model import CampaignModel
 from ..dsp.models.creative_model import CreativeModel
 from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
 from ..dsp.models.game_config_model import ConfigModel
-import os
 
 
 class GameConfigTestCase(APITestCase):
@@ -101,11 +100,11 @@ class CreativeTestCase(APITestCase):
 
         campaign = CampaignModel.objects.create(name='Test Campaign', config=config, budget=500)
 
-        category1 = CategoryModel.objects.create(code='test', tier='tier 1', category="test category")
-        category2 = CategoryModel.objects.create(code='test7', tier='tier 1', category="test category")
-        subcategory1 = SubcategoryModel.objects.create(code='test2-1', tier='tier 2',
+        category1 = CategoryModel.objects.create(code='test', category="test category")
+        category2 = CategoryModel.objects.create(code='test7', category="test category")
+        subcategory1 = SubcategoryModel.objects.create(code='test2-1',
                                                        subcategory="test subcategory", category=category1)
-        subcategory2 = SubcategoryModel.objects.create(code='test7-7', tier='tier 2',
+        subcategory2 = SubcategoryModel.objects.create(code='test7-7',
                                                        subcategory="test subcategory 2", category=category2)
 
         image = self.create_test_image()
@@ -161,11 +160,11 @@ class BidRequestTests(APITestCase):
 
         campaign = CampaignModel.objects.create(name='Test Campaign', config=config, budget=500)
 
-        category1 = CategoryModel.objects.create(code='test', tier='tier 1', category="test category")
-        category2 = CategoryModel.objects.create(code='test7', tier='tier 1', category="test category")
-        subcategory1 = SubcategoryModel.objects.create(code='test2-1', tier='tier 2',
+        category1 = CategoryModel.objects.create(code='test', category="test category")
+        category2 = CategoryModel.objects.create(code='test7', category="test category")
+        subcategory1 = SubcategoryModel.objects.create(code='test2-1',
                                                        subcategory="test subcategory", category=category1)
-        subcategory2 = SubcategoryModel.objects.create(code='test7-7', tier='tier 2',
+        subcategory2 = SubcategoryModel.objects.create(code='test7-7',
                                                        subcategory="test subcategory 2", category=category2)
 
         data = {
@@ -223,11 +222,11 @@ class BidRequestTests(APITestCase):
 
         campaign = CampaignModel.objects.create(name='Test Campaign', config=config, budget=500)
 
-        category1 = CategoryModel.objects.create(code='test', tier='tier 1', category="test category")
-        category2 = CategoryModel.objects.create(code='test7', tier='tier 1', category="test category")
-        subcategory1 = SubcategoryModel.objects.create(code='test2-1', tier='tier 2',
+        category1 = CategoryModel.objects.create(code='test', category="test category")
+        category2 = CategoryModel.objects.create(code='test7', category="test category")
+        subcategory1 = SubcategoryModel.objects.create(code='test2-1',
                                                        subcategory="test subcategory", category=category1)
-        subcategory2 = SubcategoryModel.objects.create(code='test7-7', tier='tier 2',
+        subcategory2 = SubcategoryModel.objects.create(code='test7-7',
                                                        subcategory="test subcategory 2", category=category2)
 
         creative_url = reverse("api-creative-list")

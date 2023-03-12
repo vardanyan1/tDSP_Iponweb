@@ -13,7 +13,6 @@ psycopg2
 ptyprocess
 python-dateutil
 pytz
-redis
 wcwidth
 websockets
 django-environ

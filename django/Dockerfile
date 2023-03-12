@@ -1,18 +1,16 @@
-FROM ubuntu:20.04
-RUN apt-get clean && apt-get update && apt-get install -y locales
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
-ENV LC_CTYPE en_US.UTF-8
-WORKDIR /data
-ADD requirements.txt /data
-RUN apt-get update
-RUN apt-get -y upgrade
-RUN apt-get -y install python3 python3-dev python3-pip postgresql-client postgresql-server-dev-12
-RUN apt-get update && apt-get install -y python3-pip
-RUN apt-get update && apt-get install -y libjpeg-dev libpng-dev python-pil
-RUN apt-get -y install curl zip unzip
-RUN pip3 install --upgrade pip
-RUN apt-get -y install cron
-RUN pip3 install -r requirements.txt
+FROM python:3
+
+RUN apt-get update && apt-get install -y netcat
+
+
+## Prevents Python from writing pyc files to disc
+ENV PYTHONDONTWRITEBYTECODE=1
+
+## Prevents Python from buffering stdout and stderr
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /code
+COPY requirements.txt /code/
+RUN pip install -r requirements.txt
+COPY . /code/
+ENTRYPOINT ["/code/entrypoint.sh"]
