@@ -8,6 +8,7 @@ done
 
 echo "PostgreSQL started"
 
+#  TODO:Write better code cuz if theres no migrations folder this wont work
 # Check if migrations have been applied for the dsp app
 if python src/manage.py showmigrations | grep -q "(no migrations)"; then
     echo "Migrations for dsp app not applied. Running makemigrations and migrate..."
