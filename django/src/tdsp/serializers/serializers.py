@@ -1,3 +1,5 @@
+import decimal
+
 from django.contrib.auth.models import User
 
 from rest_framework import serializers
@@ -74,17 +76,30 @@ class CampaignSerializer(serializers.ModelSerializer):
         # Get the current game configuration
         current_config = ConfigModel.objects.get(current=True)
 
+        # Calculate remaining budget in the current configuration
+        remaining_budget = current_config.budget - validated_data['budget']
+
+        # If the remaining budget is less than 0, return a BidRequestModel
+        if remaining_budget < 0:
+            raise serializers.ValidationError("Budget is insufficient to create the campaign.")
+
         # Set the 'config' field to the current game configuration
         validated_data['config'] = current_config
 
         # Create the campaign object
         campaign = CampaignModel.objects.create(**validated_data)
+
+        # Update the budget in the current configuration
+        current_config.budget = remaining_budget
+        current_config.save()
+
         return campaign
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['budget'] = int(float(representation['budget']))
         return representation
+
 
 
 class CampaignCreativeSerializer(serializers.ModelSerializer):
@@ -206,3 +221,19 @@ class NotificationSerializer(serializers.ModelSerializer):
         if bid_id:
             data['bid_id'] = bid_id
         return super().to_internal_value(data)
+
+    def create(self, validated_data):
+        # Retrieve the CreativeModel instance related to the BidResponseModel
+        creative = CreativeModel.objects.get(external_id=validated_data['bid_response'].external_id)
+
+        # Retrieve the CampaignModel instance related to the CreativeModel
+        campaign = CampaignModel.objects.get(id=creative.campaign.id)
+
+        # Calculate remaining budget in the current configuration
+        remaining_budget = campaign.budget - decimal.Decimal(str(validated_data['price']))
+
+        # Update the budget in the current configuration
+        campaign.budget = remaining_budget
+        campaign.save()
+
+        return Notification.objects.create(**validated_data)

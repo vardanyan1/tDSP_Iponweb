@@ -29,19 +29,6 @@ class BidViewSet(viewsets.ModelViewSet):
             user_id = bid_request_data['user']['id']
             blocked_categories = bid_request_data['bcat']
 
-            # Determine bid price and image based on the bid request data
-            price, image_url, creative_categories, creative_subcategories, creative_external_id = calculate_bid_price(
-                banner_width, banner_height, click_probability,
-                conversion_probability, blocked_categories, user_id)
-
-            # Create BidRequestModel instance
-            config = ConfigModel.objects.filter(current=True).first()
-
-            bid_request = BidRequestModel.objects.create(
-                bid_id=bid_id, banner_width=banner_width, banner_height=banner_height,
-                click_probability=click_probability, conversion_probability=conversion_probability,
-                site_domain=site_domain, ssp_id=ssp_id, user_id=user_id, config=config)
-
             # Get unique category codes
             b_category_codes = set(category for category in blocked_categories)
 
@@ -49,16 +36,26 @@ class BidViewSet(viewsets.ModelViewSet):
             b_category_codes = [code.replace('_', '') for code in b_category_codes]
 
             # Get subcategory and category objects using a single query
-            subcategories = SubcategoryModel.objects.filter(code__in=[code for code in b_category_codes if "-" in code])
-            categories = CategoryModel.objects.filter(code__in=[code for code in b_category_codes if "-" not in code])
+            b_subcategories = SubcategoryModel.objects.filter(code__in=[code for code in b_category_codes if "-" in code])
+            b_categories = CategoryModel.objects.filter(code__in=[code for code in b_category_codes if "-" not in code])
+
+            # Determine bid price and image based on the bid request data
+            price, image_url, creative_categories, creative_subcategories, creative_external_id, config = calculate_bid_price(
+                banner_width, banner_height, click_probability,
+                conversion_probability, b_categories, b_subcategories, user_id)
+
+            bid_request = BidRequestModel.objects.create(
+                bid_id=bid_id, banner_width=banner_width, banner_height=banner_height,
+                click_probability=click_probability, conversion_probability=conversion_probability,
+                site_domain=site_domain, ssp_id=ssp_id, user_id=user_id, config=config)
 
             # Add categories to creative
-            for category in categories:
-                bid_request.blocked_categories.add(category)
+            for b_category in b_categories:
+                bid_request.blocked_categories.add(b_category)
 
             # Add subcategories to creative
-            for sub_category in subcategories:
-                bid_request.blocked_subcategories.add(sub_category)
+            for b_sub_category in b_subcategories:
+                bid_request.blocked_subcategories.add(b_sub_category)
 
             serializer = BidRequestSerializer(bid_request)
             bid_request.save()

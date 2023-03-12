@@ -72,18 +72,18 @@ class CreativeAdminForm(forms.ModelForm):
 
 @admin.register(CreativeModel)
 class CreativeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'external_id', 'name', 'campaign', 'url', 'category_names')
+    list_display = ('id', 'external_id', 'name', 'campaign', 'url')
     search_fields = ('external_id', 'name', 'campaign', 'url')
     form = CreativeAdminForm
 
     def campaign_id(self, obj):
         return obj.campaign.name
-
-    def category_names(self, obj):
-        return ', '.join([category.subcategory for category in obj.categories.all()])
-
-    category_names.short_description = 'Categories'
-
+    #
+    # def category_names(self, obj):
+    #     return ', '.join([category.subcategory for category in obj.categories.all()])
+    #
+    # category_names.short_description = 'Categories'
+    #
     campaign_id.short_description = 'Campaign'
 
 

@@ -4,7 +4,7 @@ from ..models.categories_model import CategoryModel, SubcategoryModel
 
 
 class BidRequestModel(models.Model):
-    bid_id = models.CharField(max_length=255)
+    bid_id = models.CharField(max_length=255, unique=True)
     banner_width = models.IntegerField()
     banner_height = models.IntegerField()
     click_probability = models.FloatField()
