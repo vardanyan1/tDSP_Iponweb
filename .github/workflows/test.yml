@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY  }}
-      DEBUG: ${{ secrets.DEBUG  }}
+      DEBUG: False
     steps:
       - name: Set up Python 3.10
         uses: actions/setup-python@v3
