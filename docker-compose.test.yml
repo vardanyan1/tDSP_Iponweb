@@ -15,6 +15,7 @@ services:
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_PORT=${POSTGRES_PORT}
       - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
     ports:
       - "8000:8000"
     depends_on:
