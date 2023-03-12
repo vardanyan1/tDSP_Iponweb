@@ -26,14 +26,14 @@ class SubcategoryInline(admin.StackedInline):
 
 @admin.register(CategoryModel)
 class CategoryModelAdmin(admin.ModelAdmin):
-    list_display = ('code', 'tier', 'category')
+    list_display = ('code', 'category')
     search_fields = ('code', 'category')
     inlines = [SubcategoryInline]
 
 
 @admin.register(SubcategoryModel)
 class SubcategoryModelAdmin(admin.ModelAdmin):
-    list_display = ('code', 'tier', 'subcategory', 'category')
+    list_display = ('code', 'subcategory', 'category')
     search_fields = ('code', 'subcategory', 'category__category')
     list_filter = ('category',)
 

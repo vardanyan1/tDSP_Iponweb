@@ -10,7 +10,7 @@ services:
       - LC_ALL=en_US.UTF-8
       - DEBUG=True
     volumes:
-      - ./django:/data
+      - ./django:/code
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8000:8000"
@@ -21,14 +21,7 @@ services:
     tty: true
     env_file: .env
     restart: unless-stopped
-    command: >
-      /bin/bash -c '
-      if [ ! -f /code/categories/initiated.txt ]; then
-        python3 /code/src/manage.py migrate
-        python3 /code/src/manage.py import_categories categories/Content-Taxonomy-1.0.xlsx
-        touch /code/categories/initiated.txt
-      fi;
-      python3 /code/src/manage.py runserver 0.0.0.0:8000'
+    command: python3 /code/src/manage.py runserver 0.0.0.0:8000
 
   postgres:
     image: postgres:alpine

@@ -49,6 +49,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('csrf/', csrf.csrf, name='csrf'),
     path("", include("rest_framework.urls")),
-]
+] + staticfiles_urlpatterns()
 
-urlpatterns += staticfiles_urlpatterns()

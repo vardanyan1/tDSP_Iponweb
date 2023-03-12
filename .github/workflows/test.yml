@@ -2,7 +2,7 @@ name: Test Docker Compose
 
 on:
   push:
-    branches: [vzgo_branch_new]
+    branches: [vzgo_new_branch]
   pull_request:
     branches: [development]
 
