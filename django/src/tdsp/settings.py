@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+import ast
 import os
 from pathlib import Path
 
@@ -22,8 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-print(type(os.environ.get('DEBUG')))
-DEBUG = eval(str(os.environ.get('DEBUG')))
+DEBUG = ast.literal_eval(os.environ.get('DEBUG'))
 
 ALLOWED_HOSTS = ['*']
 
