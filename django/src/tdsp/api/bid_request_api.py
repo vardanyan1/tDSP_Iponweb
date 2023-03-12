@@ -53,11 +53,10 @@ class BidViewSet(viewsets.ModelViewSet):
 
             # Add categories to creative
             for category in categories:
-                bid_request.blacked_categories.add(category)
+                bid_request.blocked_categories.add(category)
 
             # Add subcategories to creative
             for sub_category in subcategories:
-                print(sub_category)
                 bid_request.blocked_subcategories.add(sub_category)
 
             serializer = BidRequestSerializer(bid_request)

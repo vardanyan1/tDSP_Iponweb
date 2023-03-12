@@ -126,8 +126,8 @@ class CreativeTestCase(APITestCase):
         self.assertEqual(creative.campaign_id, campaign.id)
 
         # check if categories are added to creative
-        self.assertIn(subcategory1, creative.categories.all())
-        self.assertIn(subcategory2, creative.categories.all())
+        self.assertIn(category1, creative.categories.all())
+        self.assertIn(subcategory2, creative.subcategories.all())
 
         # check if image is saved to separate service and image_url is added to creative
         self.assertTrue(creative.url)
@@ -140,7 +140,7 @@ class CreativeTestCase(APITestCase):
             'id': creative.id,
             'external_id': data['external_id'],
             'name': data['name'],
-            'categories': [{"id": subcategory1.id, "code": subcategory1.code},
+            'categories': [{"id": category1.id, "code": category1.code},
                            {"id": subcategory2.id, "code": subcategory2.code}],
             'campaign': {'id': campaign.id, 'name': campaign.name},
             'url': creative.url,
@@ -183,7 +183,7 @@ class BidRequestTests(APITestCase):
             },
             "site": {
 
-                "domain": "www.example.com",
+                "domain": "www.example.com"
             },
             "ssp": {
                 "id": "0938831"
@@ -196,7 +196,7 @@ class BidRequestTests(APITestCase):
             "bcat": [
                 str(category1.code),
                 str(subcategory2.code)
-            ],
+            ]
         }
 
         response = self.client.post(self.url, data, format='json')
