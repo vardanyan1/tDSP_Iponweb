@@ -30,8 +30,9 @@ class BidViewSet(viewsets.ModelViewSet):
             blocked_categories = bid_request_data['bcat']
 
             # Determine bid price and image based on the bid request data
-            price, image_url, cat, creative_external_id = calculate_bid_price(
-                banner_width, banner_height, click_probability, conversion_probability, blocked_categories, user_id)
+            price, image_url, creative_categories, creative_subcategories, creative_external_id = calculate_bid_price(
+                banner_width, banner_height, click_probability,
+                conversion_probability, blocked_categories, user_id)
 
             # Create BidRequestModel instance
             config = ConfigModel.objects.filter(current=True).first()
@@ -65,7 +66,16 @@ class BidViewSet(viewsets.ModelViewSet):
             # Create BidResponseModel instance
             if price:
                 bid_response = BidResponseModel.objects.create(
-                    external_id=creative_external_id, price=price, image_url=image_url, bid_request=bid_request)
+                    external_id=creative_external_id, price=price,
+                    image_url=image_url, bid_request=bid_request)
+
+                # Add categories to
+                for category in creative_categories:
+                    bid_response.categories.add(category)
+
+                # Add subcategories to
+                for sub_category in creative_subcategories:
+                    bid_response.subcategories.add(sub_category)
 
                 serializer = BidResponseSerializer(bid_response)
                 bid_response.save()

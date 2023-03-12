@@ -142,4 +142,3 @@ class BidResponseModelAdmin(admin.ModelAdmin):
     list_display = ('external_id', 'price', 'image_url', 'bid_request')
     list_filter = ('bid_request',)
     search_fields = ('external_id', 'bid_request__bid_id')
-    filter_horizontal = ('cat',)
