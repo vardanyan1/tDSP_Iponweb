@@ -4,8 +4,11 @@ import json
 import boto3
 import uuid
 import os
+import environ
 
 from django.core.files.base import ContentFile
+
+env = environ.Env()
 
 
 # TODO: revisit return types
@@ -34,7 +37,7 @@ def get_content_type_from_ext(ext):
     return content_type
 
 
-## TODO: example unit test
+# TODO: example unit test
 # describe('get_content_type_from_ext', () => {
 #     it('should return default content type if invalid extension was provided', () => {
 # result = get_content_type_from_ext('asdasd')
@@ -91,9 +94,11 @@ def save_image_to_minio(base64_image):
                           'ContentType': content_type,
                           'ContentDisposition': 'inline'
                       })
-
-    # Generate a public URL for the image
-    url = f'http://localhost:9000/{bucket_name}/{name}'
+    if env.bool('DEBUG', default=False):
+        # Generate a public URL for the image
+        url = f'http://localhost:9000/{bucket_name}/{name}'
+    else:
+        url = f'http://localhost/{bucket_name}/{name}'
 
     # Return the URL to the Django application
     return url
