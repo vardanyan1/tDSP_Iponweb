@@ -1,6 +1,9 @@
 import base64
 import imghdr
 import json
+from io import BytesIO
+from PIL import Image as pil
+
 import boto3
 import uuid
 import os
@@ -102,3 +105,18 @@ def save_image_to_minio(base64_image):
 
     # Return the URL to the Django application
     return url
+
+
+def generate_image(img_width, img_height):
+    # Create a 100x100 pixel RGB image with a red background
+    img = pil.new('RGB', (img_width, img_height), color='red')
+
+    # Encode the image as PNG and get the bytes
+    img_bytes = BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes = img_bytes.getvalue()
+
+    # Encode the image bytes as base64
+    encoded_image = base64.b64encode(img_bytes).decode('utf-8')
+
+    return encoded_image

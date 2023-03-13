@@ -60,6 +60,10 @@ class BidViewSet(viewsets.ModelViewSet):
             serializer = BidRequestSerializer(bid_request)
             bid_request.save()
 
+            # subtract 1 from config.rounds_left (ConfigModel)
+            config.rounds_left -= 1
+            config.save()
+
             # Create BidResponseModel instance
             if price:
                 bid_response = BidResponseModel.objects.create(

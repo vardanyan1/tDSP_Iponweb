@@ -13,8 +13,8 @@ from ..tools.image_server_tools import save_image_to_minio
 
 @admin.register(ConfigModel)
 class ConfigModelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'current', 'impressions_total', 'auction_type', 'mode', 'budget', 'impression_revenue',
-                    'click_revenue', 'conversion_revenue', 'frequency_capping', 'created_at')
+    list_display = ('id', 'current', 'impressions_total', 'rounds_left', 'auction_type', 'mode', 'budget',
+                    'impression_revenue', 'click_revenue', 'conversion_revenue', 'frequency_capping', 'created_at')
     list_filter = ('auction_type', 'mode')
     search_fields = ('id', 'impressions_total', 'budget')
 

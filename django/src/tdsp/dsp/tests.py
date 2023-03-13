@@ -25,8 +25,15 @@ class GameConfigTestCase(APITestCase):
     def test_create_config(self):
         url = reverse("game-configure-list")
 
+        category1 = CategoryModel.objects.create(code='IAB6', category="test category")
+        category2 = CategoryModel.objects.create(code='test7', category="test category")
+        subcategory1 = SubcategoryModel.objects.create(code='IAB6-6',
+                                                       subcategory="test subcategory", category=category1)
+        subcategory2 = SubcategoryModel.objects.create(code='test7-7',
+                                                       subcategory="test subcategory 2", category=category2)
+
         data = {
-            "impressions_total": 1,
+            "impressions_total": 3,
             "auction_type": 2,
             "mode": "free",
             "budget": 1000,
@@ -44,6 +51,9 @@ class GameConfigTestCase(APITestCase):
         config = ConfigModel.objects.get(current=True)
         self.assertEqual(config.auction_type, data['auction_type'])
         self.assertEqual(config.budget, data['budget'])
+        self.assertEqual(config.rounds_left, data['impressions_total'])
+
+        # TODO Add test for free and script separately
 
 
 class CampaignTestCase(APITestCase):
@@ -56,7 +66,7 @@ class CampaignTestCase(APITestCase):
         # Create config to associate campaign with current config
         config = ConfigModel.objects.create(impressions_total=1000, auction_type=1, mode='free', budget=5000.00,
                                             impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
-                                            frequency_capping=5)
+                                            frequency_capping=5, rounds_left=1000)
         data = {
             "name": "test campaign",
             "budget": 100,
@@ -96,13 +106,13 @@ class CreativeTestCase(APITestCase):
         # create a campaign and some categories/subcategories for testing
         config = ConfigModel.objects.create(impressions_total=1000, auction_type=1, mode='free', budget=5000.00,
                                             impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
-                                            frequency_capping=5)
+                                            frequency_capping=5, rounds_left=1000)
 
         campaign = CampaignModel.objects.create(name='Test Campaign', config=config, budget=500)
 
-        category1 = CategoryModel.objects.create(code='test', category="test category")
+        category1 = CategoryModel.objects.create(code='IAB6', category="test category")
         category2 = CategoryModel.objects.create(code='test7', category="test category")
-        subcategory1 = SubcategoryModel.objects.create(code='test2-1',
+        subcategory1 = SubcategoryModel.objects.create(code='IAB6-6',
                                                        subcategory="test subcategory", category=category1)
         subcategory2 = SubcategoryModel.objects.create(code='test7-7',
                                                        subcategory="test subcategory 2", category=category2)
@@ -156,13 +166,13 @@ class BidRequestTests(APITestCase):
     def test_create_bid_with_valid_data(self):
         config = ConfigModel.objects.create(impressions_total=10, auction_type=1, mode='free', budget=5000.00,
                                             impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
-                                            frequency_capping=5)
+                                            frequency_capping=5, rounds_left=10)
 
         campaign = CampaignModel.objects.create(name='Test Campaign', config=config, budget=500)
 
-        category1 = CategoryModel.objects.create(code='test', category="test category")
+        category1 = CategoryModel.objects.create(code='IAB6', category="test category")
         category2 = CategoryModel.objects.create(code='test7', category="test category")
-        subcategory1 = SubcategoryModel.objects.create(code='test2-1',
+        subcategory1 = SubcategoryModel.objects.create(code='IAB6-6',
                                                        subcategory="test subcategory", category=category1)
         subcategory2 = SubcategoryModel.objects.create(code='test7-7',
                                                        subcategory="test subcategory 2", category=category2)
@@ -231,13 +241,13 @@ class BidRequestTests(APITestCase):
     def test_create_notification(self):
         config = ConfigModel.objects.create(impressions_total=10, auction_type=1, mode='free', budget=5000.00,
                                             impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
-                                            frequency_capping=5)
+                                            frequency_capping=5, rounds_left=10)
 
         campaign = CampaignModel.objects.create(name='Test Campaign', config=config, budget=500)
 
-        category1 = CategoryModel.objects.create(code='test', category="test category")
+        category1 = CategoryModel.objects.create(code='IAB6', category="test category")
         category2 = CategoryModel.objects.create(code='test7', category="test category")
-        subcategory1 = SubcategoryModel.objects.create(code='test2-1',
+        subcategory1 = SubcategoryModel.objects.create(code='IAB6-6',
                                                        subcategory="test subcategory", category=category1)
         subcategory2 = SubcategoryModel.objects.create(code='test7-7',
                                                        subcategory="test subcategory 2", category=category2)

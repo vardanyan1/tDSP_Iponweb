@@ -52,6 +52,11 @@ class ConfigCreateSerializer(ConfigSerializer):
         model = ConfigModel
         exclude = ('current',)
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data.pop('rounds_left', None)
+        return data
+
 
 class SubcategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -99,7 +104,6 @@ class CampaignSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['budget'] = int(float(representation['budget']))
         return representation
-
 
 
 class CampaignCreativeSerializer(serializers.ModelSerializer):

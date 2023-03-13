@@ -14,7 +14,7 @@ class BidRequestModel(models.Model):
     user_id = models.CharField(max_length=255)
     blocked_categories = models.ManyToManyField(CategoryModel, blank=True)
     blocked_subcategories = models.ManyToManyField(SubcategoryModel, blank=True)
-    config = models.ForeignKey(ConfigModel, null=True, on_delete=models.SET_NULL, limit_choices_to={'current': True})
+    config = models.ForeignKey(ConfigModel, null=True, on_delete=models.CASCADE, limit_choices_to={'current': True})
 
     def __str__(self):
         return f"BidRequest {self.bid_id}"

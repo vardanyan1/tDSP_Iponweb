@@ -8,6 +8,7 @@ class ConfigModel(models.Model):
 
     current = models.BooleanField(default=True)
     impressions_total = models.IntegerField(blank=True, null=True)
+    rounds_left = models.IntegerField(blank=True, null=True)
     auction_type = models.IntegerField(choices=IMPRESSIONS_CHOICES)
     mode = models.CharField(choices=MODE_CHOICES, max_length=10)
     budget = models.DecimalField(max_digits=10, decimal_places=2)
