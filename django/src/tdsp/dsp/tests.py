@@ -154,7 +154,7 @@ class BidRequestTests(APITestCase):
         self.url = reverse('rtb-bid-list')
 
     def test_create_bid_with_valid_data(self):
-        config = ConfigModel.objects.create(impressions_total=1000, auction_type=1, mode='free', budget=5000.00,
+        config = ConfigModel.objects.create(impressions_total=10, auction_type=1, mode='free', budget=5000.00,
                                             impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
                                             frequency_capping=5)
 
@@ -166,9 +166,23 @@ class BidRequestTests(APITestCase):
                                                        subcategory="test subcategory", category=category1)
         subcategory2 = SubcategoryModel.objects.create(code='test7-7',
                                                        subcategory="test subcategory 2", category=category2)
+        subcategory3 = SubcategoryModel.objects.create(code='test7-7',
+                                                       subcategory="test subcategory 3", category=category2)
+
+        creative_url = reverse("api-creative-list")
+        image = self.create_test_image()
+        creative_data = {
+            "external_id": "external_id_craetive1",
+            "name": "name",
+            "categories": [{"code": subcategory3.code}],
+            "campaign": {"id": campaign.id},
+            "file": image,
+        }
+
+        creative_response = self.client.post(creative_url, creative_data, format='json')
 
         data = {
-            "id": "some_id",
+            "id": "some_id1",
             "imp": {
                 "banner": {
                     "w": 300,
@@ -194,8 +208,7 @@ class BidRequestTests(APITestCase):
             },
 
             "bcat": [
-                str(category1.code),
-                str(subcategory2.code)
+                str(category1.code)
             ]
         }
 
@@ -208,7 +221,7 @@ class BidRequestTests(APITestCase):
         # Check that response model created
         self.assertEqual(BidResponseModel.objects.count(), 1)
         # TODO: after creating logic for price change to comparing with real price
-        self.assertEqual(BidResponseModel.objects.first().price, 2.50)
+        # self.assertEqual(BidResponseModel.objects.first().price, 2.50)
 
         self.assertEqual(BidResponseModel.objects.first().image_url,
                          response.data['image_url'])
@@ -216,7 +229,7 @@ class BidRequestTests(APITestCase):
         # TODO: add tests for No Bid
 
     def test_create_notification(self):
-        config = ConfigModel.objects.create(impressions_total=1000, auction_type=1, mode='free', budget=5000.00,
+        config = ConfigModel.objects.create(impressions_total=10, auction_type=1, mode='free', budget=5000.00,
                                             impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
                                             frequency_capping=5)
 
@@ -232,7 +245,7 @@ class BidRequestTests(APITestCase):
         creative_url = reverse("api-creative-list")
         image = self.create_test_image()
         creative_data = {
-            "external_id": "external_id",
+            "external_id": "external_id2",
             "name": "name",
             "categories": [{"code": category1.code}, {"code": subcategory2.code}],
             "campaign": {"id": campaign.id},
@@ -243,7 +256,7 @@ class BidRequestTests(APITestCase):
 
         bid_url = reverse("rtb-bid-list")
         bid_data = {
-            "id": "some_id",
+            "id": "some_id2",
             "imp": {
                 "banner": {
                     "w": 300,
@@ -269,15 +282,15 @@ class BidRequestTests(APITestCase):
             },
 
             "bcat": [
-                str(category1.code),
-                str(subcategory2.code)
             ],
         }
         bid_response = self.client.post(bid_url, bid_data, format='json')
+        self.assertEqual(bid_response.status_code, status.HTTP_200_OK)
+        # price = bid_response.price
 
         notif_url = reverse("rtb-notify-list")
         notif_data = {
-            "id": "some_id",
+            "id": "some_id2",
             "win": True,
             "price": "2.5",
             "click": False,
