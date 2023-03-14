@@ -9,7 +9,6 @@ gunicorn
 hexbytes
 oauthlib
 Pillow
-psycopg2
 ptyprocess
 python-dateutil
 pytz
@@ -20,7 +19,6 @@ psycopg2-binary
 PyJWT
 djangorestframework
 openpyxl
-pandas
 requests
 tzdata
 boto3

@@ -32,23 +32,8 @@
     "Liberation Mono", "Courier New", monospace;
 }
 
-*,
-*::before,
-*::after {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  line-height: 1.8;
-  font-weight: normal;
-  background: #2b3035;
-  color: gray;
-}
-
 .tableWrapper {
+  margin-top: 100px;
   text-align: center;
 }
 
@@ -166,13 +151,13 @@ h5,
 .col-md-3,
 .col-md-4,
 .col-md-5,
-.col-md-6,
+.colMd6,
 .col-md-7,
 .col-md-8,
 .col-md-9,
 .col-md-10,
 .col-md-11,
-.col-md-12,
+.colMd12,
 .col-md,
 .col-md-auto,
 .col-lg-1,
@@ -210,7 +195,7 @@ h5,
 }
 
 @media (min-width: 768px) {
-  .col-md-6 {
+  .colMd6 {
     flex: 0 0 50%;
     max-width: 50%;
   }
@@ -221,12 +206,12 @@ h5,
 }
 
 th {
-  text-align: inherit;
+  text-align: left;
 }
 .table tbody tr {
   margin-bottom: 10px;
 }
-.justify-content-center {
+.justifyContentCenter {
   -webkit-box-pack: center !important;
   -ms-flex-pack: center !important;
   justify-content: center !important;
@@ -239,14 +224,14 @@ th {
 .my-4 {
   margin-bottom: 2rem !important;
 }
-.mb-4,
-.my-4 {
+.mb3,
+.my3 {
   margin-bottom: 1rem !important;
 }
-.text-center {
+.textCenter {
   text-align: center !important;
 }
-.heading-section {
+.headingSection {
   font-size: 28px;
   color: #fff;
 }
@@ -255,28 +240,29 @@ th {
   padding: 0.75rem;
   vertical-align: top;
   border-top: 1px solid #dee2e6;
+  text-align: left;
 }
-.table-bordered th,
-.table-bordered td {
+.tableBordered th,
+.tableBordered td {
   border: 1px solid #dee2e6;
 }
 .table thead th {
   vertical-align: bottom;
   border-bottom: 2px solid #dee2e6;
 }
-.table-bordered thead th,
-.table-bordered thead td {
+.tableBordered thead th,
+.tableBordered thead td {
   border-bottom-width: 2px;
 }
-.table-dark th,
-.table-dark td,
-.table-dark thead th,
-.table-dark tbody + tbody {
+.tableDark th,
+.tableDark td,
+.tableDark thead th,
+.tableDark tbody + tbody {
   border-color: #95999c;
 }
-.table-dark th,
-.table-dark td,
-.table-dark thead th {
+.tableDark th,
+.tableDark td,
+.tableDark thead th {
   border-color: #454d55;
 }
 
@@ -287,6 +273,10 @@ th {
   color: #fff;
   border-bottom: 4px solid #2b3035;
 }
+.table thead th:nth-child(2),
+.table thead th:nth-child(3) {
+  padding-left: 36px;
+}
 table {
   border-collapse: collapse;
 }
@@ -295,15 +285,15 @@ table {
   margin-bottom: 1rem;
   color: #212529;
 }
-.table-bordered {
+.tableBordered {
   border: 1px solid #dee2e6;
 }
-.table-dark,
-.table-dark > th,
-.table-dark > td {
+.tableDark,
+.tableDark > th,
+.tableDark > td {
   background-color: #c6c8ca;
 }
-.table-dark {
+.tableDark {
   color: #fff;
   background-color: #343a40;
 }
@@ -311,7 +301,7 @@ table {
   min-width: 1000px !important;
   width: 100%;
 }
-.table-dark.table-bordered {
+.tableDark.tableBordered {
   border: 0;
 }
 
@@ -356,4 +346,18 @@ table {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 20px;
+}
+
+.campaignsInputs {
+  background-color: #343a40;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #343a40;
+}
+
+.editedItemBorderColor {
+  border-color: #45f3ff;
 }

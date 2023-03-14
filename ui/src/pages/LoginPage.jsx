@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/login.css";
+import styles from "../styles/Login.module.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -10,7 +10,7 @@ const LoginPage = () => {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-
+    console.log(e);
     const apiUrl = "http://localhost/login/";
 
     // Get CSRF token from the server
@@ -49,10 +49,14 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="box">
-      <form autoComplete="off" onSubmit={handleLoginSubmit}>
-        <h2 className="signInText">Sign in</h2>
-        <div className="inputBox">
+    <div className={styles.box}>
+      <form
+        className={styles.loginForm}
+        autoComplete="off"
+        onSubmit={handleLoginSubmit}
+      >
+        <h2 className={styles.signInText}>Sign in</h2>
+        <div className={styles.inputBox}>
           <input
             type="text"
             required="required"
@@ -62,7 +66,7 @@ const LoginPage = () => {
           <span>Username</span>
           <i></i>
         </div>
-        <div className="inputBox">
+        <div className={styles.inputBox}>
           <input
             type="password"
             required="required"
@@ -72,7 +76,11 @@ const LoginPage = () => {
           <span>Password</span>
           <i></i>
         </div>
-        <input className="loginSubmitInput" type="submit" value="Sign In" />
+        <input
+          className={styles.loginSubmitInput}
+          type="submit"
+          value="Sign In"
+        />
       </form>
     </div>
   );

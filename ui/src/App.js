@@ -11,17 +11,18 @@ function App() {
   useEffect(() => {
     const csrfToken = localStorage.getItem('csrfToken');
     if (csrfToken === 'true' && location.pathname === '/') {
-      console.log(csrfToken);
       navigate('/campaigns')
-    };
+    } else if (csrfToken === 'false') {
+      navigate('/')
+    }
   }, [location.pathname, navigate]);
 
   return (
     <>
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="/campaigns" element={localStorage.getItem('csrfToken') ? <CampaignsPage /> : <LoginPage />} />
-        <Route path="/creatives" element={localStorage.getItem('csrfToken') ? <CreativesPage /> : <LoginPage />} />
+        <Route path="/campaigns" element={localStorage.getItem('csrfToken') === 'true' ? <CampaignsPage /> : <LoginPage />} />
+        <Route path="/creatives" element={localStorage.getItem('csrfToken') === 'true' ? <CreativesPage /> : <LoginPage />} />
       </Routes>
     </>
   );

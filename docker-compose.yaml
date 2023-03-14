@@ -52,8 +52,6 @@ services:
       - minio
     ports:
       - "3000:3000"
-    volumes:
-      - ./ui:/ui
 
 volumes:
   pgdata:
