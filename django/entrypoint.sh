@@ -8,12 +8,19 @@ done
 
 echo "PostgreSQL started"
 
+#  TODO:Write better code cuz if theres no migrations folder this wont work
 # Check if migrations have been applied for the dsp app
-if python src/manage.py showmigrations | grep -q "(no migrations)"; then
+#if python src/manage.py showmigrations | grep -q "(no migrations)"; then
+
+# Check if there is not migrations  folder apply migrations and fill the categories and subcategories
+if [ ! -d "src/tdsp/dsp/migrations" ]; then
     echo "Migrations for dsp app not applied. Running makemigrations and migrate..."
     python src/manage.py makemigrations dsp
     python src/manage.py migrate
     python src/manage.py import_categories categories/Content-Taxonomy-1.0.xlsx
+    echo "Creating superuser..."
+    python src/manage.py createsuperuser --email=admin@admin.com --noinput
+    echo "Superuser created!"
 else
     echo "Migrations for dsp app already applied. Skipping makemigrations and migrate."
 fi

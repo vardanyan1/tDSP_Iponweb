@@ -2,7 +2,7 @@ name: Test Docker Compose
 
 on:
   push:
-    branches: [vzgo_new_branch]
+    branches: [working_branch]
   pull_request:
     branches: [development]
 
@@ -47,6 +47,7 @@ jobs:
 
       MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
       MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+      LOCAL_HOST: ${{ secrets.LOCALHOST }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

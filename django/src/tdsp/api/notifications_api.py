@@ -2,12 +2,13 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from ..dsp.models.bid_request_model import BidRequestModel
-from ..dsp.models.notification_model import Notification
-from ..serializers.serializers import NotificationSerializer
+from ..dsp.models.notification_model import NotificationModel
+
+from ..serializers.notif_serializer import NotificationSerializer
 
 
 class NotificationViewSet(viewsets.ModelViewSet):
-    queryset = Notification.objects.all()
+    queryset = NotificationModel.objects.all()
     serializer_class = NotificationSerializer
 
     def create(self, request, *args, **kwargs):

@@ -1,6 +1,8 @@
 from rest_framework import viewsets, pagination
-from ..serializers.serializers import CategorySerializer, SubcategorySerializer
+
 from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
+
+from ..serializers.category_serializer import CategorySerializer, SubcategorySerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

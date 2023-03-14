@@ -1,11 +1,18 @@
 import base64
 import imghdr
 import json
+from io import BytesIO
+from PIL import Image as pil
+
 import boto3
 import uuid
 import os
+import environ
 
 from django.core.files.base import ContentFile
+
+env = environ.Env()
+
 
 # TODO: revisit return types
 
@@ -32,11 +39,12 @@ def get_content_type_from_ext(ext):
 
     return content_type
 
-## TODO: example unit test
+
+# TODO: example unit test
 # describe('get_content_type_from_ext', () => {
 #     it('should return default content type if invalid extension was provided', () => {
-    # result = get_content_type_from_ext('asdasd')
-    # assert(res)
+# result = get_content_type_from_ext('asdasd')
+# assert(res)
 # })
 # })
 
@@ -50,8 +58,8 @@ def save_image_to_minio(base64_image):
     img_file = ContentFile(decoded_img, name=name)
 
     # Credentials
-    minio_user = os.environ.get('MINIO_ACCESS_KEY')
-    minio_password = os.environ.get('MINIO_SECRET_KEY')
+    minio_user = os.environ.get('MINIO_ROOT_USER')
+    minio_password = os.environ.get('MINIO_ROOT_PASSWORD')
 
     # Connect to the MinIO server
     s3 = boto3.client('s3',
@@ -90,8 +98,22 @@ def save_image_to_minio(base64_image):
                           'ContentDisposition': 'inline'
                       })
 
-    # Generate a public URL for the image
-    url = f'/{bucket_name}/{name}'
+    url = f"http://{env.str('LOCAL_HOST')}/{bucket_name}/{name}"
 
     # Return the URL to the Django application
     return url
+
+
+def generate_image(img_width, img_height):
+    # Create a 100x100 pixel RGB image with a red background
+    img = pil.new('RGB', (img_width, img_height), color='red')
+
+    # Encode the image as PNG and get the bytes
+    img_bytes = BytesIO()
+    img.save(img_bytes, format='PNG')
+    img_bytes = img_bytes.getvalue()
+
+    # Encode the image bytes as base64
+    encoded_image = base64.b64encode(img_bytes).decode('utf-8')
+
+    return encoded_image

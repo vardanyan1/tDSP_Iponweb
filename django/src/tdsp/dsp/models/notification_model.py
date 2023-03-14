@@ -3,7 +3,7 @@ from ..models.bid_request_model import BidRequestModel
 from ..models.bid_response_model import BidResponseModel
 
 
-class Notification(models.Model):
+class NotificationModel(models.Model):
     bid_id = models.CharField(max_length=255)
     price = models.FloatField()
     win = models.BooleanField()
