@@ -1,0 +1,12 @@
+.logoutWrapper > button {
+  border: none;
+  outline: none;
+  padding: 8px 16px;
+  background: #45f3ff;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 600;
+  width: 100px;
+  font-size: 14px;
+  letter-spacing: 2px;
+}

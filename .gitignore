@@ -139,3 +139,4 @@ dmypy.json
 /minio_storage/.minio.sys/
 /minio_storage/images/
 /ui/node_modules/
+/ui/package-lock.json

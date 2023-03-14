@@ -4,13 +4,10 @@ import TableItems from "../components/TableItems";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRef } from "react";
+import PageNavigations from '../components/PageNavigations';
 
 const CampaignsPage = () => {
-  const [campaigns, setCampaigns] = useState([
-    { id: 1, name: "sonik", budget: 50000, isDisabled: true },
-    { id: 2, name: "panaSoniK", budget: 100000, isDisabled: true },
-    { id: 3, name: "traraSoniK", budget: 10, isDisabled: true },
-  ]);
+  const [campaigns, setCampaigns] = useState([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const modalRef = useRef(null);
 
@@ -18,7 +15,7 @@ const CampaignsPage = () => {
     axios.get("http://localhost/api/campaigns").then((response) => {
       setCampaigns(response.data);
     });
-  });
+  }, []);
 
   const handleIsEdited = (id) => {
     setCampaigns((prevCampaigns) =>

@@ -10,12 +10,12 @@ const LoginPage = () => {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    console.log(e);
-    const apiUrl = "http://localhost/login/";
+
+    const apiUrl = "http://localhost:8000/";
 
     // Get CSRF token from the server
     axios
-      .get("http://localhost/csrf/", { withCredentials: true })
+      .get(`${apiUrl}csrf/`, { withCredentials: true })
       .then((response) => {
         const csrfToken = response?.data?.csrfToken;
 
@@ -33,7 +33,7 @@ const LoginPage = () => {
         };
 
         axios
-          .post(apiUrl, loginData, { withCredentials: true })
+          .post(`${apiUrl}login/`, loginData, { withCredentials: true })
           .then((response) => {
             if (response.status === 200) {
               navigate("/campaigns");

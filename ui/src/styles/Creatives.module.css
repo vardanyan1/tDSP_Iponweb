@@ -328,3 +328,13 @@ table {
 .editedItemBorderColor {
   border-color: #45f3ff;
 }
+
+.itemUrl {
+    display: block;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #ffffff;
+    text-decoration: none;
+}
