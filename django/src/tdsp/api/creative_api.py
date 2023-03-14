@@ -1,15 +1,11 @@
-import json
-import requests
-import os
-import logging
-import boto3
-from botocore.exceptions import ClientError
-
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+
 from ..dsp.models.creative_model import CreativeModel
 from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
-from ..serializers.serializers import CreativeSerializer
+
+from ..serializers.creative_serializer import CreativeSerializer
+
 from ..tools.image_server_tools import save_image_to_minio
 
 

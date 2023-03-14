@@ -5,7 +5,8 @@ from ..dsp.models.campaign_model import CampaignModel
 from ..dsp.models.categories_model import SubcategoryModel
 from ..dsp.models.creative_model import CreativeModel
 from ..dsp.models.game_config_model import ConfigModel
-from ..serializers.serializers import ConfigSerializer, ConfigCreateSerializer, CampaignSerializer, CreativeSerializer
+
+from ..serializers.config_serializer import ConfigSerializer, ConfigCreateSerializer
 
 from ..tools.image_server_tools import generate_image, save_image_to_minio
 
@@ -40,7 +41,6 @@ class ConfigViewSet(viewsets.ModelViewSet):
 
         if data['mode'] == "free":
             campaign = CampaignModel.objects.create(name='Free Campaign', config=config, budget=data['budget'])
-            CampaignSerializer(campaign)
 
             # Create creative
             image_url = save_image_to_minio(generate_image(300, 200))
@@ -48,7 +48,10 @@ class ConfigViewSet(viewsets.ModelViewSet):
                                                     campaign_id=campaign.id, url=image_url)
             subcategory = SubcategoryModel.objects.get(code="IAB6-6")
             creative.subcategories.add(subcategory)
-            CreativeSerializer(creative)
+
+            # Update the budget in the current configuration
+            remaining_budget = config.budget - data['budget']
+            ConfigModel.objects.filter(current=True).update(budget=remaining_budget)
 
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=200, headers=headers)
+        return Response("", status=200, headers=headers)

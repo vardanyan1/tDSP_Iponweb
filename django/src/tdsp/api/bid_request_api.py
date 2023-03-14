@@ -1,11 +1,13 @@
 from rest_framework import status, viewsets
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet
+
 from ..dsp.models.bid_request_model import BidRequestModel
 from ..dsp.models.bid_response_model import BidResponseModel
 from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
-from ..dsp.models.game_config_model import ConfigModel
-from ..serializers.serializers import BidRequestSerializer, BidResponseSerializer, AdSerializer
+
+from ..serializers.bid_request_serializer import BidRequestCreateSerializer, BidRequestSerializer
+from ..serializers.bid_response_serializer import BidResponseSerializer
+
 from ..tools.calculator import calculate_bid_price
 
 
@@ -14,7 +16,7 @@ class BidViewSet(viewsets.ModelViewSet):
     serializer_class = BidRequestSerializer
 
     def create(self, request, *args, **kwargs):
-        serializer = AdSerializer(data=request.data)
+        serializer = BidRequestCreateSerializer(data=request.data)
         if serializer.is_valid():
             # Retrieve data from serializer
             bid_request_data = serializer.data
@@ -85,4 +87,3 @@ class BidViewSet(viewsets.ModelViewSet):
                 return Response('No-bid', status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-

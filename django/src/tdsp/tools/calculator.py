@@ -5,6 +5,8 @@ from django.db.models import Q
 from ..dsp.models.creative_model import CreativeModel
 from ..dsp.models.game_config_model import ConfigModel
 
+from .image_server_tools import generate_image
+
 
 def calculate_bid_price(banner_width, banner_height, click_probability,
                         conversion_probability, b_categories, b_subcategories, user_id):
@@ -15,6 +17,7 @@ def calculate_bid_price(banner_width, banner_height, click_probability,
     price = config.impression_revenue + decimal.Decimal(str(click_probability)) * config.click_revenue \
             + decimal.Decimal(str(conversion_probability)) * config.conversion_revenue
 
+    # Some logic to adjust the price based on rounds_left of config
     creatives = CreativeModel.objects.filter(
         Q(campaign__config__current=True) &
         ~Q(categories__in=b_categories) &

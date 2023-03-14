@@ -5,24 +5,54 @@ from io import BytesIO
 import json
 
 from django.urls import reverse
+from django.db import transaction
+
 
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 
 from .models.bid_request_model import BidRequestModel
 from .models.bid_response_model import BidResponseModel
-from .models.notification_model import Notification
+from .models.notification_model import NotificationModel
 from ..dsp.models.campaign_model import CampaignModel
 from ..dsp.models.creative_model import CreativeModel
 from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
 from ..dsp.models.game_config_model import ConfigModel
 
 
+class FillCategoriesTestCase(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+    def test_create_categories_for_further_testing(self):
+        categories = [
+            {"code": "IAB1", "category": "Illegal Content"},
+            {"code": "IAB2", "category": "Non-Standard Content"},
+            {"code": "IAB3", "category": "Uncategorized"},
+            {"code": "IAB4", "category": "Shopping"},
+            {"code": "IAB5", "category": "Travel"},
+            {"code": "IAB6", "category": "Sports"},
+            {"code": "IAB7", "category": "Pets"},
+            ]
+        with transaction.atomic():
+            for category in categories:
+                new_category = CategoryModel.objects.create(**category)
+                sub_prefix = ["1", "2", "3", "4", "5", "6"]
+                for prefix in sub_prefix:
+                    SubcategoryModel.objects.create(code=category['code']+"-"+prefix,
+                                                    category=new_category,
+                                                    subcategory=category['code']+"-"+prefix)
+
+        test_category = CategoryModel.objects.get(code="IAB6")
+
+        self.assertEqual(test_category.category, "Sports")
+
+
 class GameConfigTestCase(APITestCase):
     def setUp(self):
         self.client = APIClient()
 
-    def test_create_config(self):
+    def test_create_free_game_mode_config(self):
         url = reverse("game-configure-list")
 
         category1 = CategoryModel.objects.create(code='IAB6', category="test category")
@@ -50,7 +80,10 @@ class GameConfigTestCase(APITestCase):
         # check if config is created with the correct data
         config = ConfigModel.objects.get(current=True)
         self.assertEqual(config.auction_type, data['auction_type'])
-        self.assertEqual(config.budget, data['budget'])
+        if config.mode == "free":
+            self.assertEqual(config.budget, 0)
+        else:
+            self.assertEqual(config.budget, data['budget'])
         self.assertEqual(config.rounds_left, data['impressions_total'])
 
         # TODO Add test for free and script separately
@@ -310,7 +343,7 @@ class BidRequestTests(APITestCase):
 
         notif_response = self.client.post(notif_url, notif_data, format="json")
         self.assertEqual(notif_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(Notification.objects.count(), 1)
+        self.assertEqual(NotificationModel.objects.count(), 1)
 
     @staticmethod
     def create_test_image():

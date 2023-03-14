@@ -18,6 +18,7 @@ services:
       - DEBUG=${DEBUG}
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - LOCAL_HOST=${LOCAL_HOST}
     ports:
       - "8000:8000"
     depends_on:
