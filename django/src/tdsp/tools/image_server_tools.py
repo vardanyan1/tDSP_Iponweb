@@ -1,12 +1,9 @@
 import base64
 import imghdr
-import json
 from io import BytesIO
-from PIL import Image as pil
-
-import boto3
+from PIL import Image as Pil
+import requests
 import uuid
-import os
 import environ
 
 from django.core.files.base import ContentFile
@@ -47,8 +44,22 @@ def get_content_type_from_ext(ext):
 # assert(res)
 # })
 # })
+def send_image_to_flask_server(base64_image):
+    image_file = decode_image_file(base64_image)
 
-def save_image_to_minio(base64_image):
+    url = "http://image_server_flask:8080/upload"
+
+    files = {'file': image_file}
+    response = requests.post(url, files=files)
+
+    if response.status_code == 200:
+        return response.json()['url']
+    else:
+        print(f"Error sending image to Flask server: {response.text}")
+        return None
+
+
+def decode_image_file(base64_image):
     # Decode the base64-encoded image
     decoded_img = base64.b64decode(base64_image)
 
@@ -57,56 +68,17 @@ def save_image_to_minio(base64_image):
     content_type = get_content_type_from_ext(ext)
     img_file = ContentFile(decoded_img, name=name)
 
-    # Credentials
-    minio_user = os.environ.get('MINIO_ROOT_USER')
-    minio_password = os.environ.get('MINIO_ROOT_PASSWORD')
+    return img_file
 
-    # Connect to the MinIO server
-    s3 = boto3.client('s3',
-                      endpoint_url='http://minio:9000',
-                      aws_access_key_id=minio_user,
-                      aws_secret_access_key=minio_password,
-                      region_name='us-east-1',
-                      )
-    bucket_name = 'images'
 
-    # Check if the bucket already exists
-    if bucket_name not in [bucket['Name'] for bucket in s3.list_buckets()['Buckets']]:
-        # Create the bucket
-        s3.create_bucket(Bucket=bucket_name)
-
-        policy = {
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Effect": "Allow",
-                    "Principal": "*",
-                    "Action": "s3:GetObject",
-                    "Resource": [
-                        f"arn:aws:s3:::{bucket_name}/*"
-                    ]
-                }
-            ]
-        }
-        s3.put_bucket_policy(Bucket=bucket_name, Policy=json.dumps(policy))
-
-    # Save the image to MinIO with public-read ACL
-    s3.upload_fileobj(img_file, bucket_name, name,
-                      ExtraArgs={
-                          'ACL': 'public-read',
-                          'ContentType': content_type,
-                          'ContentDisposition': 'inline'
-                      })
-
-    url = f"http://{env.str('LOCAL_HOST')}/{bucket_name}/{name}"
-
-    # Return the URL to the Django application
+def send_image(base64_image):
+    url = send_image_to_flask_server(base64_image)
     return url
 
 
 def generate_image(img_width, img_height):
     # Create a 100x100 pixel RGB image with a red background
-    img = pil.new('RGB', (img_width, img_height), color='red')
+    img = Pil.new('RGB', (img_width, img_height), color='red')
 
     # Encode the image as PNG and get the bytes
     img_bytes = BytesIO()

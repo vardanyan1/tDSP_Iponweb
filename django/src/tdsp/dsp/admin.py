@@ -8,7 +8,7 @@ from .models.categories_model import CategoryModel, SubcategoryModel
 from .models.campaign_model import CampaignModel
 from .models.creative_model import CreativeModel
 from ..tools.calculator import calculate_bid_price
-from ..tools.image_server_tools import save_image_to_minio
+from ..tools.image_server_tools import send_image
 
 
 @admin.register(ConfigModel)
@@ -59,7 +59,7 @@ class CreativeAdminForm(forms.ModelForm):
         encoded_image = self.cleaned_data.get('file')
 
         # Call the function to send the encoded file to the server and get the URL
-        url = save_image_to_minio(encoded_image)
+        url = send_image(encoded_image)
 
         # Set the URL of the uploaded file to the instance URL field
         instance.url = url

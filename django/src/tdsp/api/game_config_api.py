@@ -8,7 +8,7 @@ from ..dsp.models.game_config_model import ConfigModel
 
 from ..serializers.config_serializer import ConfigSerializer, ConfigCreateSerializer
 
-from ..tools.image_server_tools import generate_image, save_image_to_minio
+from ..tools.image_server_tools import generate_image, send_image
 
 
 class ConfigViewSet(viewsets.ModelViewSet):
@@ -43,7 +43,7 @@ class ConfigViewSet(viewsets.ModelViewSet):
             campaign = CampaignModel.objects.create(name='Free Campaign', config=config, budget=data['budget'])
 
             # Create creative
-            image_url = save_image_to_minio(generate_image(300, 200))
+            image_url = send_image(generate_image(300, 200))
             creative = CreativeModel.objects.create(external_id="free_creative_id", name="Free Creative",
                                                     campaign_id=campaign.id, url=image_url)
             subcategory = SubcategoryModel.objects.get(code="IAB6-6")

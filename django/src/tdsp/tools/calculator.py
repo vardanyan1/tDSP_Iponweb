@@ -5,8 +5,6 @@ from django.db.models import Q
 from ..dsp.models.creative_model import CreativeModel
 from ..dsp.models.game_config_model import ConfigModel
 
-from .image_server_tools import generate_image
-
 
 def calculate_bid_price(banner_width, banner_height, click_probability,
                         conversion_probability, b_categories, b_subcategories, user_id):

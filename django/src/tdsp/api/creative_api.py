@@ -6,7 +6,7 @@ from ..dsp.models.categories_model import CategoryModel, SubcategoryModel
 
 from ..serializers.creative_serializer import CreativeSerializer
 
-from ..tools.image_server_tools import save_image_to_minio
+from ..tools.image_server_tools import send_image
 
 
 class CreativeViewSet(viewsets.ModelViewSet):
@@ -22,7 +22,7 @@ class CreativeViewSet(viewsets.ModelViewSet):
         categories = request.data.get('categories')
 
         # Save image to separate service and get url
-        image_url = save_image_to_minio(encoded_image)
+        image_url = send_image(encoded_image)
 
         # Create creative
         creative = CreativeModel.objects.create(external_id=external_id, name=name,
