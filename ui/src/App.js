@@ -1,9 +1,9 @@
+import { useEffect } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import CampaignsPage from './pages/CampaignsPage';
 import CreativesPage from './pages/CreativesPage';
 import ConfiguresPage from './pages/ConfiguresPage';
-import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 
 function App() {

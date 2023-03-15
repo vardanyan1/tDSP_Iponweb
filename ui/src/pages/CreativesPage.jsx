@@ -1,72 +1,114 @@
+import { useEffect, useState, useRef, useCallback } from "react";
+import axios from "../axios-instance";
 import styles from "../styles/Creatives.module.css";
-import axios from "axios";
-import { useEffect, useState, useRef } from "react";
 import CreativesTableItems from "../components/CreativesTableItems";
-import CreateCampaignItemModal from "../components/CreateCampaignItemModal";
+import CreateCreativesItemModal from "../components/CreateCreativesItemModal";
+
+const initialState = [
+  {
+    id: 100,
+    external_id: "string",
+    name: "test",
+    categories: [{ code: "IAB_7" }, { code: "IAB_1-11" }],
+    campaign: { id: 100 },
+    url: "string_url",
+  },
+];
 
 const CreativesPage = () => {
-  const [creatives, setCreatives] = useState([]);
+  const [creatives, setCreatives] = useState(initialState);
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const modalRef = useRef(null);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/creatives")
-      .then((response) => {
+    async function fetchData() {
+      try {
+        const response = await axios.get("/api/creatives");
         if (response.status === 200) {
-          console.log(response.data);
           setCreatives(response.data);
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error(error);
-      });
+      }
+    }
+    fetchData();
   }, []);
 
-  const handleToggleModal = () => {};
+  const handleRemove = useCallback((id) => {
+    setCreatives((prevCreatives) =>
+      prevCreatives.filter((creative) => creative.id !== id)
+    );
+  }, []);
+
+  const handleToggleModal = useCallback(
+    () => setIsOpenModal(!isOpenModal),
+    [isOpenModal]
+  );
+
+  const handleCreateCreativesItem = (formValues) => {
+    const categoryArray = formValues.categories
+      .trim()
+      .split(/\s+/)
+      .map((category) => ({ code: category }));
+
+    const newItem = { ...formValues, categories: categoryArray };
+    // Clear in Feature
+    const lastId = creatives.at(-1)?.id || 0;
+    setCreatives((prevCreatives) => [
+      ...prevCreatives,
+      { id: lastId + 1, ...newItem },
+    ]);
+
+    handleToggleModal();
+  };
 
   return (
-    <div className={styles.tableWrapper}>
+    <div className={styles.creativesWrapper}>
       <div className={styles.container}>
-        <div className={`${styles.row} ${styles.justifyContentCenter}`}>
-          <div
-            className={`${styles.colMd6} ${styles.textCenter} ${styles.mb3}`}
-          >
-            <h2 className={styles.headingSection}>Creatives</h2>
+        <div className={styles.row}>
+          <div className={styles.headerWrapper}>
+            <h2>Creatives</h2>
           </div>
         </div>
-        <div className={styles.createCampaignWrapper}>
-          <button onClick={handleToggleModal} className={styles.createCampaign}>
-            Create
-          </button>
+        <div className={styles.createButtonWrapper}>
+          <button onClick={handleToggleModal}>Create</button>
         </div>
         <div className={styles.row}>
-          <div className={styles.colMd12}>
-            <div>
-              <table
-                className={`${styles.table} ${styles.tableBordered} ${styles.tableDark}`}
-              >
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>External ID</th>
-                    <th>Name</th>
-                    <th>Categories</th>
-                    <th>Campaign</th>
-                    <th>Url</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {creatives.map((item) => {
-                    return <CreativesTableItems key={item.id} item={item} />;
-                  })}
-                </tbody>
-              </table>
-            </div>
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>External ID</th>
+                  <th>Name</th>
+                  <th>Categories</th>
+                  <th>Campaign</th>
+                  <th>Url</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {creatives.map((item) => {
+                  return (
+                    <CreativesTableItems
+                      key={item.id}
+                      {...{ item, handleRemove }}
+                    />
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      {false && <CreateCampaignItemModal modalRef={modalRef} />}
+      {isOpenModal && (
+        <CreateCreativesItemModal
+          handleToggleModal={handleToggleModal}
+          modalRef={modalRef}
+          handleCreateCreativesItem={handleCreateCreativesItem}
+        />
+      )}
     </div>
   );
 };

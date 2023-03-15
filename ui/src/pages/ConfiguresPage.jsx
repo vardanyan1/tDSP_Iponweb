@@ -1,6 +1,6 @@
-import styles from "../styles/Configures.module.css";
-import axios from "axios";
 import { useEffect, useState } from "react";
+import axios from "../axios-instance";
+import styles from "../styles/Configures.module.css";
 
 const ConfiguresPage = () => {
   const [configures, setConfigures] = useState({});
@@ -8,9 +8,7 @@ const ConfiguresPage = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/game/configure/"
-        );
+        const response = await axios.get("/game/configure/");
         if (response.status === 200) {
           const currentObject = response.data.find(
             (obj) => obj.current === true
@@ -44,8 +42,8 @@ const ConfiguresPage = () => {
       <h2 className={styles.headerText}>Configure</h2>
       <div className={styles.configuresWrapper}>
         <ul className={styles.configuresList}>
-          {configItems.map((item) => (
-            <li key={item.label}>
+          {configItems.map((item, index) => (
+            <li key={index}>
               <span>{item.label}</span>: {item.value}
             </li>
           ))}

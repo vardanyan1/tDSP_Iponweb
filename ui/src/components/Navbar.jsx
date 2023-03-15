@@ -11,13 +11,17 @@ const Navbar = () => {
   };
 
   const links = [
-    { to: "/campaigns", text: "Campaigns" },
-    { to: "/creatives", text: "Creatives" },
-    { to: "/configure", text: "Configure" },
+    { id: 1, to: "/campaigns", text: "Campaigns" },
+    { id: 2, to: "/creatives", text: "Creatives" },
+    { id: 3, to: "/configure", text: "Configure" },
   ];
 
-  const linkElements = links.map(({ to, text }) => (
-    <Link to={to} className={location.pathname === to && styles.active}>
+  const linkElements = links.map(({ id, to, text }) => (
+    <Link
+      key={id}
+      to={to}
+      className={location.pathname === to ? styles.active : ""}
+    >
       {text}
     </Link>
   ));

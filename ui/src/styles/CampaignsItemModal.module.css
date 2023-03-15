@@ -1,0 +1,57 @@
+.createCampaignsModal {
+  padding: 40px 40px;
+  border-radius: 8px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.inputsWrapper {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+}
+
+.inputsWrapper > input {
+  padding: 6px;
+  outline: none;
+  border: 1px solid #45f3ff;
+  border-radius: 4px;
+  background-color: inherit;
+  color: #ffffff;
+}
+
+.inputsWrapper > input::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #ffffff;
+  opacity: 1; /* Firefox */
+}
+
+.modal {
+  position: fixed;
+  z-index: 999;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #28292d;
+  padding: 40px 20px;
+  border-radius: 10px;
+  border: 1px solid #ffffff;
+}
+
+.modalContent {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.overlay {
+  position: fixed;
+  z-index: 998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}

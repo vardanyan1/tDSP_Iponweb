@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import styles from "../styles/Login.module.css";
-import axios from "axios";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "../axios-instance";
+import styles from "../styles/Login.module.css";
 
 const LoginPage = () => {
   const [login, setLogin] = useState("");
@@ -11,41 +11,35 @@ const LoginPage = () => {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
 
-    const apiUrl = "http://localhost:8000/";
-
-    // Get CSRF token from the server
-    axios
-      .get(`${apiUrl}csrf/`, { withCredentials: true })
-      .then((response) => {
-        const csrfToken = response?.data?.csrfToken;
-
-        if (csrfToken) {
-          localStorage.setItem("csrfToken", true);
-
-          // Set the CSRF token as a header on the Axios instance
-          axios.defaults.headers.common["X-CSRFToken"] = csrfToken;
-        }
-
-        // Send the POST request with the login data and cookies
-        const loginData = {
-          username: login,
-          password: password,
-        };
-
-        axios
-          .post(`${apiUrl}login/`, loginData, { withCredentials: true })
-          .then((response) => {
-            if (response.status === 200) {
-              navigate("/campaigns");
-            }
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-      })
-      .catch((error) => {
-        console.error("ERROR", error);
+    try {
+      // Get CSRF token from the server
+      const response = await axios.get("/csrf/", {
+        withCredentials: true,
       });
+      const csrfToken = response?.data?.csrfToken;
+
+      if (csrfToken) {
+        localStorage.setItem("csrfToken", true);
+
+        // Set the CSRF token as a header on the Axios instance
+        axios.defaults.headers.common["X-CSRFToken"] = csrfToken;
+      }
+
+      // Send the POST request with the login data and cookies
+      const loginData = {
+        username: login,
+        password: password,
+      };
+
+      const loginResponse = await axios.post("/login/", loginData, {
+        withCredentials: true,
+      });
+      if (loginResponse.status === 200) {
+        navigate("/campaigns");
+      }
+    } catch (error) {
+      console.error("ERROR", error);
+    }
   };
 
   return (
@@ -59,7 +53,7 @@ const LoginPage = () => {
         <div className={styles.inputBox}>
           <input
             type="text"
-            required="required"
+            required
             value={login}
             onChange={(e) => setLogin(e.target.value)}
           />
@@ -69,7 +63,7 @@ const LoginPage = () => {
         <div className={styles.inputBox}>
           <input
             type="password"
-            required="required"
+            required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
