@@ -7,6 +7,7 @@
   overflow: hidden;
   margin: 100px auto 0;
 }
+
 .box::before,
 .box::after {
   content: "";
@@ -20,6 +21,7 @@
   background: linear-gradient(0deg, transparent, #45f3ff, #45f3ff);
   animation: animate 6s linear infinite;
 }
+
 .box::after {
   animation-delay: -3s;
 }
@@ -32,6 +34,7 @@
     transform: rotate(360deg);
   }
 }
+
 .loginForm {
   position: absolute;
   inset: 2px;
@@ -43,17 +46,20 @@
   flex-direction: column;
   align-items: center;
 }
+
 .signInText {
   color: #45f3ff;
   font-weight: 500;
   text-align: center;
   letter-spacing: 0.1em;
 }
+
 .inputBox {
   position: relative;
   width: 300px;
   margin-top: 35px;
 }
+
 .inputBox input {
   position: relative;
   width: 100%;
@@ -68,6 +74,7 @@
   transition: 0.5s;
   z-index: 10;
 }
+
 .inputBox span {
   position: absolute;
   left: 0;
@@ -78,12 +85,14 @@
   letter-spacing: 0.05em;
   transition: 0.5s;
 }
+
 .inputBox input:valid ~ span,
 .inputBox input:focus ~ span {
   color: #45f3ff;
   transform: translateX(0px) translateY(-34px);
   font-size: 0.75em;
 }
+
 .inputBox i {
   position: absolute;
   left: 0;
@@ -97,10 +106,12 @@
   pointer-events: none;
   z-index: 9;
 }
+
 .inputBox input:valid ~ i,
 .inputBox input:focus ~ i {
   height: 44px;
 }
+
 .loginSubmitInput {
   border: none;
   outline: none;
@@ -112,6 +123,7 @@
   width: 100px;
   margin-top: 30px;
 }
+
 .loginSubmitInput:active {
   opacity: 0.8;
 }

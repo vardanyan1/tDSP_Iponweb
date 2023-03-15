@@ -1,4 +1,3 @@
-
 .tableWrapper {
   margin-top: 60px;
   text-align: center;
@@ -265,7 +264,6 @@ table {
   background-color: #343a40;
 }
 .table {
-  min-width: 1000px !important;
   width: 100%;
 }
 .tableDark.tableBordered {
@@ -330,11 +328,11 @@ table {
 }
 
 .itemUrl {
-    display: block;
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #ffffff;
-    text-decoration: none;
+  display: block;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #ffffff;
+  text-decoration: none;
 }

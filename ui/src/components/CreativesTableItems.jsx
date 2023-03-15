@@ -1,10 +1,7 @@
 import React from "react";
 import styles from "../styles/Creatives.module.css";
 
-const CreativesTableItems = ({
-  item
-}) => {
-console.log(item)
+const CreativesTableItems = ({ item }) => {
   return (
     <tr>
       <th scope="row">{item.id}</th>
@@ -15,26 +12,20 @@ console.log(item)
         <span>{item.name}</span>
       </td>
       <td>
-      {item.categories.map((item, index) => {
-        return (
-            <span>{index > 0 ? ', ' + item.code : item.code}</span>
-        )
-       })
-      }
-
+        {item.categories.map((item, index) => {
+          return <span>{index > 0 ? ", " + item.code : item.code}</span>;
+        })}
       </td>
       <td>
         <span>{item.campaign.name}</span>
       </td>
       <td>
-        <a href={item.url} className={styles.itemUrl}>{item.url}</a>
+        <a href={item.url} className={styles.itemUrl}>
+          {item.url}
+        </a>
       </td>
       <td>
-        <button
-          className={styles.removeCampaignsItem}
-        >
-          Remove
-        </button>
+        <button className={styles.removeCampaignsItem}>Remove</button>
       </td>
     </tr>
   );

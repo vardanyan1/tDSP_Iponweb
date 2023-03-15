@@ -1,0 +1,25 @@
+.headerText {
+  font-size: 28px;
+  color: #fff;
+  text-align: center;
+  margin: 60px 0px 30px;
+}
+
+.configuresWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.configuresList {
+  list-style-type: none;
+  margin: 0 auto;
+}
+
+.configuresList > li {
+  margin-bottom: 10px;
+}
+
+.configuresList > li > span {
+  display: inline-block;
+  width: 150px;
+}

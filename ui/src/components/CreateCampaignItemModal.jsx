@@ -7,9 +7,8 @@ const CreateCampaignItemModal = ({
   handleCreateCampaignItem,
 }) => {
   const [newItem, setNewItem] = useState({
-    name: undefined,
-    budget: undefined,
-    isDisabled: true,
+    name: "",
+    budget: "",
   });
   const [errorType, setErrorType] = useState({
     name: false,
@@ -30,85 +29,74 @@ const CreateCampaignItemModal = ({
     };
   }, [handleToggleModal]);
 
-  const handleInputChange = (type) => (e) => {
-    if (type === "budget") {
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    if (name === "budget") {
       const regex = /^[0-9]+$/;
-      const isNumber = regex.test(e.target.value);
+      const isNumber = regex.test(value);
       if (!isNumber) return;
     }
-    setErrorType((prevState) => ({
-      ...prevState,
-      [type]: !e.target.value,
-    }));
     setNewItem((prevState) => ({
       ...prevState,
-      [type]: e.target.value,
+      [name]: value,
     }));
-  };
-
-  const handleBlur = (type) => (e) => {
     setErrorType((prevState) => ({
       ...prevState,
-      [type]: !e.target.value,
+      [name]: !value,
     }));
   };
 
-  const handleSubmit = (formValues) => (event) => {
-    event.preventDefault();
-    if (!formValues.name || !formValues.budget) {
-      setErrorType((prevState) => ({
-        ...prevState,
-        name: !formValues.name,
-        budget: !formValues.budget,
-      }));
-      return;
-    }
-    handleCreateCampaignItem(formValues);
+  const handleBlur = (event) => {
+    const { name, value } = event.target;
+    setErrorType((prevState) => ({
+      ...prevState,
+      [name]: !value,
+    }));
   };
 
-  console.log({ errorType });
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const { name, budget } = newItem;
+    if (!name || !budget) {
+      setErrorType({
+        name: !name,
+        budget: !budget,
+      });
+      return;
+    }
+    handleCreateCampaignItem(newItem);
+  };
 
   return (
     <div>
       <div id="modal" className={styles.modal} ref={modalRef}>
         <div className={styles.modalContent}>
-          <form
-            onSubmit={handleSubmit(newItem)}
-            className={styles.createCampaignsModal}
-          >
+          <form onSubmit={handleSubmit} className={styles.createCampaignsModal}>
             <div className={styles.inputsWrapper}>
               <input
                 type="text"
                 id="name"
                 name="name"
                 placeholder="Campaign name"
-                value={newItem.name || ""}
+                value={newItem.name}
                 style={{
-                  borderColor: errorType?.name ? "red" : undefined,
+                  borderColor: errorType.name ? "red" : undefined,
                 }}
-                onBlur={handleBlur("name")}
-                onChange={handleInputChange("name")}
+                onBlur={handleBlur}
+                onChange={handleInputChange}
               />
               <input
                 type="text"
                 id="budget"
                 name="budget"
                 placeholder="Budget"
-                value={newItem.budget || ""}
+                value={newItem.budget}
                 style={{
-                  borderColor: errorType?.budget ? "red" : undefined,
+                  borderColor: errorType.budget ? "red" : undefined,
                 }}
-                onBlur={handleBlur("budget")}
-                onChange={handleInputChange("budget")}
-              />
-              {/* <input
-                type="text"
-                id="bidFloor"
-                name="bid floor"
-                placeholder="Bid floor"
-                value={bidFloorValue}
+                onBlur={handleBlur}
                 onChange={handleInputChange}
-              /> */}
+              />
             </div>
             <div className={styles.campaignModalBtnWrapper}>
               <button

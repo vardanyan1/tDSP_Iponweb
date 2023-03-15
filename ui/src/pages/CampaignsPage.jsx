@@ -4,50 +4,21 @@ import TableItems from "../components/TableItems";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useRef } from "react";
-import PageNavigations from '../components/PageNavigations';
+
+const initialState = [{ id: 100, name: "test", budget: "100000000" }];
 
 const CampaignsPage = () => {
-  const [campaigns, setCampaigns] = useState([]);
+  const [campaigns, setCampaigns] = useState(initialState);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const modalRef = useRef(null);
 
   useEffect(() => {
-    axios.get("http://localhost/api/campaigns").then((response) => {
-      setCampaigns(response.data);
+    axios.get("http://localhost:8000/api/campaigns/").then((response) => {
+      if (response.status === 200) {
+        setCampaigns(response.data);
+      }
     });
   }, []);
-
-  const handleIsEdited = (id) => {
-    setCampaigns((prevCampaigns) =>
-      prevCampaigns.map((campaign) =>
-        campaign.id === id
-          ? { ...campaign, isDisabled: !campaign.isDisabled }
-          : campaign
-      )
-    );
-  };
-
-  const handleChangeName = (e, id) => {
-    setCampaigns((prevCampaigns) =>
-      prevCampaigns.map((campaign) =>
-        campaign.id === id ? { ...campaign, name: e.target.value } : campaign
-      )
-    );
-  };
-  const handleChangeBudget = (e, id) => {
-    const regex = /^[0-9]+$/;
-    const isNumber = regex.test(e.target.value);
-
-    if (isNumber || e.target.value === "") {
-      setCampaigns((prevCampaigns) =>
-        prevCampaigns.map((campaign) =>
-          campaign.id === id
-            ? { ...campaign, budget: e.target.value }
-            : campaign
-        )
-      );
-    }
-  };
 
   const handleRemove = (id) => {
     setCampaigns((prevCampaigns) =>
@@ -68,8 +39,6 @@ const CampaignsPage = () => {
     ]);
     handleToggleModal();
   };
-
-  console.log({ campaigns });
 
   return (
     <div className={styles.tableWrapper}>
@@ -106,10 +75,7 @@ const CampaignsPage = () => {
                       <TableItems
                         key={item.id}
                         item={item}
-                        handleIsEdited={handleIsEdited}
                         handleRemove={handleRemove}
-                        handleChangeName={handleChangeName}
-                        handleChangeBudget={handleChangeBudget}
                       />
                     );
                   })}

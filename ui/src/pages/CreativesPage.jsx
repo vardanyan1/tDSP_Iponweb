@@ -1,27 +1,25 @@
 import styles from "../styles/Creatives.module.css";
-import TableItems from "../components/TableItems";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
-import CreativesTableItems from '../components/CreativesTableItems';
-import CreateCampaignItemModal from '../components/CreateCampaignItemModal';
-import PageNavigations from '../components/PageNavigations';
+import CreativesTableItems from "../components/CreativesTableItems";
+import CreateCampaignItemModal from "../components/CreateCampaignItemModal";
 
 const CreativesPage = () => {
   const [creatives, setCreatives] = useState([]);
-  const [isOpenModal, setIsOpenModal] = useState(false);
   const modalRef = useRef(null);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/api/creatives")
-        .then((response) => {
-            if(response.status === 200) {
-                console.log(response.data);
-                setCreatives(response.data);
-            }
-        })
-        .catch((error) => {
-            console.error(error);
-        });
+    axios
+      .get("http://localhost:8000/api/creatives")
+      .then((response) => {
+        if (response.status === 200) {
+          console.log(response.data);
+          setCreatives(response.data);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
   const handleToggleModal = () => {};
@@ -59,12 +57,7 @@ const CreativesPage = () => {
                 </thead>
                 <tbody>
                   {creatives.map((item) => {
-                    return (
-                      <CreativesTableItems
-                        key={item.id}
-                        item={item}
-                      />
-                    );
+                    return <CreativesTableItems key={item.id} item={item} />;
                   })}
                 </tbody>
               </table>
@@ -73,11 +66,7 @@ const CreativesPage = () => {
         </div>
       </div>
 
-      {isOpenModal && (
-        <CreateCampaignItemModal
-          modalRef={modalRef}
-        />
-      )}
+      {false && <CreateCampaignItemModal modalRef={modalRef} />}
     </div>
   );
 };
