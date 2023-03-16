@@ -7,9 +7,8 @@ WORKDIR /ui
 # Copy the package.json and package-lock.json files to the working directory
 COPY package*.json ./
 
-# Install dependencies if node_modules folder does not exist
-RUN apk add yarn \
-    && if [ ! -d "node_modules" ]; then yarn install; fi
+# Install dependencies
+RUN apk add yarn && yarn install
 
 # Copy the rest of the application files to the working directory
 COPY . .

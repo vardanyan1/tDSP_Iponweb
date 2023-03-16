@@ -23,7 +23,7 @@ from .api.bid_request_api import BidViewSet
 from .api.notifications_api import NotificationViewSet
 from .api.user_group_api import UserViewSet
 from .api.game_config_api import ConfigViewSet
-from .api.categories_api import CategoryViewSet, SubcategoryViewSet
+from .api.categories_api import CategoryViewSet
 from .api.creative_api import CreativeViewSet
 from .api.campaign_api import CampaignViewSet
 from .api import csrf
@@ -41,7 +41,6 @@ router.register(r'rtb/notify', NotificationViewSet, basename='rtb-notify')
 # Additional
 router.register(r'users', UserViewSet)
 router.register(r'categories', CategoryViewSet)
-router.register(r'subcategories', SubcategoryViewSet)
 
 
 urlpatterns = [

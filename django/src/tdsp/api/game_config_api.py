@@ -2,7 +2,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 
 from ..dsp.models.campaign_model import CampaignModel
-from ..dsp.models.categories_model import SubcategoryModel
+from ..dsp.models.categories_model import CategoryModel
 from ..dsp.models.creative_model import CreativeModel
 from ..dsp.models.game_config_model import ConfigModel
 
@@ -46,8 +46,8 @@ class ConfigViewSet(viewsets.ModelViewSet):
             image_url = send_image(generate_image(300, 200))
             creative = CreativeModel.objects.create(external_id="free_creative_id", name="Free Creative",
                                                     campaign_id=campaign.id, url=image_url)
-            subcategory = SubcategoryModel.objects.get(code="IAB6-6")
-            creative.subcategories.add(subcategory)
+            category = CategoryModel.objects.get(code="IAB6-6")
+            creative.categories.add(category)
 
             # Update the budget in the current configuration
             remaining_budget = config.budget - data['budget']

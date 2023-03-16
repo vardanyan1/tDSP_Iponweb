@@ -19,14 +19,27 @@ function App() {
     }
   }, [location.pathname, navigate]);
 
+  const pages = [
+    {
+      path: "/campaigns",
+      element: <CampaignsPage text='Campaigns' />,
+    },
+    {
+      path: "/creatives",
+      element: <CreativesPage text='Creatives' />,
+    },
+    {
+      path: "/configure",
+      element: <ConfiguresPage text='Configure' />,
+    },
+  ];
+
   return (
     <>
       {location.pathname !== '/' && <Navbar />}
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="/campaigns" element={<CampaignsPage />} />
-        <Route path="/creatives" element={<CreativesPage />} />
-        <Route path="/configure" element={<ConfiguresPage />} />
+        {pages.map(({ path, element }) => <Route key={path} path={path} element={element} />)}
       </Routes>
     </>
   );

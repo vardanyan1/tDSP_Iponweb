@@ -5,7 +5,6 @@ import ModalButtons from "./ModalButtons";
 
 const CreateCreativesItemModal = ({
   handleToggleModal,
-  modalRef,
   handleCreateCreativesItem,
 }) => {
   const [newItem, setNewItem] = useState({
@@ -13,14 +12,14 @@ const CreateCreativesItemModal = ({
     external_id: "",
     categories: [],
     campaign: "",
-    url: "",
+    file: "",
   });
   const [errorType, setErrorType] = useState({
     name: false,
     external_id: false,
     categories: false,
     campaign: false,
-    url: false,
+    file: false,
   });
 
   useEffect(() => {
@@ -60,15 +59,15 @@ const CreateCreativesItemModal = ({
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const { name, external_id, categories, campaign, url } = newItem;
+    const { name, external_id, categories, campaign, file } = newItem;
 
-    if (!name || !external_id || !categories.length || !campaign || !url) {
+    if (!name || !external_id || !categories.length || !campaign || !file) {
       setErrorType({
         name: !name,
         external_id: !external_id,
         categories: !categories.length,
         campaign: !campaign,
-        url: !url,
+        file: !file,
       });
       return;
     }
@@ -81,13 +80,13 @@ const CreateCreativesItemModal = ({
     const reader = new FileReader();
 
     reader.onload = (event) => {
-      const url = event.target.result;
+      const file = event.target.result;
 
-      setNewItem((prevState) => ({ ...prevState, url }));
+      setNewItem((prevState) => ({ ...prevState, file }));
 
       setErrorType((prevState) => ({
         ...prevState,
-        url: !url,
+        file: !file,
       }));
     };
 
@@ -109,7 +108,7 @@ const CreateCreativesItemModal = ({
 
   return (
     <div>
-      <div id="modal" className={styles.modal} ref={modalRef}>
+      <div id="modal" className={styles.modal}>
         <div className={styles.modalContent}>
           <form onSubmit={handleSubmit} className={styles.createCreativesModal}>
             <div className={styles.inputsWrapper}>
@@ -169,17 +168,17 @@ const CreateCreativesItemModal = ({
               <div className={styles.chooseImageBtnWrapper}>
                 <ImageUploadButton
                   handleChooseImage={handleChooseImage}
-                  url={newItem.url}
+                  file={newItem.file}
                 />
               </div>
               <input
                 type="text"
-                id="url"
-                name="url"
-                placeholder="url"
-                value={newItem.url}
+                id="file"
+                name="file"
+                placeholder="file"
+                value={newItem.file}
                 style={{
-                  borderColor: errorType.url ? "#ff59a7" : undefined,
+                  borderColor: errorType.file ? "#ff59a7" : undefined,
                 }}
                 onBlur={handleBlur}
                 onChange={handleInputChange}

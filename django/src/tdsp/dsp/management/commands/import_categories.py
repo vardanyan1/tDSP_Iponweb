@@ -1,6 +1,6 @@
 import openpyxl
 from django.core.management.base import BaseCommand
-from ...models.categories_model import CategoryModel, SubcategoryModel
+from ...models.categories_model import CategoryModel
 
 
 class Command(BaseCommand):
@@ -16,23 +16,22 @@ class Command(BaseCommand):
 
         categories = []
         for row in worksheet.iter_rows(min_row=2, values_only=True):
-            code, _, category, *_ = row
-            if code is not None and category is not None:
-                categories.append({'code': code, 'category': category})
+            code, _, name, *_ = row
+            if code is not None and name is not None:
+                categories.append({'code': code, 'name': name})
 
         for category in categories:
             code = category['code']
-            category_name = category['category']
+            name = category['name']
 
             if '-' not in code:
-                category, _ = CategoryModel.objects.get_or_create(code=code, category=category_name)
+                category, _ = CategoryModel.objects.get_or_create(code=code, name=name)
 
             elif '-' in code:
                 parent_code, _ = code.split('-')
                 parent_category = CategoryModel.objects.get(code=parent_code)
 
-                subcategory, _ = SubcategoryModel.objects.get_or_create(
-                    code=code, subcategory=category_name, category=parent_category)
+                subcategory, _ = CategoryModel.objects.get_or_create(
+                    code=code, name=name, parent=parent_category)
 
         self.stdout.write(self.style.SUCCESS('Successfully imported categories and subcategories'))
-

@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "../styles/Campaigns.module.css";
+import Button from "./Button/Button";
 
 const TableItems = React.memo(
   ({ item, handleRemove }) => {
@@ -13,12 +14,9 @@ const TableItems = React.memo(
           <span>{item.budget}</span>
         </td>
         <td>
-          <button
-            className={styles.removeCampaignsItem}
-            onClick={() => handleRemove(item.id)}
-          >
-            Remove
-          </button>
+          <div className={styles.removeBtnWrapper}>
+            <Button handleClick={() => handleRemove(item.id)} text="Remove" />
+          </div>
         </td>
       </tr>
     );

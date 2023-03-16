@@ -1,17 +1,11 @@
 from rest_framework import serializers
-
-from ..dsp.models.categories_model import SubcategoryModel, CategoryModel
-
-
-class SubcategorySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = SubcategoryModel
-        fields = '__all__'
+from ..dsp.models.categories_model import CategoryModel
 
 
-class CategorySerializer(serializers.HyperlinkedModelSerializer):
-    subcategories = SubcategorySerializer(many=True, read_only=True)
+class CategorySerializer(serializers.ModelSerializer):
+    parent = serializers.PrimaryKeyRelatedField(queryset=CategoryModel.objects.all(), allow_null=True)
+    children = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = CategoryModel
-        fields = '__all__'
+        fields = ['id', 'name', 'code', 'parent', 'children']

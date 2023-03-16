@@ -1,5 +1,5 @@
 from django.db import models
-from ..models.categories_model import CategoryModel, SubcategoryModel
+from ..models.categories_model import CategoryModel
 from ..models.campaign_model import CampaignModel
 
 
@@ -9,7 +9,6 @@ class CreativeModel(models.Model):
     name = models.CharField(max_length=100)
     url = models.URLField(max_length=500)
     categories = models.ManyToManyField(CategoryModel)
-    subcategories = models.ManyToManyField(SubcategoryModel)
     campaign = models.ForeignKey(CampaignModel, on_delete=models.CASCADE, limit_choices_to={'config__current': True})
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

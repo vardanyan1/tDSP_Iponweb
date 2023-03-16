@@ -6,6 +6,9 @@ from ..dsp.models.bid_response_model import BidResponseModel
 
 
 class BidResponseSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the BidResponse model.
+    """
     cat = serializers.SerializerMethodField()
 
     class Meta:
@@ -18,16 +21,12 @@ class BidResponseSerializer(serializers.ModelSerializer):
 
     def get_cat(self, obj):
         """
-        Serialize blocked_categories and their corresponding subcategories.
+        Serialize categories.
         """
         categories = obj.categories.all()
-        subcategories = obj.subcategories.all()
 
-        # Merge categories and subcategories
-        all_categories = list(categories) + list(subcategories)
-
-        # Serialize each category and subcategory
-        serialized_categories = [c.code for c in all_categories]
+        # Serialize each category
+        serialized_categories = [c.code for c in categories]
 
         return serialized_categories
 

@@ -1,26 +1,15 @@
-import { useEffect, useState } from "react";
-import axios from "../axios-instance";
+import { useState } from "react";
+import Header from "../components/Header/Header";
+import { useFetchGetData } from "../hooks/useFetchData";
 import styles from "../styles/Configures.module.css";
 
 const ConfiguresPage = () => {
   const [configures, setConfigures] = useState({});
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await axios.get("/game/configure/");
-        if (response.status === 200) {
-          const currentObject = response.data.find(
-            (obj) => obj.current === true
-          );
-          setConfigures(currentObject);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    fetchData();
-  }, []);
+  const { isLoading, isError } = useFetchGetData(
+    "/api/configure/",
+    setConfigures
+  );
 
   const configItems = [
     { label: "Id", value: configures.id },
@@ -38,18 +27,24 @@ const ConfiguresPage = () => {
   ];
 
   return (
-    <>
-      <h2 className={styles.headerText}>Configure</h2>
-      <div className={styles.configuresWrapper}>
-        <ul className={styles.configuresList}>
-          {configItems.map((item, index) => (
-            <li key={index}>
-              <span>{item.label}</span>: {item.value}
-            </li>
-          ))}
-        </ul>
+    <div className={styles.configuresWrapper}>
+      <div className={styles.container}>
+        <Header text="Configure" />
+        {isLoading && <p>Loading...</p>}
+        {isError && <p>Error fetching data.</p>}
+        {!isLoading && !isError && (
+          <div className={styles.configuresWrapper}>
+            <ul className={styles.configuresList}>
+              {configItems.map((item, index) => (
+                <li key={index}>
+                  <span>{item.label}</span>: {item.value}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

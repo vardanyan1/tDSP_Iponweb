@@ -1,4 +1,5 @@
 import styles from "../styles/Creatives.module.css";
+import Button from "./Button/Button";
 
 const CreativesTableItems = ({ item, handleRemove }) => {
   return (
@@ -11,33 +12,29 @@ const CreativesTableItems = ({ item, handleRemove }) => {
         <span>{item.name}</span>
       </td>
       <td>
-        {item?.categories?.map((item, index) => (
+        {item.categories?.map((item, index) => (
           <span key={item.code}>
             {index > 0 ? ", " + item.code : item.code}
           </span>
         ))}
-        {/* {item?.categories} */}
       </td>
       <td>
         <span>{item.campaign.name}</span>
       </td>
       <td>
         <a
-          href={item.url}
+          href={item.file}
           className={styles.itemUrl}
           target="_blank"
           rel="noreferrer"
         >
-          {item.url}
+          {item.file}
         </a>
       </td>
       <td>
-        <button
-          className={styles.removeCreativesItem}
-          onClick={() => handleRemove(item.id)}
-        >
-          Remove
-        </button>
+        <div className={styles.removeBtnWrapper}>
+          <Button handleClick={() => handleRemove(item.id)} text="Remove" />
+        </div>
       </td>
     </tr>
   );

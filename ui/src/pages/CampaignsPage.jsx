@@ -1,28 +1,19 @@
-import { useCallback, useEffect, useState } from "react";
-import axios from "../axios-instance";
+import { useCallback, useState } from "react";
 import styles from "../styles/Campaigns.module.css";
 import CreateCampaignsItemModal from "../components/CreateCampaignsItemModal";
 import CampaignsTableItems from "../components/CampaignsTableItems";
-
-const initialState = [{ id: 100, name: "test", budget: "100000000" }];
+import Header from "../components/Header/Header";
+import Button from "../components/Button/Button";
+import { useFetchGetData } from "../hooks/useFetchData";
 
 const CampaignsPage = () => {
-  const [campaigns, setCampaigns] = useState(initialState);
+  const [campaigns, setCampaigns] = useState([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await axios.get("/api/campaigns/");
-        if (response.status === 200) {
-          setCampaigns(response.data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    fetchData();
-  }, []);
+  const { isLoading, isError } = useFetchGetData(
+    "/api/campaigns/",
+    setCampaigns
+  );
 
   const handleRemove = useCallback((id) => {
     setCampaigns((prevCampaigns) =>
@@ -51,37 +42,39 @@ const CampaignsPage = () => {
   return (
     <div className={styles.campaignsWrapper}>
       <div className={styles.container}>
-        <div className={styles.row}>
-          <div className={styles.headerWrapper}>
-            <h2>Campaigns</h2>
-          </div>
-        </div>
+        <Header text="Campaigns" />
         <div className={styles.createButtonWrapper}>
-          <button onClick={handleToggleModal}>Create</button>
+          <Button handleClick={handleToggleModal} text="Create" />
         </div>
         <div className={styles.row}>
           <div className={styles.tableWrapper}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Budget</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {campaigns.map((item) => {
-                  return (
-                    <CampaignsTableItems
-                      key={item.id}
-                      item={item}
-                      handleRemove={handleRemove}
-                    />
-                  );
-                })}
-              </tbody>
-            </table>
+            {isLoading ? (
+              <p>Loading...</p>
+            ) : isError ? (
+              <p>Error: {isError}</p>
+            ) : (
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Budget</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {campaigns.map((item) => {
+                    return (
+                      <CampaignsTableItems
+                        key={item.id}
+                        item={item}
+                        handleRemove={handleRemove}
+                      />
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       </div>

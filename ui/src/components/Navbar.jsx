@@ -1,5 +1,6 @@
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import styles from "../styles/Navbar.module.css";
+import Button from "./Button/Button";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ const Navbar = () => {
       <div></div>
       <div className={styles.navigationLinksWrapper}>{linkElements}</div>
       <div className={styles.logoutWrapper}>
-        <button onClick={handleClick}>Logout</button>
+        <Button handleClick={handleClick} text="Logout" />
       </div>
     </div>
   );

@@ -117,7 +117,7 @@
   font-size: 14px;
 }
 
-.removeCreativesItem {
+.removeBtnWrapper > button {
   border: none;
   outline: none;
   padding: 5px 0px;
