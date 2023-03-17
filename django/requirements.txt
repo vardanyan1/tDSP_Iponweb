@@ -18,6 +18,7 @@ django-environ
 psycopg2-binary
 PyJWT
 djangorestframework
+djangorestframework_simplejwt
 openpyxl
 requests
 tzdata

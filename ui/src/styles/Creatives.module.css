@@ -136,3 +136,8 @@
   text-overflow: ellipsis;
   max-width: 150px;
 }
+
+.itemUrl::placeholder {
+  color: red;
+  opacity: 1; /* Firefox */
+}

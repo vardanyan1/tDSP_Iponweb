@@ -20,7 +20,7 @@ class BidViewSet(viewsets.ModelViewSet):
             bid_request_data = serializer.data
 
             config = ConfigModel.objects.get(current=True)
-            if config.rounds_left < 0:
+            if config.rounds_left <= 0:
                 return Response({"error": "No rounds left."},
                                 status=status.HTTP_400_BAD_REQUEST)
 

@@ -18,6 +18,7 @@ from django.urls import include, path
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from rest_framework import routers
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .api.bid_request_api import BidViewSet
 from .api.notifications_api import NotificationViewSet
@@ -26,7 +27,6 @@ from .api.game_config_api import ConfigViewSet
 from .api.categories_api import CategoryViewSet
 from .api.creative_api import CreativeViewSet
 from .api.campaign_api import CampaignViewSet
-from .api import csrf
 
 router = routers.DefaultRouter()
 
@@ -46,6 +46,6 @@ router.register(r'categories', CategoryViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
-    path('csrf/', csrf.csrf, name='csrf'),
-    path("", include("rest_framework.urls")),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ] + staticfiles_urlpatterns()

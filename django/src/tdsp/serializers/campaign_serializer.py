@@ -8,7 +8,6 @@ class CampaignSerializer(serializers.ModelSerializer):
         model = CampaignModel
         fields = ['id', 'name', 'budget']
 
-
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['budget'] = int(float(representation['budget']))

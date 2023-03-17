@@ -30,7 +30,7 @@ const CreateCampaignsItemModal = React.memo(
 
     const handleInputChange = (event) => {
       const { name, value } = event.target;
-      if (name === "budget") {
+      if (name === "budget" && value.length) {
         const regex = /^[0-9]+$/;
         const isNumber = regex.test(value);
         if (!isNumber) return;

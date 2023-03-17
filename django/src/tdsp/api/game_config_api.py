@@ -14,7 +14,6 @@ from ..tools.image_server_tools import generate_image, send_image
 class ConfigViewSet(viewsets.ModelViewSet):
     queryset = ConfigModel.objects.all()
     serializer_class = ConfigSerializer
-    permission_classes = [permissions.AllowAny]
 
     def get_serializer_class(self):
         if self.action == 'create':

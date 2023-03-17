@@ -27,7 +27,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         bid_request = BidRequestModel.objects.get(bid_id=bid_id)
-        bid_response = bid_request.bidresponsemodel_set.first() if data['win'] else None
+        bid_response = bid_request.bidresponsemodel_set.first()
         data['bid_request'] = bid_request.id
         if bid_response:
             data['bid_response'] = bid_response.id

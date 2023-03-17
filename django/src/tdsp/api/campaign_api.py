@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from ..dsp.models.campaign_model import CampaignModel
 from ..dsp.models.game_config_model import ConfigModel
 
-from ..serializers.campaign_serializer import CampaignSerializer, CampaignCreativeSerializer
+from ..serializers.campaign_serializer import CampaignSerializer
 
 
 class CampaignViewSet(viewsets.ModelViewSet):

@@ -7,9 +7,20 @@ const ConfiguresPage = () => {
   const [configures, setConfigures] = useState({});
 
   const { isLoading, isError } = useFetchGetData(
-    "/api/configure/",
+    "/game/configure/",
     setConfigures
   );
+
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+  }
 
   const configItems = [
     { label: "Id", value: configures.id },
@@ -23,7 +34,10 @@ const ConfiguresPage = () => {
     { label: "Conversion revenue", value: configures.conversion_revenue },
     { label: "Impression revenue", value: configures.impression_revenue },
     { label: "Impressions total", value: configures.impressions_total },
-    { label: "Created at", value: configures.created_at },
+    {
+      label: "Created at",
+      value: formatDate(configures.created_at),
+    },
   ];
 
   return (
