@@ -4,6 +4,9 @@ from ..dsp.models.bid_request_model import BidRequestModel
 
 
 class BidRequestCreateSerializer(serializers.Serializer):
+    """
+    Serializer for creating a new BidRequest instance.
+    """
     id = serializers.CharField(max_length=255)
     imp = serializers.DictField(child=serializers.DictField(child=serializers.IntegerField()))
     click = serializers.DictField(child=serializers.FloatField())
@@ -15,6 +18,9 @@ class BidRequestCreateSerializer(serializers.Serializer):
 
 
 class BidRequestSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the BidRequest model.
+    """
     blocked_categories = serializers.SerializerMethodField()
 
     class Meta:
@@ -24,15 +30,11 @@ class BidRequestSerializer(serializers.ModelSerializer):
 
     def get_blocked_categories(self, obj):
         """
-        Serialize blocked_categories and their corresponding subcategories.
+        Serialize blocked_categories.
         """
         categories = obj.blocked_categories.all()
-        subcategories = obj.blocked_subcategories.all()
 
-        # Merge categories and subcategories
-        all_categories = list(categories) + list(subcategories)
-
-        # Serialize each category and subcategory
-        serialized_categories = [{'id': c.id, 'code': c.code} for c in all_categories]
+        # Serialize each category
+        serialized_categories = [{'id': c.id, 'code': c.code} for c in categories]
 
         return serialized_categories

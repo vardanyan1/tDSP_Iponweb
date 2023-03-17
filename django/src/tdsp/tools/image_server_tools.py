@@ -1,22 +1,83 @@
 import base64
 import imghdr
-import json
 from io import BytesIO
-from PIL import Image as pil
-
-import boto3
+from PIL import Image as Pil
+import requests
 import uuid
-import os
-import environ
 
 from django.core.files.base import ContentFile
 
-env = environ.Env()
+
+def send_image(base64_image: str) -> str:
+    """
+    Send a base64-encoded image to the Flask server and return the URL of the stored image.
+
+    :param base64_image: A base64-encoded image string
+    :return: The URL of the stored image if successful, None otherwise
+    """
+    try:
+        url = send_image_to_flask_server(base64_image)
+        return url
+    except ImageUploadError as e:
+        # Handle the error (e.g., log the error message, return an error message, etc.)
+        print(e)
+        return "Error uploading the image"
 
 
-# TODO: revisit return types
+def send_image_to_flask_server(base64_image: str) -> str:
+    """
+    Send a base64-encoded image to the Flask server for storage.
 
-def generate_image_name(decoded_img):
+    :param base64_image: A base64-encoded image string
+    :return: The URL of the stored image if successful
+    :raises ImageUploadError: If an error occurs while sending the image to the Flask server
+    """
+    image_file = decode_image_file(base64_image)
+
+    url = "http://image_server_flask:8080/upload"
+
+    files = {'file': image_file}
+    response = requests.post(url, files=files)
+
+    if response.status_code == 200:
+        return response.json()['url']
+    else:
+        raise ImageUploadError(f"Error sending image to Flask server: {response.text}")
+
+
+def decode_image_file(base64_image: str) -> ContentFile:
+    """
+    Decode a base64-encoded image and create a ContentFile object from the decoded data.
+
+    :param base64_image: A base64-encoded image string
+    :return: A ContentFile object containing the decoded image data
+    """
+    # Remove the data URL part, if present
+    if base64_image.startswith('data:'):
+        base64_image = base64_image.split('base64,')[-1]
+
+    # Add padding if necessary
+    padding = 4 - len(base64_image) % 4
+    if padding:
+        base64_image += "=" * padding
+
+    # Decode the base64-encoded image
+    decoded_img = base64.b64decode(base64_image)
+
+    # create a ContentFile object from the decoded data
+    name, ext = generate_image_name(decoded_img)
+    img_file = ContentFile(decoded_img, name=name)
+
+    return img_file
+
+
+def generate_image_name(decoded_img: bytes) -> tuple[str, str]:
+    """
+    Generate a unique image name with the appropriate extension for the given decoded image.
+
+    :param decoded_img: Decoded image bytes
+    :return: A tuple containing the generated unique image name and the extension
+    """
     ext = imghdr.what(None, h=decoded_img)
 
     # Generate a random 32-character name
@@ -28,85 +89,16 @@ def generate_image_name(decoded_img):
     return image_name, ext
 
 
-def get_content_type_from_ext(ext):
-    content_type = 'application/octet-stream'
+def generate_image(img_width: int, img_height: int) -> str:
+    """
+    Generate a red RGB image with the given dimensions and return it as a base64-encoded string.
 
-    if ext:
-        if ext == 'jpeg':
-            content_type = 'image/jpeg'
-        elif ext == 'png':
-            content_type = 'image/png'
-
-    return content_type
-
-
-# TODO: example unit test
-# describe('get_content_type_from_ext', () => {
-#     it('should return default content type if invalid extension was provided', () => {
-# result = get_content_type_from_ext('asdasd')
-# assert(res)
-# })
-# })
-
-def save_image_to_minio(base64_image):
-    # Decode the base64-encoded image
-    decoded_img = base64.b64decode(base64_image)
-
-    # create a ContentFile object from the decoded data
-    name, ext = generate_image_name(decoded_img)
-    content_type = get_content_type_from_ext(ext)
-    img_file = ContentFile(decoded_img, name=name)
-
-    # Credentials
-    minio_user = os.environ.get('MINIO_ROOT_USER')
-    minio_password = os.environ.get('MINIO_ROOT_PASSWORD')
-
-    # Connect to the MinIO server
-    s3 = boto3.client('s3',
-                      endpoint_url='http://minio:9000',
-                      aws_access_key_id=minio_user,
-                      aws_secret_access_key=minio_password,
-                      region_name='us-east-1',
-                      )
-    bucket_name = 'images'
-
-    # Check if the bucket already exists
-    if bucket_name not in [bucket['Name'] for bucket in s3.list_buckets()['Buckets']]:
-        # Create the bucket
-        s3.create_bucket(Bucket=bucket_name)
-
-        policy = {
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Effect": "Allow",
-                    "Principal": "*",
-                    "Action": "s3:GetObject",
-                    "Resource": [
-                        f"arn:aws:s3:::{bucket_name}/*"
-                    ]
-                }
-            ]
-        }
-        s3.put_bucket_policy(Bucket=bucket_name, Policy=json.dumps(policy))
-
-    # Save the image to MinIO with public-read ACL
-    s3.upload_fileobj(img_file, bucket_name, name,
-                      ExtraArgs={
-                          'ACL': 'public-read',
-                          'ContentType': content_type,
-                          'ContentDisposition': 'inline'
-                      })
-
-    url = f"http://{env.str('LOCAL_HOST')}/{bucket_name}/{name}"
-
-    # Return the URL to the Django application
-    return url
-
-
-def generate_image(img_width, img_height):
+    :param img_width: The width of the generated image in pixels
+    :param img_height: The height of the generated image in pixels
+    :return: A base64-encoded string representing the generated image
+    """
     # Create a 100x100 pixel RGB image with a red background
-    img = pil.new('RGB', (img_width, img_height), color='red')
+    img = Pil.new('RGB', (img_width, img_height), color='red')
 
     # Encode the image as PNG and get the bytes
     img_bytes = BytesIO()
@@ -117,3 +109,7 @@ def generate_image(img_width, img_height):
     encoded_image = base64.b64encode(img_bytes).decode('utf-8')
 
     return encoded_image
+
+
+class ImageUploadError(Exception):
+    pass

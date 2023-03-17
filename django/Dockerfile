@@ -1,6 +1,6 @@
-FROM python:3
+FROM python:3-alpine
 
-RUN apt-get update && apt-get install -y netcat
+RUN apk update && apk add netcat-openbsd
 
 
 ## Prevents Python from writing pyc files to disc
