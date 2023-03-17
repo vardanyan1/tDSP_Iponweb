@@ -1,6 +1,9 @@
 from django.urls import reverse
+from django.contrib.auth.models import User
+
 from rest_framework import status
 from rest_framework.test import APITestCase
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from ..models.bid_request_model import BidRequestModel
 from ..models.bid_response_model import BidResponseModel
@@ -12,6 +15,16 @@ from ...tools.image_server_tools import generate_image
 
 class BidRequestTests(APITestCase):
     def setUp(self):
+        # Create a test user
+        self.test_user = User.objects.create_user(
+            username='test',
+            password='test'
+        )
+        # Get JWT token and use in headers
+        refresh = RefreshToken.for_user(self.test_user)
+        self.token = str(refresh.access_token)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
+
         self.bid_request_url = reverse('rtb-bid-list')
         self.creative_url = reverse("api-creative-list")
 

@@ -1,11 +1,14 @@
 import base64
-
 from PIL import Image as Pil
 from io import BytesIO
 
 from django.urls import reverse
+from django.contrib.auth.models import User
+
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APITestCase
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 from ..models.campaign_model import CampaignModel
 from ..models.categories_model import CategoryModel
@@ -16,7 +19,16 @@ from ..models.game_config_model import ConfigModel
 class CreativeTestCase(APITestCase):
 
     def setUp(self):
-        self.client = APIClient()
+        # Create a test user
+        self.test_user = User.objects.create_user(
+            username='test',
+            password='test'
+        )
+        # Get JWT token and use in headers
+        refresh = RefreshToken.for_user(self.test_user)
+        self.token = str(refresh.access_token)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
+
         self.url = reverse("api-creative-list")
 
         # Create a campaign and some categories for testing

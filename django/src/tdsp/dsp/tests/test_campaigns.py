@@ -1,6 +1,9 @@
 from django.urls import reverse
+from django.contrib.auth.models import User
+
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APITestCase
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from ..models.campaign_model import CampaignModel
 from ..models.categories_model import CategoryModel
@@ -9,7 +12,16 @@ from ..models.game_config_model import ConfigModel
 
 class CampaignTestCase(APITestCase):
     def setUp(self):
-        self.client = APIClient()
+        # Create a test user
+        self.test_user = User.objects.create_user(
+            username='test',
+            password='test'
+        )
+        # Get JWT token and use in headers
+        refresh = RefreshToken.for_user(self.test_user)
+        self.token = str(refresh.access_token)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
+
         self.url = reverse("api-campaign-list")
 
         self.category = CategoryModel.objects.create(code="IAB6-6", name="test category")

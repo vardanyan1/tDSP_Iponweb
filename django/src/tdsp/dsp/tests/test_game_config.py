@@ -1,13 +1,24 @@
+from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APITestCase
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from ..models.categories_model import CategoryModel
 from ..models.game_config_model import ConfigModel
 
 
 class GameConfigTestCase(APITestCase):
     def setUp(self):
-        self.client = APIClient()
+        # Create a test user
+        self.test_user = User.objects.create_user(
+            username='test',
+            password='test'
+        )
+        # Get JWT token and use in headers
+        refresh = RefreshToken.for_user(self.test_user)
+        self.token = str(refresh.access_token)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
 
     def test_create_free_game_mode_config(self):
         url = reverse("game-configure-list")
