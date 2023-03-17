@@ -12,7 +12,7 @@ const CreativesTableItems = ({ item, handleRemove }) => {
         <span>{item.name}</span>
       </td>
       <td>
-        {item.categories?.map((item, index) => (
+        {item.categories.map((item, index) => (
           <span key={item.code}>
             {index > 0 ? ", " + item.code : item.code}
           </span>
@@ -23,12 +23,12 @@ const CreativesTableItems = ({ item, handleRemove }) => {
       </td>
       <td>
         <a
-          href={item.file}
+          href={item.url}
           className={styles.itemUrl}
           target="_blank"
           rel="noreferrer"
         >
-          {item.file}
+          {item.url}
         </a>
       </td>
       <td>

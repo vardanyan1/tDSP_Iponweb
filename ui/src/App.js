@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import CampaignsPage from './pages/CampaignsPage';
 import CreativesPage from './pages/CreativesPage';
@@ -7,30 +6,30 @@ import ConfiguresPage from './pages/ConfiguresPage';
 import Navbar from './components/Navbar';
 
 function App() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    const csrfToken = localStorage.getItem('csrfToken');
-    if (csrfToken === 'true' && location.pathname === '/') {
-      navigate('/campaigns')
-    } else if (csrfToken === 'false') {
-      navigate('/')
-    }
-  }, [location.pathname, navigate]);
+  // useEffect(() => {
+  //   const csrfToken = localStorage.getItem('csrfToken');
+  //   if (csrfToken === 'true' && location.pathname === '/') {
+  //     navigate('/campaigns')
+  //   } else if (csrfToken === 'false') {
+  //     navigate('/')
+  //   }
+  // }, [location.pathname, navigate]);
 
   const pages = [
     {
       path: "/campaigns",
-      element: <CampaignsPage text='Campaigns' />,
+      element: <CampaignsPage />,
     },
     {
       path: "/creatives",
-      element: <CreativesPage text='Creatives' />,
+      element: <CreativesPage />,
     },
     {
       path: "/configure",
-      element: <ConfiguresPage text='Configure' />,
+      element: <ConfiguresPage />,
     },
   ];
 

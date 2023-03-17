@@ -25,7 +25,7 @@
 
 .inputsWrapper > input::placeholder {
   /* Chrome, Firefox, Opera, Safari 10.1+ */
-  color: #ffffff;
+  color: #a0a0a0;
   opacity: 1; /* Firefox */
 }
 

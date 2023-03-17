@@ -7,38 +7,35 @@ const LoginPage = () => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [error, setError] = useState(false);
+
+  const handleLoginInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "login") {
+      setLogin(value);
+    } else if (name === "password") {
+      setPassword(value);
+    }
+  };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Get CSRF token from the server
-      const response = await axios.get("/csrf/", {
-        withCredentials: true,
-      });
-      const csrfToken = response?.data?.csrfToken;
-
-      if (csrfToken) {
-        localStorage.setItem("csrfToken", true);
-
-        // Set the CSRF token as a header on the Axios instance
-        axios.defaults.headers.common["X-CSRFToken"] = csrfToken;
-      }
-
-      // Send the POST request with the login data and cookies
       const loginData = {
         username: login,
         password: password,
       };
 
-      const loginResponse = await axios.post("/login/", loginData, {
-        withCredentials: true,
-      });
-      if (loginResponse.status === 200) {
-        navigate("/campaigns");
-      }
+      const response = await axios.post("/api/token/", loginData);
+
+      localStorage.setItem("access", response.data.access);
+      localStorage.setItem("refresh", response.data.refresh);
+
+      navigate("/campaigns");
     } catch (error) {
       console.error("ERROR", error);
+      setError(true);
     }
   };
 
@@ -53,9 +50,10 @@ const LoginPage = () => {
         <div className={styles.inputBox}>
           <input
             type="text"
+            name="login"
             required
             value={login}
-            onChange={(e) => setLogin(e.target.value)}
+            onChange={handleLoginInputChange}
           />
           <span>Username</span>
           <i></i>
@@ -63,13 +61,19 @@ const LoginPage = () => {
         <div className={styles.inputBox}>
           <input
             type="password"
+            name="password"
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handleLoginInputChange}
           />
           <span>Password</span>
           <i></i>
         </div>
+        {error && (
+          <p className={styles.error}>
+            Please, enter a valid Username or Password
+          </p>
+        )}
         <input
           className={styles.loginSubmitInput}
           type="submit"

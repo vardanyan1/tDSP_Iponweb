@@ -127,3 +127,9 @@
 .loginSubmitInput:active {
   opacity: 0.8;
 }
+
+.error {
+  margin-top: 10px;
+  color: #ff59a7;
+  font-size: 14px;
+}

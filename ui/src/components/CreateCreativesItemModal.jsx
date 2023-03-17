@@ -13,15 +13,15 @@ const CreateCreativesItemModal = ({
     name: "",
     external_id: "",
     categories: [],
-    campaign: { id: null, name: "" },
-    file: "",
+    campaign: null,
+    url: "",
   });
   const [errorType, setErrorType] = useState({
     name: false,
     external_id: false,
     categories: false,
     campaign: false,
-    file: false,
+    url: false,
   });
   const [campaigns, setCampaigns] = useState([]);
 
@@ -65,36 +65,18 @@ const CreateCreativesItemModal = ({
     }));
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const { name, external_id, categories, campaign, file } = newItem;
-    console.log(campaign);
-    if (!name || !external_id || !categories.length || !campaign || !file) {
-      setErrorType({
-        name: !name,
-        external_id: !external_id,
-        categories: !categories.length,
-        campaign: !campaign,
-        file: !file,
-      });
-      return;
-    }
-
-    handleCreateCreativesItem(newItem);
-  };
-
   const handleChooseImage = (e) => {
     const file = e.target.files[0];
+
     const reader = new FileReader();
-
     reader.onload = (event) => {
-      const file = event.target.result;
+      const url = event.target.result;
 
-      setNewItem((prevState) => ({ ...prevState, file }));
+      setNewItem((prevState) => ({ ...prevState, url }));
 
       setErrorType((prevState) => ({
         ...prevState,
-        file: !file,
+        url: !url,
       }));
     };
 
@@ -102,6 +84,7 @@ const CreateCreativesItemModal = ({
   };
 
   const handleSelectChange = (event) => {
+    console.log(event);
     const { value, id } = event.target;
 
     setNewItem((prevItem) => ({
@@ -112,6 +95,24 @@ const CreateCreativesItemModal = ({
       ...prevItem,
       campaign: !value,
     }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const { name, external_id, categories, campaign, url } = newItem;
+    console.log("external - ", external_id, "campaign - ", campaign);
+    if (!name || !external_id || !categories.length || !campaign || !url) {
+      setErrorType({
+        name: !name,
+        external_id: !external_id,
+        categories: !categories.length,
+        campaign: !campaign,
+        url: !url,
+      });
+      return;
+    }
+
+    handleCreateCreativesItem(newItem);
   };
 
   return (
@@ -165,9 +166,17 @@ const CreateCreativesItemModal = ({
                     borderColor: errorType.campaign ? "#ff59a7" : undefined,
                   }}
                 >
-                  {campaigns.map((item, index) => {
+                  <option
+                    value=""
+                    defaultValue
+                    hidden
+                    style={{ color: "#a0a0a0" }}
+                  >
+                    Select Campaign
+                  </option>
+                  {campaigns.map((item) => {
                     return (
-                      <option key={index} id={item.id} value={item.name}>
+                      <option key={item.id} id={item.id} value={item.name}>
                         {item.name}
                       </option>
                     );
@@ -176,17 +185,18 @@ const CreateCreativesItemModal = ({
                 <div className={styles.chooseImageBtnWrapper}>
                   <ImageUploadButton
                     handleChooseImage={handleChooseImage}
-                    file={newItem.file}
+                    url={newItem.url}
                   />
                 </div>
                 <input
                   type="text"
-                  id="file"
-                  name="file"
-                  placeholder="file"
-                  value={newItem.file}
+                  id="url"
+                  name="url"
+                  placeholder="url"
+                  value={newItem.url}
+                  readOnly
                   style={{
-                    borderColor: errorType.file ? "#ff59a7" : undefined,
+                    borderColor: errorType.url ? "#ff59a7" : undefined,
                   }}
                   onBlur={handleBlur}
                   onChange={handleInputChange}

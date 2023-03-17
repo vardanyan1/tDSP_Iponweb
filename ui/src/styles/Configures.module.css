@@ -45,6 +45,7 @@
 .configuresList {
   list-style-type: none;
   margin: 0 auto;
+  color: #ffffff;
 }
 
 .configuresList > li {
