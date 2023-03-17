@@ -37,6 +37,8 @@ jobs:
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY  }}
       DEBUG: ${{ secrets.DEBUG  }}
+      DJANGO_SUPERUSER_PASSWORD: ${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
+      DJANGO_SUPERUSER_USERNAME: ${{ secrets.DJANGO_SUPERUSER_USERNAME }}
 
       POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
       POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
@@ -45,8 +47,6 @@ jobs:
       POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
       POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
 
-      MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
-      MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
       LOCAL_HOST: ${{ secrets.LOCALHOST }}
     steps:
       - name: Checkout code

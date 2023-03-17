@@ -1,27 +1,44 @@
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import CampaignsPage from './pages/CampaignsPage';
 import CreativesPage from './pages/CreativesPage';
-import { useEffect } from 'react';
+import ConfiguresPage from './pages/ConfiguresPage';
+import Navbar from './components/Navbar';
 
 function App() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    const csrfToken = localStorage.getItem('csrfToken');
-    if (csrfToken === 'true' && location.pathname === '/') {
-      console.log(csrfToken);
-      navigate('/campaigns')
-    };
-  }, [location.pathname, navigate]);
+  // useEffect(() => {
+  //   const csrfToken = localStorage.getItem('csrfToken');
+  //   if (csrfToken === 'true' && location.pathname === '/') {
+  //     navigate('/campaigns')
+  //   } else if (csrfToken === 'false') {
+  //     navigate('/')
+  //   }
+  // }, [location.pathname, navigate]);
+
+  const pages = [
+    {
+      path: "/campaigns",
+      element: <CampaignsPage />,
+    },
+    {
+      path: "/creatives",
+      element: <CreativesPage />,
+    },
+    {
+      path: "/configure",
+      element: <ConfiguresPage />,
+    },
+  ];
 
   return (
     <>
+      {location.pathname !== '/' && <Navbar />}
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="/campaigns" element={localStorage.getItem('csrfToken') ? <CampaignsPage /> : <LoginPage />} />
-        <Route path="/creatives" element={localStorage.getItem('csrfToken') ? <CreativesPage /> : <LoginPage />} />
+        {pages.map(({ path, element }) => <Route key={path} path={path} element={element} />)}
       </Routes>
     </>
   );

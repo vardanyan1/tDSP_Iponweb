@@ -11,18 +11,11 @@ from ..dsp.models.notification_model import NotificationModel
 
 class NotificationSerializer(serializers.ModelSerializer):
     bid_request = serializers.PrimaryKeyRelatedField(queryset=BidRequestModel.objects.all())
-    bid_response = serializers.PrimaryKeyRelatedField(queryset=BidResponseModel.objects.all())
-    config = serializers.SerializerMethodField()
+    bid_response = serializers.PrimaryKeyRelatedField(queryset=BidResponseModel.objects.all(), allow_null=True, required=False)
 
     class Meta:
         model = NotificationModel
         fields = '__all__'
-
-    def get_config(self, obj):
-        config = obj.bid_request.config.filter(current=True).first()
-        if config:
-            return config.id
-        return None
 
     def to_internal_value(self, data):
         bid_id = data.get('id', None)
@@ -31,17 +24,15 @@ class NotificationSerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
     def create(self, validated_data):
-        # Retrieve the CreativeModel instance related to the BidResponseModel
-        creative = CreativeModel.objects.get(external_id=validated_data['bid_response'].external_id)
+        if validated_data.get('win') and validated_data.get('bid_response'):
+            # Retrieve the CreativeModel instance related to the BidResponseModel
+            creative = CreativeModel.objects.get(external_id=validated_data['bid_response'].external_id)
 
-        # Retrieve the CampaignModel instance related to the CreativeModel
-        campaign = CampaignModel.objects.get(id=creative.campaign.id)
+            # Retrieve the CampaignModel instance related to the CreativeModel
+            campaign = CampaignModel.objects.get(id=creative.campaign.id)
 
-        # Calculate remaining budget in the current configuration
-        remaining_budget = campaign.budget - decimal.Decimal(str(validated_data['price']))
-
-        # Update the budget in the current configuration
-        campaign.budget = remaining_budget
-        campaign.save()
+            # Update the budget in the current configuration
+            campaign.budget = campaign.budget - decimal.Decimal(str(validated_data['price']))
+            campaign.save()
 
         return NotificationModel.objects.create(**validated_data)

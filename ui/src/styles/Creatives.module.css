@@ -1,0 +1,139 @@
+.creativesWrapper {
+  margin-top: 60px;
+}
+
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
+}
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+}
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.headerWrapper {
+  position: relative;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.headerWrapper > h2 {
+  font-size: 28px;
+  color: #fff;
+}
+
+.tableWrapper {
+  position: relative;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+@media (min-width: 768px) {
+  .headerWrapper {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  .tableWrapper {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+.createButtonWrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.createButtonWrapper > button {
+  border: none;
+  outline: none;
+  padding: 8px 16px;
+  background: #45f3ff;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 600;
+  width: 100px;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+.table {
+  color: #fff;
+  background-color: #343a40;
+  width: 100%;
+  border-collapse: collapse;
+}
+.table td,
+.table th {
+  text-align: left;
+}
+.table thead th {
+  padding: 20px 30px;
+  font-size: 14px;
+  border-bottom: 2px solid #454d55;
+}
+.table tbody tr {
+  margin-bottom: 10px;
+}
+.table tbody td,
+.table tbody th {
+  border: none;
+  padding: 20px 30px;
+  border-bottom: 3px solid #2b3035;
+  font-size: 14px;
+}
+
+.removeBtnWrapper > button {
+  border: none;
+  outline: none;
+  padding: 5px 0px;
+  background: #45f3ff;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 600;
+  width: 60px;
+}
+
+.itemUrl {
+  display: block;
+  color: #ffffff;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+  max-height: 18px;
+}

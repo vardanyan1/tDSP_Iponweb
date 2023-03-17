@@ -9,7 +9,6 @@ gunicorn
 hexbytes
 oauthlib
 Pillow
-psycopg2
 ptyprocess
 python-dateutil
 pytz
@@ -19,8 +18,8 @@ django-environ
 psycopg2-binary
 PyJWT
 djangorestframework
+djangorestframework_simplejwt
 openpyxl
-pandas
 requests
 tzdata
 boto3

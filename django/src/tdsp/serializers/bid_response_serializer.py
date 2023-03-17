@@ -1,9 +1,14 @@
+from urllib.parse import urlencode
+
 from rest_framework import serializers
 
 from ..dsp.models.bid_response_model import BidResponseModel
 
 
 class BidResponseSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the BidResponse model.
+    """
     cat = serializers.SerializerMethodField()
 
     class Meta:
@@ -16,16 +21,12 @@ class BidResponseSerializer(serializers.ModelSerializer):
 
     def get_cat(self, obj):
         """
-        Serialize blocked_categories and their corresponding subcategories.
+        Serialize categories.
         """
         categories = obj.categories.all()
-        subcategories = obj.subcategories.all()
 
-        # Merge categories and subcategories
-        all_categories = list(categories) + list(subcategories)
-
-        # Serialize each category and subcategory
-        serialized_categories = [{'id': c.id, 'code': c.code} for c in all_categories]
+        # Serialize each category
+        serialized_categories = [c.code for c in categories]
 
         return serialized_categories
 
@@ -35,5 +36,13 @@ class BidResponseSerializer(serializers.ModelSerializer):
         instead of an OrderedDict.
         """
         data = super().to_representation(instance)
+
+        # Add banner width and height as query parameters to image_url
+        banner_width = instance.bid_request.banner_width
+        banner_height = instance.bid_request.banner_height
+        query_params = urlencode({'w': banner_width, 'h': banner_height})
+        data['image_url'] = f"{data['image_url']}?{query_params}"
+
+        # Remove the 'bid_request' field from the response
         data.pop('bid_request', None)
         return data

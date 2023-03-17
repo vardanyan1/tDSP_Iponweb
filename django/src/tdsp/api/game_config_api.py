@@ -2,19 +2,18 @@ from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 
 from ..dsp.models.campaign_model import CampaignModel
-from ..dsp.models.categories_model import SubcategoryModel
+from ..dsp.models.categories_model import CategoryModel
 from ..dsp.models.creative_model import CreativeModel
 from ..dsp.models.game_config_model import ConfigModel
 
 from ..serializers.config_serializer import ConfigSerializer, ConfigCreateSerializer
 
-from ..tools.image_server_tools import generate_image, save_image_to_minio
+from ..tools.image_server_tools import generate_image, send_image
 
 
 class ConfigViewSet(viewsets.ModelViewSet):
     queryset = ConfigModel.objects.all()
     serializer_class = ConfigSerializer
-    permission_classes = [permissions.AllowAny]
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -43,11 +42,11 @@ class ConfigViewSet(viewsets.ModelViewSet):
             campaign = CampaignModel.objects.create(name='Free Campaign', config=config, budget=data['budget'])
 
             # Create creative
-            image_url = save_image_to_minio(generate_image(300, 200))
+            image_url = send_image(generate_image(300, 200))
             creative = CreativeModel.objects.create(external_id="free_creative_id", name="Free Creative",
                                                     campaign_id=campaign.id, url=image_url)
-            subcategory = SubcategoryModel.objects.get(code="IAB6-6")
-            creative.subcategories.add(subcategory)
+            category = CategoryModel.objects.get(code="IAB6-6")
+            creative.categories.add(category)
 
             # Update the budget in the current configuration
             remaining_budget = config.budget - data['budget']

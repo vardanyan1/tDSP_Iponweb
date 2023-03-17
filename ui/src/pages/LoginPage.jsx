@@ -1,78 +1,84 @@
-import React, { useState } from "react";
-import "../styles/login.css";
-import axios from "axios";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "../axios-instance";
+import styles from "../styles/Login.module.css";
 
 const LoginPage = () => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [error, setError] = useState(false);
+
+  const handleLoginInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "login") {
+      setLogin(value);
+    } else if (name === "password") {
+      setPassword(value);
+    }
+  };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
 
-    const apiUrl = "http://localhost/login/";
+    try {
+      const loginData = {
+        username: login,
+        password: password,
+      };
 
-    // Get CSRF token from the server
-    axios
-      .get("http://localhost/csrf/", { withCredentials: true })
-      .then((response) => {
-        const csrfToken = response?.data?.csrfToken;
+      const response = await axios.post("/api/token/", loginData);
 
-        if (csrfToken) {
-          localStorage.setItem("csrfToken", true);
+      localStorage.setItem("access", response.data.access);
+      localStorage.setItem("refresh", response.data.refresh);
 
-          // Set the CSRF token as a header on the Axios instance
-          axios.defaults.headers.common["X-CSRFToken"] = csrfToken;
-        }
-
-        // Send the POST request with the login data and cookies
-        const loginData = {
-          username: login,
-          password: password,
-        };
-
-        axios
-          .post(apiUrl, loginData, { withCredentials: true })
-          .then((response) => {
-            if (response.status === 200) {
-              navigate("/campaigns");
-            }
-          })
-          .catch((err) => {
-            console.error(err);
-          });
-      })
-      .catch((error) => {
-        console.error("ERROR", error);
-      });
+      navigate("/campaigns");
+    } catch (error) {
+      console.error("ERROR", error);
+      setError(true);
+    }
   };
 
   return (
-    <div className="box">
-      <form autoComplete="off" onSubmit={handleLoginSubmit}>
-        <h2 className="signInText">Sign in</h2>
-        <div className="inputBox">
+    <div className={styles.box}>
+      <form
+        className={styles.loginForm}
+        autoComplete="off"
+        onSubmit={handleLoginSubmit}
+      >
+        <h2 className={styles.signInText}>Sign in</h2>
+        <div className={styles.inputBox}>
           <input
             type="text"
-            required="required"
+            name="login"
+            required
             value={login}
-            onChange={(e) => setLogin(e.target.value)}
+            onChange={handleLoginInputChange}
           />
           <span>Username</span>
           <i></i>
         </div>
-        <div className="inputBox">
+        <div className={styles.inputBox}>
           <input
             type="password"
-            required="required"
+            name="password"
+            required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handleLoginInputChange}
           />
           <span>Password</span>
           <i></i>
         </div>
-        <input className="loginSubmitInput" type="submit" value="Sign In" />
+        {error && (
+          <p className={styles.error}>
+            Please, enter a valid Username or Password
+          </p>
+        )}
+        <input
+          className={styles.loginSubmitInput}
+          type="submit"
+          value="Sign In"
+        />
       </form>
     </div>
   );

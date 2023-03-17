@@ -1,51 +1,59 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "../styles/campaign.css";
-import TableItems from "../components/TableItems";
-import CreateCampaignItemModal from "../components/CreateCampaignItemModal";
+import { useCallback, useState } from "react";
+import styles from "../styles/Campaigns.module.css";
+import CreateCampaignsItemModal from "../components/CreateCampaignsItemModal";
+import CampaignsTableItems from "../components/CampaignsTableItems";
+import Header from "../components/Header/Header";
+import Button from "../components/Button/Button";
+import { useFetchGetData } from "../hooks/useFetchData";
 
 const CampaignsPage = () => {
-  const [campaigns, setCampaigns] = useState([
-    { id: 1, name: "sonik", budget: 50000 },
-    { id: 2, name: "panaSoniK", budget: 100000 },
-    { id: 3, name: "traraSoniK", budget: 10 },
-  ]);
+  const [campaigns, setCampaigns] = useState([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  useEffect(() => {
-    axios.get("http://localhost/api/campaigns").then((response) => {
-      setCampaigns(response.data);
-    });
+  const { isLoading, isError } = useFetchGetData(
+    "/api/campaigns/",
+    setCampaigns
+  );
+
+  const handleRemove = useCallback((id) => {
+    setCampaigns((prevCampaigns) =>
+      prevCampaigns.filter((campaign) => campaign.id !== id)
+    );
   }, []);
 
-  const handleEdit = (id) => {};
-  const handleRemove = (id) => {};
+  const handleToggleModal = useCallback(
+    () => setIsOpenModal(!isOpenModal),
+    [isOpenModal]
+  );
 
-  const handleCreateCampaignItem = () => {
-    setIsOpenModal(!isOpenModal);
-  };
+  const handleCreateCampaignsItem = useCallback(
+    (formValues) => {
+      // Clear in Feature
+      const lastId = campaigns[campaigns.length - 1]?.id || 0;
+      setCampaigns((prevCampaigns) => [
+        ...prevCampaigns,
+        { id: lastId + 1, ...formValues },
+      ]);
+      handleToggleModal();
+    },
+    [campaigns, handleToggleModal]
+  );
 
-  const handleCloseModal = () => {
-    setIsOpenModal(!isOpenModal);
-  };
-  console.log(isOpenModal);
   return (
-    <div className="tableWrapper">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-md-6 text-center mb-3">
-            <h2 className="heading-section">Campaigns</h2>
-          </div>
+    <div className={styles.campaignsWrapper}>
+      <div className={styles.container}>
+        <Header text="Campaigns" />
+        <div className={styles.createButtonWrapper}>
+          <Button handleClick={handleToggleModal} text="Create" />
         </div>
-        <div className="createCampaignWrapper">
-          <button onClick={handleCreateCampaignItem} className="createCampaign">
-            Create
-          </button>
-        </div>
-        <div className="row">
-          <div className="col-md-12">
-            <div className="table-wrap">
-              <table className="table table-bordered table-dark table-hover">
+        <div className={styles.row}>
+          <div className={styles.tableWrapper}>
+            {isLoading ? (
+              <p>Loading...</p>
+            ) : isError ? (
+              <p>Error: {isError}</p>
+            ) : (
+              <table className={styles.table}>
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -57,23 +65,25 @@ const CampaignsPage = () => {
                 <tbody>
                   {campaigns.map((item) => {
                     return (
-                      <TableItems
+                      <CampaignsTableItems
                         key={item.id}
                         item={item}
-                        handleEdit={handleEdit}
                         handleRemove={handleRemove}
                       />
                     );
                   })}
                 </tbody>
               </table>
-            </div>
+            )}
           </div>
         </div>
       </div>
 
       {isOpenModal && (
-        <CreateCampaignItemModal handleCloseModal={handleCloseModal} />
+        <CreateCampaignsItemModal
+          handleToggleModal={handleToggleModal}
+          handleCreateCampaignsItem={handleCreateCampaignsItem}
+        />
       )}
     </div>
   );
