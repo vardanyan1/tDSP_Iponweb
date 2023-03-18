@@ -6,7 +6,7 @@ from ..dsp.models.campaign_model import CampaignModel
 class CampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = CampaignModel
-        fields = ['id', 'name', 'budget']
+        fields = ['id', 'name', 'budget', 'is_active']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

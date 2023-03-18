@@ -10,7 +10,7 @@ const ConfiguresPage = () => {
     "/game/configure/",
     setConfigures
   );
-  console.log(configures);
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
 
@@ -28,6 +28,7 @@ const ConfiguresPage = () => {
     { label: "Id", value: configures.id },
     { label: "Mode", value: configures.mode },
     { label: "Auction type", value: configures.auction_type },
+    { label: "Game goal", value: configures.game_goal },
     { label: "Current", value: configures.current + "" },
     { label: "Budget", value: configures.budget },
     { label: "Rounds left", value: configures.rounds_left },

@@ -7,6 +7,7 @@ class ConfigModel(models.Model):
     MODE_CHOICES = [('free', 'Free'), ('script', 'Script')]
 
     current = models.BooleanField(default=True)
+    game_goal = models.CharField(max_length=20)
     impressions_total = models.IntegerField(blank=True, null=True)
     rounds_left = models.IntegerField(blank=True, null=True)
     auction_type = models.IntegerField(choices=IMPRESSIONS_CHOICES)

@@ -23,6 +23,7 @@ export const useFetchGetData = (url, setData) => {
                         setData(response.data);
                         return;
                     }
+
                     setData(response.data[0]);
                 })
                 .catch((error) => {

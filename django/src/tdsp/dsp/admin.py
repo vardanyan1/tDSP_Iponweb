@@ -36,7 +36,7 @@ class CategoryModelAdmin(admin.ModelAdmin):
 
 @admin.register(CampaignModel)
 class CampaignModelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'budget', 'config')
+    list_display = ('id', 'name', 'budget', 'is_active', 'config')
     search_fields = ('name',)
 
     def config(self, obj):

@@ -5,23 +5,20 @@ import ImageUploadButton from "./ImageUploadButton";
 import Input from "./Input";
 import ModalButtons from "./ModalButtons";
 
-const CreateCreativesItemModal = ({
-  handleToggleModal,
-  handleCreateCreativesItem,
-}) => {
+const CreateCreativesItemModal = ({ handleToggleModal, handleCreateCreativesItem }) => {
   const [newItem, setNewItem] = useState({
     name: "",
     external_id: "",
     categories: [],
     campaign: null,
-    url: "",
+    file: "",
   });
   const [errorType, setErrorType] = useState({
     name: false,
     external_id: false,
     categories: false,
     campaign: false,
-    url: false,
+    file: false,
   });
   const [campaigns, setCampaigns] = useState([]);
 
@@ -58,25 +55,35 @@ const CreateCreativesItemModal = ({
   };
 
   const handleBlur = (event) => {
-    const { name, value } = event.target;
+  const { name, value } = event.target;
+  const categoriesRegex = /^IAB\d{1,2}(-\d{1,2})?\s*(IAB\d{1,2}(-\d{1,2})?\s*)*$/;
+
+  if (name === "categories") {
+    setErrorType((prevState) => ({
+      ...prevState,
+      categories: !categoriesRegex.test(value),
+    }));
+  } else {
     setErrorType((prevState) => ({
       ...prevState,
       [name]: !value,
     }));
-  };
+  }
+};
+
 
   const handleChooseImage = (e) => {
     const file = e.target.files[0];
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      const url = event.target.result;
+      const file = event.target.result;
 
-      setNewItem((prevState) => ({ ...prevState, url }));
+      setNewItem((prevState) => ({ ...prevState, file }));
 
       setErrorType((prevState) => ({
         ...prevState,
-        url: !url,
+        file: !file,
       }));
     };
 
@@ -84,12 +91,12 @@ const CreateCreativesItemModal = ({
   };
 
   const handleSelectChange = (event) => {
-    console.log(event);
-    const { value, id } = event.target;
+    const { value } = event.target;
+    const selectedCampaign = campaigns.find((campaign) => campaign.name === value);
 
     setNewItem((prevItem) => ({
       ...prevItem,
-      campaign: { id: id, name: value },
+      campaign: { id: selectedCampaign.id },
     }));
     setErrorType((prevItem) => ({
       ...prevItem,
@@ -99,20 +106,20 @@ const CreateCreativesItemModal = ({
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const { name, external_id, categories, campaign, url } = newItem;
-    console.log("external - ", external_id, "campaign - ", campaign);
-    if (!name || !external_id || !categories.length || !campaign || !url) {
+    const { name, external_id, categories, campaign, file } = newItem;
+
+    if (!name || !external_id || !categories.length || !campaign || !file) {
       setErrorType({
         name: !name,
         external_id: !external_id,
         categories: !categories.length,
         campaign: !campaign,
-        url: !url,
+        file: !file,
       });
       return;
     }
 
-    handleCreateCreativesItem(newItem);
+    handleCreateCreativesItem(categories, newItem);
   };
 
   return (
@@ -185,22 +192,9 @@ const CreateCreativesItemModal = ({
                 <div className={styles.chooseImageBtnWrapper}>
                   <ImageUploadButton
                     handleChooseImage={handleChooseImage}
-                    url={newItem.url}
+                    file={newItem.file}
                   />
                 </div>
-                <input
-                  type="text"
-                  id="url"
-                  name="url"
-                  placeholder="url"
-                  value={newItem.url}
-                  readOnly
-                  style={{
-                    borderColor: errorType.url ? "#ff59a7" : undefined,
-                  }}
-                  onBlur={handleBlur}
-                  onChange={handleInputChange}
-                />
               </div>
               <ModalButtons handleToggleModal={handleToggleModal} />
             </form>

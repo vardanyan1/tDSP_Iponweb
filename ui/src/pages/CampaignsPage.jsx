@@ -5,6 +5,7 @@ import CampaignsTableItems from "../components/CampaignsTableItems";
 import Header from "../components/Header/Header";
 import Button from "../components/Button/Button";
 import { useFetchGetData } from "../hooks/useFetchData";
+import axios from '../axios-instance';
 
 const CampaignsPage = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -16,9 +17,19 @@ const CampaignsPage = () => {
   );
 
   const handleRemove = useCallback((id) => {
-    setCampaigns((prevCampaigns) =>
-      prevCampaigns.filter((campaign) => campaign.id !== id)
-    );
+
+  const access_token = localStorage.getItem('access');
+
+  axios
+    .delete(`/api/campaigns/${id}`, { headers: { Authorization: `Bearer ${access_token}` } })
+    .then((response) => {
+      setCampaigns((prevCampaigns) =>
+        prevCampaigns.filter((campaign) => campaign.id !== id)
+      );
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }, []);
 
   const handleToggleModal = useCallback(
@@ -27,18 +38,37 @@ const CampaignsPage = () => {
   );
 
   const handleCreateCampaignsItem = useCallback(
-    (formValues) => {
-      // Clear in Feature
-      const lastId = campaigns[campaigns.length - 1]?.id || 0;
-      setCampaigns((prevCampaigns) => [
-        ...prevCampaigns,
-        { id: lastId + 1, ...formValues },
-      ]);
-      handleToggleModal();
+    (formValues, configure) => {
+        if(+configure.budget >= formValues.budget) {
+            const access_token = localStorage.getItem('access');
+
+            axios.post('/api/campaigns/', formValues, { headers: { Authorization: `Bearer ${access_token}` } })
+                .then((response) => {
+                    setCampaigns((prevCampaigns) => [...prevCampaigns, response.data]);
+                });
+
+            handleToggleModal();
+        }
     },
-    [campaigns, handleToggleModal]
+    [handleToggleModal]
   );
 
+  const handleCheckboxChange = (e, item) => {
+  const access_token = localStorage.getItem('access');
+
+  axios.put(`/api/campaigns/${item.id}/`, { ...item, is_active: e.target.checked }, { headers: { Authorization: `Bearer ${access_token}` } })
+    .then((response) => {
+      setCampaigns((prevCampaigns) => {
+        return prevCampaigns.map((campaign) => {
+          if (campaign.id === item.id) {
+            return { ...campaign, is_active: response.data.is_active };
+          } else {
+            return campaign;
+          }
+        });
+      });
+    });
+}
   return (
     <div className={styles.campaignsWrapper}>
       <div className={styles.container}>
@@ -59,6 +89,7 @@ const CampaignsPage = () => {
                     <th>ID</th>
                     <th>Name</th>
                     <th>Budget</th>
+                    <th>Active</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -69,6 +100,7 @@ const CampaignsPage = () => {
                         key={item.id}
                         item={item}
                         handleRemove={handleRemove}
+                        handleCheckboxChange={handleCheckboxChange}
                       />
                     );
                   })}

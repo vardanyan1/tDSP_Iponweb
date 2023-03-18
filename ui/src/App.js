@@ -6,7 +6,6 @@ import ConfiguresPage from './pages/ConfiguresPage';
 import Navbar from './components/Navbar';
 
 function App() {
-  // const navigate = useNavigate();
   const location = useLocation();
 
   // useEffect(() => {

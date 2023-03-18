@@ -7,7 +7,8 @@ const Navbar = () => {
   const location = useLocation();
 
   const handleClick = () => {
-    localStorage.setItem("csrfToken", false);
+    localStorage.setItem("access", '');
+    localStorage.setItem("refresh", '');
     navigate("/");
   };
 
