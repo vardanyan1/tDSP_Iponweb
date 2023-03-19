@@ -16,7 +16,7 @@ services:
         cd src/
         gunicorn --bind 0.0.0.0:8000 tdsp.wsgi
     volumes:
-      - static_files:/code/src/static
+      - static_files:/code/src/django-static/
 
   postgres:
     image: postgres:alpine
@@ -44,6 +44,9 @@ services:
       - web
       - postgres
       - image_server_flask
+    volumes:
+      - ui_html:/usr/share/nginx/html/
+
 
   nginx:
     image: nginx:stable-alpine
@@ -52,14 +55,17 @@ services:
     depends_on:
       - web
       - image_server_flask
+      - ui
     volumes:
       - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
-      - static_files:/usr/share/nginx/static
+      - static_files:/usr/share/nginx/django-static
+      - ui_html:/usr/share/nginx/html
 
 volumes:
   pgdata:
   image_server_flask:
   static_files:
+  ui_html:
 
 networks:
   default:
