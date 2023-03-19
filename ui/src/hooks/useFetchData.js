@@ -11,7 +11,7 @@ export const useFetchGetData = (url, setData) => {
         const access_token = localStorage.getItem("access");
 
         if (!access_token) {
-            navigate("/");
+            navigate("/ui/");
         } else {
             setIsLoading(true);
             setIsError(null);

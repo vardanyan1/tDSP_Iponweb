@@ -1,6 +1,6 @@
 FROM python:3-alpine
 
-RUN apk update && apk add netcat-openbsd
+RUN apk update && apk add netcat-openbsd libjpeg-turbo-dev zlib-dev libpq
 
 
 ## Prevents Python from writing pyc files to disc
