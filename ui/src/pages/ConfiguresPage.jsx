@@ -25,21 +25,21 @@ const ConfiguresPage = () => {
   };
 
   const configItems = [
-    { label: "Id", value: configures.id },
-    { label: "Mode", value: configures.mode },
-    { label: "Auction type", value: configures.auction_type },
-    { label: "Game goal", value: configures.game_goal },
-    { label: "Current", value: configures.current + "" },
-    { label: "Budget", value: configures.budget },
-    { label: "Rounds left", value: configures.rounds_left },
-    { label: "Frequency capping", value: configures.frequency_capping },
-    { label: "Click revenue", value: configures.click_revenue },
-    { label: "Conversion revenue", value: configures.conversion_revenue },
-    { label: "Impression revenue", value: configures.impression_revenue },
-    { label: "Impressions total", value: configures.impressions_total },
+    { label: "Id", value: configures?.id },
+    { label: "Mode", value: configures?.mode },
+    { label: "Auction type", value: configures?.auction_type },
+    { label: "Game goal", value: configures?.game_goal },
+    { label: "Current", value: configures?.current + "" },
+    { label: "Budget", value: configures?.budget },
+    { label: "Rounds left", value: configures?.rounds_left },
+    { label: "Frequency capping", value: configures?.frequency_capping },
+    { label: "Click revenue", value: configures?.click_revenue },
+    { label: "Conversion revenue", value: configures?.conversion_revenue },
+    { label: "Impression revenue", value: configures?.impression_revenue },
+    { label: "Impressions total", value: configures?.impressions_total },
     {
       label: "Created at",
-      value: formatDate(configures.created_at),
+      value: formatDate(configures?.created_at),
     },
   ];
 
