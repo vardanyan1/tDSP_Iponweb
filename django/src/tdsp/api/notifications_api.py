@@ -10,10 +10,23 @@ from ..serializers.notif_serializer import NotificationSerializer
 
 
 class NotificationViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for managing bid request notifications.
+    It provides the ability to create, retrieve, update, and delete notifications for bid requests.
+    """
     queryset = NotificationModel.objects.all()
     serializer_class = NotificationSerializer
 
     def create(self, request, *args, **kwargs):
+        """
+       Create a new notification object for the specified bid request, and update the UserImpression object if the bid is won.
+
+       :param request: (Request): The request object containing the data for the new notification object.
+
+       :return Response: A response object containing a success message or an error response if the request is invalid.
+
+       :raise  HTTPError: If there is an error while creating the notification object or updating the UserImpression object.
+       """
         data = request.data
         bid_id = data['id']
 

@@ -9,7 +9,19 @@ from ..models.game_config_model import ConfigModel
 
 
 class GameConfigTestCase(APITestCase):
+    """
+    A test case for testing the creation of game configuration using the Game Configuration API endpoint.
+
+    Methods:
+        setUp(): Sets up the necessary objects and authentication token before each test case method.
+        test_create_free_game_mode_config(): Tests creating a game configuration with free mode and checks that the
+                                             configuration is created with the correct data.
+    TODO: Add test for script mode separately
+    """
     def setUp(self):
+        """
+        Create a test user and set JWT token.
+        """
         # Create a test user
         self.test_user = User.objects.create_user(
             username='test',
@@ -21,6 +33,10 @@ class GameConfigTestCase(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.token}')
 
     def test_create_free_game_mode_config(self):
+        """
+        Test creating a game configuration with free mode and checks that the configuration is created with the
+        correct data.
+        """
         url = reverse("game-configure-list")
 
         CategoryModel.objects.create(code="IAB6-6", name="test category")
@@ -28,6 +44,7 @@ class GameConfigTestCase(APITestCase):
         data = {
             "impressions_total": 3,
             "auction_type": 2,
+            "game_goal": "revenue",
             "mode": "free",
             "budget": 1000,
             "impression_revenue": 10,
@@ -48,5 +65,3 @@ class GameConfigTestCase(APITestCase):
         else:
             self.assertEqual(config.budget, data['budget'])
         self.assertEqual(config.rounds_left, data['impressions_total'])
-
-        # TODO Add test for free and script separately

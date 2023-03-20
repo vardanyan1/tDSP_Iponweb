@@ -8,10 +8,27 @@ from ..serializers.campaign_serializer import CampaignSerializer
 
 
 class CampaignViewSet(viewsets.ModelViewSet):
+    """
+    This class defines a viewset for the CampaignModel. It handles creating and deleting campaign objects.
+    """
     queryset = CampaignModel.objects.all()
     serializer_class = CampaignSerializer
 
     def create(self, request, *args, **kwargs):
+        """
+        Create a campaign object if there's a budget for new campaign in game_config.budget.
+
+        Args:
+            request (Request): The request object containing the campaign data.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            Response: The response object containing the serialized CampaignModel data or an error response if the request is invalid.
+
+        Raises:
+            HTTPError: If the request is not valid.
+        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -49,6 +66,15 @@ class CampaignViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def destroy(self, request, *args, **kwargs):
+        """
+        Delete a campaign object and returns the budget of the campaign back to configs budget.
+
+        :param request: (Request): The request object containing the campaign data.
+
+        :return Response: The response object containing a success message or an error response if the campaign object or game configuration does not exist.
+
+        :raise HTTPError: If the request is not valid.
+        """
         # Retrieve the campaign object to delete
         campaign = self.get_object()
 

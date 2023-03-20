@@ -15,6 +15,15 @@ class BidViewSet(viewsets.ModelViewSet):
     serializer_class = BidRequestSerializer
 
     def create(self, request, *args, **kwargs):
+        """
+        This function is used to create a bid request and calculate the bid price.
+
+        :param request:(Request): The request object containing the bid request data.
+
+        :return Response: The response object containing the serialized BidResponseModel data or a "No-bid" response if the bid price is zero.
+
+        :raise HTTPError: If the request is not valid.
+        """
         serializer = BidRequestCreateSerializer(data=request.data)
         if serializer.is_valid():
             bid_request_data = serializer.data

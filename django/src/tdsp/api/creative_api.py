@@ -16,7 +16,13 @@ class CreativeViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         """
-        Create a new creative, saving the image to a separate service, and assigning categories.
+        Create a new creative object with the given data, save the image to a separate service, and assign categories to it.
+
+        :param  request: (Request) The request object containing the data for the new creative object.
+
+        :return Response: A response object containing the serialized data of the new creative object or an error response if the request is invalid.
+
+        :raise HTTPError: If there is an error while creating the creative object.
         """
         # Get data from request
         external_id = request.data.get('external_id')

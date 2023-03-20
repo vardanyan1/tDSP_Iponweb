@@ -11,7 +11,24 @@ from ..models.game_config_model import ConfigModel
 
 
 class CampaignTestCase(APITestCase):
+    """
+    A test case for testing the creation of campaigns using the Campaign API endpoint.
+
+    Methods:
+        setUp(): Sets up the necessary objects and authentication token before each test case method.
+        test_create_campaign_with_valid_data(): Tests creating a campaign with valid data and checks that the campaign
+                                                  is created with the correct data.
+        test_create_campaign_with_missing_name(): Tests creating a campaign with missing name field and expects an
+                                                  HTTP 400 error response.
+        test_create_campaign_with_missing_budget(): Tests creating a campaign with missing budget field and expects an
+                                                    HTTP 400 error response.
+        test_create_campaign_with_negative_budget(): Tests creating a campaign with a negative budget value and
+                                                      expects an HTTP 400 error response.
+    """
     def setUp(self):
+        """
+        Initializes the test case with test data.
+        """
         # Create a test user
         self.test_user = User.objects.create_user(
             username='test',
@@ -35,10 +52,14 @@ class CampaignTestCase(APITestCase):
             click_revenue=0.50,
             conversion_revenue=5.00,
             frequency_capping=5,
-            rounds_left=1000
+            rounds_left=1000,
+            game_goal="revenue"
         )
 
     def test_create_campaign_with_valid_data(self):
+        """
+        Tests creating a campaign with valid data and checks that the campaign is created with the correct data.
+        """
         data = {
             "name": "test campaign",
             "budget": 100,
@@ -52,6 +73,9 @@ class CampaignTestCase(APITestCase):
         self.assertEqual(campaign.config, self.config)
 
     def test_create_campaign_with_missing_name(self):
+        """
+        Tests creating a campaign with missing name field and expects an HTTP 400 error response.
+        """
         data = {
             "budget": 100,
         }
@@ -59,6 +83,9 @@ class CampaignTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_campaign_with_missing_budget(self):
+        """
+        Tests creating a campaign with missing budget field and expects an HTTP 400 error response.
+        """
         data = {
             "name": "test campaign",
         }
@@ -66,6 +93,9 @@ class CampaignTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_campaign_with_negative_budget(self):
+        """
+        Tests creating a campaign with a negative budget value and expects an HTTP 400 error response.
+        """
         data = {
             "name": "test campaign",
             "budget": -100,
