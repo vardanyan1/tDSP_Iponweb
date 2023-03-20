@@ -23,3 +23,4 @@ openpyxl
 requests
 tzdata
 boto3
+coverage
