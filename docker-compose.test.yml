@@ -24,6 +24,8 @@ services:
     depends_on:
       - postgres
       - image_server_flask
+    volumes:
+      - ./src_volume:/code/src
     command:
       - /bin/sh
       - -c
@@ -54,4 +56,3 @@ services:
       - LOCAL_HOST=${LOCAL_HOST}
       - DEBUG=${DEBUG}
     restart: unless-stopped
-
