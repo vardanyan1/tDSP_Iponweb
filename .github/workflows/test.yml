@@ -2,7 +2,7 @@ name: Test Docker Compose
 
 on:
   push:
-    branches: [working_branch]
+    branches: [test_coverage]
   pull_request:
     branches: [development]
 
@@ -35,8 +35,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      SECRET_KEY: ${{ secrets.SECRET_KEY  }}
-      DEBUG: ${{ secrets.DEBUG  }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DEBUG: ${{ secrets.DEBUG }}
       DJANGO_SUPERUSER_PASSWORD: ${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
       DJANGO_SUPERUSER_USERNAME: ${{ secrets.DJANGO_SUPERUSER_USERNAME }}
 
@@ -55,14 +55,28 @@ jobs:
       - name: Build images
         run: docker-compose -f docker-compose.test.yml build
 
-      - name: Start services
+      - name: Create volume for src directory
+        run: mkdir src_volume
+
+      - name: Start services with volume mount
         run: docker-compose -f docker-compose.test.yml up -d
 
       - name: Wait for services to start
         run: docker-compose -f docker-compose.test.yml ps
 
-      - name: Run tests
-        run: docker-compose -f docker-compose.test.yml run --rm web python3 src/manage.py test tdsp.dsp.tests
+      - name: Run tests and generate coverage report
+        run: |
+          docker-compose -f docker-compose.test.yml run --rm web /bin/sh -c "\
+            coverage run src/manage.py test tdsp.dsp.tests && \
+            coverage xml -o /code/src/coverage.xml"
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./django/src/coverage.xml
+          flags: unittests
+          env_vars: DJANGO_SETTINGS_MODULE
+          fail_ci_if_error: true
 
       - name: Stop services
         run: docker-compose -f docker-compose.test.yml down

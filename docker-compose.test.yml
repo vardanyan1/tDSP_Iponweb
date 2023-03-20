@@ -16,7 +16,7 @@ services:
       - POSTGRES_PORT=${POSTGRES_PORT}
       - SECRET_KEY=${SECRET_KEY}
       - LOCAL_HOST=${LOCAL_HOST}
-      - DJANGO_SUPERUSER_USERNAME={$DJANGO_SUPERUSER_USERNAME}
+      - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME}
       - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD}
       - DEBUG=${DEBUG}
     ports:
@@ -24,6 +24,8 @@ services:
     depends_on:
       - postgres
       - image_server_flask
+    volumes:
+      - ./django/src:/code/src
     command:
       - /bin/sh
       - -c
@@ -54,4 +56,3 @@ services:
       - LOCAL_HOST=${LOCAL_HOST}
       - DEBUG=${DEBUG}
     restart: unless-stopped
-
