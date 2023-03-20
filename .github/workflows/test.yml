@@ -68,12 +68,12 @@ jobs:
         run: |
           docker-compose -f docker-compose.test.yml run --rm web /bin/sh -c "\
             coverage run src/manage.py test tdsp.dsp.tests && \
-            coverage xml -o src/coverage.xml"
+            coverage xml -o /code/src/coverage.xml"
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
-          file: ./src_volume/coverage.xml
+          file: ./django/src/coverage.xml
           flags: unittests
           env_vars: DJANGO_SETTINGS_MODULE
           fail_ci_if_error: true
