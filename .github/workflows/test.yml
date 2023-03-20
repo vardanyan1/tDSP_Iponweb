@@ -2,9 +2,12 @@ name: Test Docker Compose
 
 on:
   push:
-    branches: [test_coverage]
+    branches:
+      -development
   pull_request:
-    branches: [development, main]
+    branches:
+      - main
+      - development
 
 jobs:
   lint:
