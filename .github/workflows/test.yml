@@ -2,9 +2,12 @@ name: Test Docker Compose
 
 on:
   push:
-    branches: [test_coverage]
+    branches:
+      -development
   pull_request:
-    branches: [development, main]
+    branches:
+      - main
+      - development
 
 jobs:
   lint:
@@ -73,6 +76,7 @@ jobs:
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
+          token: ${{ secrets.CODECOV_TOKEN }} # Add this line
           file: ./django/src/coverage.xml
           flags: unittests
           env_vars: DJANGO_SETTINGS_MODULE
