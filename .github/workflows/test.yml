@@ -4,7 +4,7 @@ on:
   push:
     branches: [test_coverage]
   pull_request:
-    branches: [development]
+    branches: [development, main]
 
 jobs:
   lint:
