@@ -2,7 +2,7 @@ name: Test Docker Compose
 
 on:
   push:
-    branches: [working_branch]
+    branches: [test_coverage]
   pull_request:
     branches: [development]
 
@@ -63,6 +63,9 @@ jobs:
 
       - name: Run tests
         run: docker-compose -f docker-compose.test.yml run --rm web python3 src/manage.py test tdsp.dsp.tests
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
 
       - name: Stop services
         run: docker-compose -f docker-compose.test.yml down
