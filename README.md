@@ -1,14 +1,17 @@
-# tDSP (Toy DSP project for IPONWEB)
+# tDSP - Toy Demand-Side Platform
 [![codecov](https://codecov.io/gh/vardanyan1/tDSP_Iponweb/branch/test_coverage/graph/badge.svg?token=JNV37UGX2P)](https://codecov.io/gh/vardanyan1/tDSP_Iponweb)
 
-A short description of your project, its purpose, and key features.
-
+This project aims to build a toy Demand-Side Platform (tDSP) for participating in Real-Time Bidding (RTB) auctions, competing with other DSPs for ad impressions. The tDSP will interact with a toy Supply-Side Platform (tSSP) and adhere to the specifications provided.
 ## Table of Contents
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
+- [Overview](#Overview)
+- [Installation](#Installation)
+- [Usage](#Usage)
 - [License](#license)
+
+## Overview
+
+The tDSP project involves building a software platform that allows advertisers to participate in RTB auctions for ad impressions. The platform will interact with a tSSP, which unites game management and publisher UIs for ad impressions. The tDSP must meet specific requirements to participate in the game.
 
 ## Installation
 
@@ -25,15 +28,6 @@ Explain how to use your project, including examples and screenshots (if applicab
 1. Example 1
 2. Example 2
 
-## Contributing
-
-Guidelines for those who want to contribute to your project.
-
-1. Fork the project
-2. Create a new branch (`git checkout -b feature_branch`)
-3. Commit your changes (`git commit -m 'Add some feature'`)
-4. Push to the branch (`git push origin feature_branch`)
-5. Create a new Pull Request
 
 ## License
 
