@@ -7,6 +7,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+.idea
 .Python
 build/
 develop-eggs/
@@ -103,6 +104,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.*
 .venv
 env/
 venv/
@@ -127,3 +129,16 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/django/src/tdsp/DSP/migrations/
+/django/src/xlsx_importer/migrations/
+/django/categories/initiated.txt
+/django/categories/initiated.txt
+/image_server/src/image_server/server/migrations/
+/image_server/src/media/
+.DS_Store
+/minio_storage/.minio.sys/
+/minio_storage/images/
+/ui/node_modules/
+/ui/package-lock.json
+/image_server_flask/images/
+/django/src/django-static/

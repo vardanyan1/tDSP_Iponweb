@@ -1,0 +1,60 @@
+version: "3.7"
+services:
+  web:
+    build:
+      context: ./django
+    environment:
+      - DEPLOYMENT=api
+      - LC_CTYPE=en_US.UTF-8
+      - LANG=en_US.UTF-8
+      - LC_ALL=en_US.UTF-8
+    volumes:
+      - ./django:/code
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - image_server_flask
+    stdin_open: true
+    tty: true
+    env_file: .env
+    restart: unless-stopped
+    command: python3 /code/src/manage.py runserver 0.0.0.0:8000
+
+  postgres:
+    image: postgres:alpine
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+
+  image_server_flask:
+    build:
+      context: ./image_server_flask
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./image_server_flask:/app
+    env_file: .env
+    restart: unless-stopped
+
+  ui:
+    build: ./ui
+    depends_on:
+      - web
+      - postgres
+      - image_server_flask
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./ui:/ui
+
+volumes:
+  pgdata:
+
+networks:
+  default:
+    name: dev_net
