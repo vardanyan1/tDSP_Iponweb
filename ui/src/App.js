@@ -6,7 +6,6 @@ import ConfiguresPage from './pages/ConfiguresPage';
 import Navbar from './components/Navbar';
 
 function App() {
-  // const navigate = useNavigate();
   const location = useLocation();
 
   // useEffect(() => {
@@ -20,24 +19,24 @@ function App() {
 
   const pages = [
     {
-      path: "/campaigns",
+      path: "/ui/campaigns",
       element: <CampaignsPage />,
     },
     {
-      path: "/creatives",
+      path: "/ui/creatives",
       element: <CreativesPage />,
     },
     {
-      path: "/configure",
+      path: "/ui/configure",
       element: <ConfiguresPage />,
     },
   ];
 
   return (
     <>
-      {location.pathname !== '/' && <Navbar />}
+      {location.pathname !== '/ui/' && <Navbar />}
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/ui/" element={<LoginPage />} />
         {pages.map(({ path, element }) => <Route key={path} path={path} element={element} />)}
       </Routes>
     </>

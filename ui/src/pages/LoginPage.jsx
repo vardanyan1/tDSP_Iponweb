@@ -32,7 +32,7 @@ const LoginPage = () => {
       localStorage.setItem("access", response.data.access);
       localStorage.setItem("refresh", response.data.refresh);
 
-      navigate("/campaigns");
+      navigate("/ui/campaigns");
     } catch (error) {
       console.error("ERROR", error);
       setError(true);

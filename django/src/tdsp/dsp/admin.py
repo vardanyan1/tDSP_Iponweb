@@ -14,6 +14,10 @@ from ..tools.image_server_tools import send_image
 
 @admin.register(ConfigModel)
 class ConfigModelAdmin(admin.ModelAdmin):
+    """
+    ConfigModelAdmin is a Django admin model class that defines display,
+    filtering, and search options for the ConfigModel.
+    """
     list_display = ('id', 'current', 'impressions_total', 'rounds_left', 'auction_type', 'mode', 'budget',
                     'impression_revenue', 'click_revenue', 'conversion_revenue', 'frequency_capping', 'created_at')
     list_filter = ('auction_type', 'mode')
@@ -21,6 +25,11 @@ class ConfigModelAdmin(admin.ModelAdmin):
 
 
 class CategoryInline(admin.TabularInline):
+    """
+    CategoryInline is a Django admin TabularInline class that allows
+    editing of related CategoryModel instances directly from the
+    CategoryModelAdmin form.
+    """
     model = CategoryModel
     extra = 1
     fk_name = 'parent'
@@ -29,6 +38,10 @@ class CategoryInline(admin.TabularInline):
 
 @admin.register(CategoryModel)
 class CategoryModelAdmin(admin.ModelAdmin):
+    """
+    CategoryModelAdmin is a Django admin model class that defines display,
+    search, and inline editing options for the CategoryModel.
+    """
     list_display = ('code', 'name', 'parent')
     search_fields = ('code', 'name', 'parent__name')
     inlines = [CategoryInline]
@@ -36,7 +49,15 @@ class CategoryModelAdmin(admin.ModelAdmin):
 
 @admin.register(CampaignModel)
 class CampaignModelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'budget', 'config')
+    """
+    CampaignModelAdmin is a Django admin model class that defines display
+    and search options for the CampaignModel.
+
+    Methods:
+    config(obj: CampaignModel) -> int:
+        Returns the ID of the related ConfigModel instance.
+    """
+    list_display = ('id', 'name', 'budget', 'is_active', 'config')
     search_fields = ('name',)
 
     def config(self, obj):
@@ -46,6 +67,14 @@ class CampaignModelAdmin(admin.ModelAdmin):
 
 
 class CreativeAdminForm(forms.ModelForm):
+    """
+    CreativeAdminForm is a Django ModelForm class that defines custom
+    form fields and a custom save method for the CreativeModel.
+
+    Methods:
+    save(commit: bool = True) -> CreativeModel:
+        Custom save method that handles image uploading and URL assignment.
+    """
     file = forms.CharField(label='File', widget=forms.Textarea)
 
     class Meta:
@@ -71,6 +100,16 @@ class CreativeAdminForm(forms.ModelForm):
 
 @admin.register(CreativeModel)
 class CreativeAdmin(admin.ModelAdmin):
+    """
+    CreativeAdmin is a Django admin model class that defines display,
+    search options, and custom form for the CreativeModel.
+
+    Methods:
+    categories_display(obj: CreativeModel) -> str:
+        Returns a comma-separated string of category names.
+    campaign(obj: CreativeModel) -> str:
+        Returns the name of the related CampaignModel instance.
+    """
     list_display = ('id', 'external_id', 'name', 'campaign', 'url', 'categories_display')
     search_fields = ('external_id', 'name', 'campaign__name', 'url')
     form = CreativeAdminForm
@@ -88,6 +127,20 @@ class CreativeAdmin(admin.ModelAdmin):
 
 @admin.register(BidRequestModel)
 class BidRequestModelAdmin(admin.ModelAdmin):
+    """
+    BidRequestModelAdmin is a Django admin model class that defines display,
+    filtering, and search options for the BidRequestModel, as well as custom
+    form and save behavior.
+
+    Methods:
+    blocked_categories_display(obj: BidRequestModel) -> str:
+        Returns a comma-separated string of blocked category names.
+    get_form(request, obj=None, **kwargs) -> forms.ModelForm:
+        Customizes the form to hide the 'config' field.
+    save_related(request, form, formsets, change) -> None:
+        Custom save method that handles saving many-to-many relationships,
+        setting the current config, and creating a BidResponse instance.
+    """
     list_display = ('id', 'bid_id', 'banner_width', 'banner_height', 'click_probability', 'conversion_probability',
                     'site_domain', 'ssp_id', 'user_id', 'config', 'blocked_categories_display')
     search_fields = ('id', 'site_domain', 'ssp_id', 'user_id')
@@ -131,6 +184,16 @@ class BidRequestModelAdmin(admin.ModelAdmin):
 
 @admin.register(BidResponseModel)
 class BidResponseModelAdmin(admin.ModelAdmin):
+    """
+    BidResponseModelAdmin is a Django admin model class that defines display,
+    search options, and queryset behavior for the BidResponseModel.
+
+    Methods:
+    get_queryset(request) -> QuerySet:
+        Customizes the queryset to include related bid_request instances.
+    bid_request_id(obj: BidResponseModel) -> str:
+        Returns the bid_id of the related BidRequestModel instance.
+    """
     list_display = ('id', 'external_id', 'price', 'image_url', 'bid_request')
     search_fields = ('external_id', 'bid_request__bid_id')
     raw_id_fields = ('bid_request',)
@@ -149,6 +212,15 @@ class BidResponseModelAdmin(admin.ModelAdmin):
 
 @admin.register(NotificationModel)
 class NotificationModelAdmin(admin.ModelAdmin):
+    """
+    NotificationModelAdmin is a Django admin model class that defines display,
+    filtering, and search options for the NotificationModel, as well as custom
+    queryset behavior.
+
+    Methods:
+    get_queryset(request) -> QuerySet:
+        Customizes the queryset to include related bid_request and bid_response instances.
+    """
     list_display = ('id', 'bid_id', 'price', 'win', 'click', 'conversion', 'revenue', 'bid_request', 'bid_response')
     search_fields = ('bid_id',)
     list_filter = ('win', 'click', 'conversion')

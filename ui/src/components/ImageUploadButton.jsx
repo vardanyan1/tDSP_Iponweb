@@ -1,7 +1,7 @@
-const ImageUploadButton = ({ handleChooseImage, url }) => {
+const ImageUploadButton = ({ handleChooseImage, file }) => {
   return (
     <div>
-      <div>{url && <img src={url} alt="oops..." />}</div>
+      <div>{file && <img src={file} alt="oops..." />}</div>
       <label htmlFor="files">Choose Image</label>
       <input
         id="files"

@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import styles from "../styles/CampaignsItemModal.module.css";
 import Input from "./Input";
 import ModalButtons from "./ModalButtons";
+import { useFetchGetData } from "../hooks/useFetchData";
 
 const CreateCampaignsItemModal = React.memo(
-  ({ handleToggleModal, handleCreateCampaignsItem }) => {
+  ({ handleToggleModal, handleCreateCampaignsItem, handleSetConfigure }) => {
     const [newItem, setNewItem] = useState({
       name: "",
       budget: "",
@@ -13,6 +14,14 @@ const CreateCampaignsItemModal = React.memo(
       name: false,
       budget: false,
     });
+
+  const [configure, setConfigure] = useState([]);
+
+  const { isLoading, isError } = useFetchGetData(
+    "/game/configure/",
+    setConfigure
+  );
+console.log(isLoading, isError);
 
     useEffect(() => {
       const handleOutsideClick = (event) => {
@@ -63,7 +72,7 @@ const CreateCampaignsItemModal = React.memo(
         });
         return;
       }
-      handleCreateCampaignsItem(newItem);
+      handleCreateCampaignsItem(newItem, configure);
     };
 
     return (

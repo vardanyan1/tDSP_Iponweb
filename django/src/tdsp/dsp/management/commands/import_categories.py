@@ -4,12 +4,27 @@ from ...models.categories_model import CategoryModel
 
 
 class Command(BaseCommand):
+    """
+    A management command that imports categories and subcategories from an xlsx file.
+
+    Usage:
+        python manage.py import_categories <file_path>
+
+    <file_path> is the path to the xlsx file containing the categories and subcategories.
+
+    """
     help = 'Imports categories and subcategories from an xlsx file'
 
     def add_arguments(self, parser):
+        """
+        Define command line arguments for the management command.
+        """
         parser.add_argument('file_path', help='Path to the xlsx file')
 
     def handle(self, *args, **options):
+        """
+        Handle the management command.
+        """
         file_path = options['file_path']
         workbook = openpyxl.load_workbook(filename=file_path, read_only=True, data_only=True)
         worksheet = workbook['Sheet1']

@@ -14,7 +14,20 @@ from ...tools.image_server_tools import generate_image
 
 
 class BidRequestTests(APITestCase):
+    """
+    Test case for the Bid Request API.
+
+    Methods:
+        setUp(): Initializes the test case with test data.
+        test_create_bid_with_valid_data(): Tests creating a bid with valid data.
+
+    TODO: after creating logic for price change to comparing with real price
+    TODO: add tests for No Bid
+    """
     def setUp(self):
+        """
+        Initializes the test case with test data.
+        """
         # Create a test user
         self.test_user = User.objects.create_user(
             username='test',
@@ -34,12 +47,15 @@ class BidRequestTests(APITestCase):
         self.config = ConfigModel.objects.create(
             impressions_total=10, auction_type=1, mode='free', budget=5000.00,
             impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
-            frequency_capping=5, rounds_left=10
+            frequency_capping=5, rounds_left=10, game_goal="revenue"
         )
 
         self.campaign = CampaignModel.objects.create(name='Test Campaign', config=self.config, budget=500)
 
     def test_create_bid_with_valid_data(self):
+        """
+        Tests creating a bid with valid data.
+        """
         image = generate_image(300, 400)
         creative_data = {
             "external_id": "external_id_creative1",
@@ -88,12 +104,9 @@ class BidRequestTests(APITestCase):
         # Check that response model created
         self.assertEqual(BidResponseModel.objects.count(), 1)
 
-        # TODO: after creating logic for price change to comparing with real price
         # self.assertEqual(BidResponseModel.objects.first().price, 2.50)
 
         self.assertEqual(
             f"{BidResponseModel.objects.first().image_url}?w={bid_request_data['imp']['banner']['w']}"
             f"&h={bid_request_data['imp']['banner']['h']}",
             response.data['image_url'])
-
-        # TODO: add tests for No Bid

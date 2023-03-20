@@ -5,6 +5,7 @@ import CreateCreativesItemModal from "../components/CreateCreativesItemModal";
 import Header from "../components/Header/Header";
 import Button from "../components/Button/Button";
 import { useFetchGetData } from "../hooks/useFetchData";
+import axios from '../axios-instance';
 
 const CreativesPage = () => {
   const [creatives, setCreatives] = useState([]);
@@ -16,9 +17,18 @@ const CreativesPage = () => {
   );
 
   const handleRemove = useCallback((id) => {
-    setCreatives((prevCreatives) =>
-      prevCreatives.filter((creative) => creative.id !== id)
-    );
+  const access_token = localStorage.getItem('access');
+
+  axios
+    .delete(`/api/creatives/${id}`, { headers: { Authorization: `Bearer ${access_token}` } })
+    .then((response) => {
+      setCreatives((prevCreatives) =>
+        prevCreatives.filter((creative) => creative.id !== id)
+      );
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }, []);
 
   const handleToggleModal = useCallback(
@@ -27,24 +37,25 @@ const CreativesPage = () => {
   );
 
   const handleCreateCreativesItem = useCallback(
-    (formValues) => {
-      const categoryArray = formValues.categories
+    (categories, newItem) => {
+
+    const formattedCategories = categories
         .trim()
-        .split(/\s+/)
+        .split(" ")
         .map((category) => ({ code: category }));
 
-      const newItem = { ...formValues, categories: categoryArray };
-      // Clear in Feature
-      const lastId = creatives.at(-1)?.id || 0;
+    const item = {...newItem, categories: formattedCategories};
+    const access_token = localStorage.getItem('access');
 
-      setCreatives((prevCreatives) => [
-        ...prevCreatives,
-        { id: lastId + 1, ...newItem },
-      ]);
+    axios
+     .post('/api/creatives/', item, { headers: { Authorization: `Bearer ${access_token}` } })
+     .then((response) => {
+          setCreatives((prevCreatives) => [...prevCreatives,  response.data ]);
+     });
 
       handleToggleModal();
     },
-    [creatives, handleToggleModal]
+    [handleToggleModal]
   );
 
   return (

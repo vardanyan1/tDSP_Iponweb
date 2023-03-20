@@ -12,15 +12,34 @@ from ..tools.image_server_tools import generate_image, send_image
 
 
 class ConfigViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for managing game configurations. It provides the ability to create, retrieve,
+    update, and delete game configurations.
+    """
     queryset = ConfigModel.objects.all()
     serializer_class = ConfigSerializer
 
     def get_serializer_class(self):
+        """
+        Return the serializer class to use for the viewset based on the action being performed.
+
+        :return Serializer: The serializer class to use.
+        """
         if self.action == 'create':
             return ConfigCreateSerializer
         return ConfigSerializer
 
     def create(self, request, *args, **kwargs):
+        """
+       Create a new game configuration object, and if configuration.mode==free, create a free
+       campaign with a creative for the configuration.
+
+       :param    request: (Request): The request object containing the data for the new game configuration object.
+
+       :return Response: A response object containing a success message or an error response if the request is invalid.
+
+       :raise HTTPError: If there is an error while creating the game configuration object or the free campaign and creative objects.
+       """
         # Delete the old config object, if it exists
         ConfigModel.objects.filter(current=True).delete()
 

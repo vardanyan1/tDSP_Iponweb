@@ -18,6 +18,9 @@ if [ ! -d "src/tdsp/dsp/migrations" ]; then
     python src/manage.py makemigrations dsp
     python src/manage.py migrate
     python src/manage.py import_categories categories/Content-Taxonomy-1.0.xlsx
+    echo "Collecting static files..."
+    python src/manage.py collectstatic --noinput
+
     echo "Creating superuser..."
     python src/manage.py createsuperuser --email=admin@admin.com --noinput
     echo "Superuser created!"

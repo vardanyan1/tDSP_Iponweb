@@ -7,14 +7,15 @@ const Navbar = () => {
   const location = useLocation();
 
   const handleClick = () => {
-    localStorage.setItem("csrfToken", false);
-    navigate("/");
+    localStorage.setItem("access", '');
+    localStorage.setItem("refresh", '');
+    navigate("/ui/");
   };
 
   const links = [
-    { id: 1, to: "/campaigns", text: "Campaigns" },
-    { id: 2, to: "/creatives", text: "Creatives" },
-    { id: 3, to: "/configure", text: "Configure" },
+    { id: 1, to: "/ui/campaigns", text: "Campaigns" },
+    { id: 2, to: "/ui/creatives", text: "Creatives" },
+    { id: 3, to: "/ui/configure", text: "Configure" },
   ];
 
   const linkElements = links.map(({ id, to, text }) => (

@@ -17,7 +17,22 @@ from ...tools.image_server_tools import generate_image
 
 
 class NotificationTests(APITestCase):
+    """
+    A test case for testing the Notification API endpoint.
+
+    Methods:
+        setUp(): Sets up the necessary objects and authentication token before each test case method.
+        test_create_notification(): Tests creating a notification object by simulating the creation of all necessary
+                                    objects and checking that the notification object and user impression are
+                                    created correctly.
+        test_create_no_bid_notification(): Tests creating a notification object with no bid response by simulating
+                                            the creation of a bid request and checking that the notification object is
+                                            created correctly but no user impression is added.
+    """
     def setUp(self):
+        """
+        Initializes the test case with test data.
+        """
         # Create a test user
         self.test_user = User.objects.create_user(
             username='test',
@@ -36,7 +51,7 @@ class NotificationTests(APITestCase):
         self.config = ConfigModel.objects.create(
             impressions_total=10, auction_type=1, mode='free', budget=5000.00,
             impression_revenue=0.10, click_revenue=0.50, conversion_revenue=5.00,
-            frequency_capping=5, rounds_left=10
+            frequency_capping=5, rounds_left=10, game_goal="revenue"
         )
 
         self.campaign = CampaignModel.objects.create(name='Test Campaign', config=self.config, budget=500)
@@ -45,6 +60,9 @@ class NotificationTests(APITestCase):
         self.category2 = CategoryModel.objects.create(code='test7', name="test category")
 
     def test_create_notification(self):
+        """
+        Tests creating a notification for bid with valid data.
+        """
         # Create Creative
         image = generate_image(300, 300)
         creative_data = {
@@ -114,6 +132,10 @@ class NotificationTests(APITestCase):
         self.assertEqual(user_impression.campaign, related_creative.campaign)
 
     def test_create_no_bid_notification(self):
+        """
+        Tests checking that the notification object with win=False
+        is created correctly but no user impression is added.
+        """
         # Create Bid Request
         bid_request_data = {
             "id": "some_id2",
@@ -164,4 +186,3 @@ class NotificationTests(APITestCase):
         # Check that UserImpression is not updated
         user_impression_count = UserImpression.objects.count()
         self.assertEqual(user_impression_count, 0)
-
