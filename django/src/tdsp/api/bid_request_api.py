@@ -7,7 +7,7 @@ from ..dsp.models.categories_model import CategoryModel
 from ..dsp.models.game_config_model import ConfigModel
 from ..serializers.bid_request_serializer import BidRequestSerializer, BidRequestCreateSerializer
 from ..serializers.bid_response_serializer import BidResponseSerializer
-from ..tools.calculator import calculate_bid_price
+from ..tools.calculator_v2 import calculate_bid_price
 
 
 class BidViewSet(viewsets.ModelViewSet):
