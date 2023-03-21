@@ -8,7 +8,7 @@ from .models.categories_model import CategoryModel
 from .models.campaign_model import CampaignModel
 from .models.creative_model import CreativeModel
 from .models.notification_model import NotificationModel
-from ..tools.calculator import calculate_bid_price
+from ..tools.calculator_v2 import calculate_bid_price
 from ..tools.image_server_tools import send_image
 
 
