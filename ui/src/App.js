@@ -1,44 +1,81 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import CampaignsPage from './pages/CampaignsPage';
-import CreativesPage from './pages/CreativesPage';
-import ConfiguresPage from './pages/ConfiguresPage';
+import { Route, Routes, useLocation, Navigate, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import jwt_decode from 'jwt-decode';
 import Navbar from './components/Navbar';
+import routes from './routes';
+import Spinner from './components/Spinner/Spinner';
 
 function App() {
-  const location = useLocation();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const csrfToken = localStorage.getItem('csrfToken');
-  //   if (csrfToken === 'true' && location.pathname === '/') {
-  //     navigate('/campaigns')
-  //   } else if (csrfToken === 'false') {
-  //     navigate('/')
-  //   }
-  // }, [location.pathname, navigate]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isValidToken, setIsValidToken] = useState(false);
+  const [shouldRenderRoutes, setShouldRenderRoutes] = useState(false);
 
-  const pages = [
-    {
-      path: "/ui/campaigns",
-      element: <CampaignsPage />,
-    },
-    {
-      path: "/ui/creatives",
-      element: <CreativesPage />,
-    },
-    {
-      path: "/ui/configure",
-      element: <ConfiguresPage />,
-    },
-  ];
+  const validateToken = async () => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      setIsValidToken(false);
+      setIsLoading(false);
+      return Promise.resolve(false);
+    }
+
+    try {
+      const decoded = jwt_decode(token);
+      const currentTime = Date.now() / 1000;
+
+      if (decoded.exp && decoded.exp > currentTime) {
+        setIsValidToken(true);
+      } else {
+        setIsValidToken(false);
+        localStorage.removeItem('token');
+      }
+    } catch (error) {
+      setIsValidToken(false);
+      localStorage.removeItem('token');
+    }
+
+    setIsLoading(false);
+    return Promise.resolve(true);
+  };
+
+  useEffect(() => {
+    validateToken().then((isValidToken) => {
+      if (isValidToken && (pathname === '/ui' || pathname === '/' || pathname === '/ui/')) {
+        navigate('/ui/campaigns');
+      }
+      setShouldRenderRoutes(true);
+    });
+  }, [pathname, navigate]);
+
+  const shouldShowNavbar = useMemo(() => {
+    return routes.some(route => route.isPrivate && route.path === pathname);
+  }, [pathname]);
 
   return (
     <>
-      {location.pathname !== '/ui/' && <Navbar />}
-      <Routes>
-        <Route path="/ui/" element={<LoginPage />} />
-        {pages.map(({ path, element }) => <Route key={path} path={path} element={element} />)}
-      </Routes>
+      {shouldShowNavbar && <Navbar />}
+      {shouldRenderRoutes && (
+        <Routes>
+          <Route path="/" element={<Navigate to="/ui/" />} />
+          {routes.map(({ path, element, isPrivate }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                isPrivate && !isValidToken ? (
+                  <Navigate to="/ui/" />
+                ) : (
+                  element
+                )
+              }
+            />
+          ))}
+        </Routes>
+      )}
+      {isLoading && <Spinner />}
     </>
   );
 }

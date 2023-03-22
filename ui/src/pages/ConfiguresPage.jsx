@@ -1,5 +1,7 @@
 import { useState } from "react";
+import Error from "../components/Error/Error";
 import Header from "../components/Header/Header";
+import Spinner from "../components/Spinner/Spinner";
 import { useFetchGetData } from "../hooks/useFetchData";
 import styles from "../styles/Configures.module.css";
 
@@ -47,10 +49,10 @@ const ConfiguresPage = () => {
     <div className={styles.configuresWrapper}>
       <div className={styles.container}>
         <Header text="Configure" />
-        {isLoading && <p>Loading...</p>}
-        {isError && <p>Error fetching data.</p>}
-        {!isLoading && !isError && (
-          <div className={styles.configuresWrapper}>
+        <div className={styles.configuresWrapper}>
+          {isLoading && <Spinner />}
+          {isError && <Error />}
+          {!isLoading && !isError && (
             <ul className={styles.configuresList}>
               {configItems.map((item, index) => (
                 <li key={index}>
@@ -58,8 +60,8 @@ const ConfiguresPage = () => {
                 </li>
               ))}
             </ul>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

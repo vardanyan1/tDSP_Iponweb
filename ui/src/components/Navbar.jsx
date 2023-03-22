@@ -7,8 +7,8 @@ const Navbar = () => {
   const location = useLocation();
 
   const handleClick = () => {
-    localStorage.setItem("access", '');
-    localStorage.setItem("refresh", '');
+    localStorage.setItem("token", "");
+    localStorage.setItem("refresh", "");
     navigate("/ui/");
   };
 

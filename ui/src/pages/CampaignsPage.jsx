@@ -5,7 +5,9 @@ import CampaignsTableItems from "../components/CampaignsTableItems";
 import Header from "../components/Header/Header";
 import Button from "../components/Button/Button";
 import { useFetchGetData } from "../hooks/useFetchData";
-import axios from '../axios-instance';
+import axios from "../axios-instance";
+import Spinner from "../components/Spinner/Spinner";
+import Error from "../components/Error/Error";
 
 const CampaignsPage = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -17,19 +19,20 @@ const CampaignsPage = () => {
   );
 
   const handleRemove = useCallback((id) => {
+    const access_token = localStorage.getItem("token");
 
-  const access_token = localStorage.getItem('access');
-
-  axios
-    .delete(`/api/campaigns/${id}`, { headers: { Authorization: `Bearer ${access_token}` } })
-    .then((response) => {
-      setCampaigns((prevCampaigns) =>
-        prevCampaigns.filter((campaign) => campaign.id !== id)
-      );
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    axios
+      .delete(`/api/campaigns/${id}`, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((response) => {
+        setCampaigns((prevCampaigns) =>
+          prevCampaigns.filter((campaign) => campaign.id !== id)
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
   const handleToggleModal = useCallback(
@@ -39,36 +42,44 @@ const CampaignsPage = () => {
 
   const handleCreateCampaignsItem = useCallback(
     (formValues, configure) => {
-        if(+configure.budget >= formValues.budget) {
-            const access_token = localStorage.getItem('access');
+      if (+configure.budget >= formValues.budget) {
+        const access_token = localStorage.getItem("token");
 
-            axios.post('/api/campaigns/', formValues, { headers: { Authorization: `Bearer ${access_token}` } })
-                .then((response) => {
-                    setCampaigns((prevCampaigns) => [...prevCampaigns, response.data]);
-                });
+        axios
+          .post("/api/campaigns/", formValues, {
+            headers: { Authorization: `Bearer ${access_token}` },
+          })
+          .then((response) => {
+            setCampaigns((prevCampaigns) => [...prevCampaigns, response.data]);
+          });
 
-            handleToggleModal();
-        }
+        handleToggleModal();
+      }
     },
     [handleToggleModal]
   );
 
   const handleCheckboxChange = (e, item) => {
-  const access_token = localStorage.getItem('access');
+    const access_token = localStorage.getItem("token");
 
-  axios.put(`/api/campaigns/${item.id}/`, { ...item, is_active: e.target.checked }, { headers: { Authorization: `Bearer ${access_token}` } })
-    .then((response) => {
-      setCampaigns((prevCampaigns) => {
-        return prevCampaigns.map((campaign) => {
-          if (campaign.id === item.id) {
-            return { ...campaign, is_active: response.data.is_active };
-          } else {
-            return campaign;
-          }
+    axios
+      .put(
+        `/api/campaigns/${item.id}/`,
+        { ...item, is_active: e.target.checked },
+        { headers: { Authorization: `Bearer ${access_token}` } }
+      )
+      .then((response) => {
+        setCampaigns((prevCampaigns) => {
+          return prevCampaigns.map((campaign) => {
+            if (campaign.id === item.id) {
+              return { ...campaign, is_active: response.data.is_active };
+            } else {
+              return campaign;
+            }
+          });
         });
       });
-    });
-}
+  };
   return (
     <div className={styles.campaignsWrapper}>
       <div className={styles.container}>
@@ -78,19 +89,17 @@ const CampaignsPage = () => {
         </div>
         <div className={styles.row}>
           <div className={styles.tableWrapper}>
-            {isLoading ? (
-              <p>Loading...</p>
-            ) : isError ? (
-              <p>Error: {isError}</p>
-            ) : (
+            {isLoading && <Spinner />}
+            {isError && <Error />}
+            {!isError && !isLoading && (
               <table className={styles.table}>
                 <thead>
                   <tr>
                     <th>ID</th>
                     <th>Name</th>
                     <th>Budget</th>
-                    <th>Active</th>
-                    <th>Actions</th>
+                    <th className={styles.centered}>Active</th>
+                    <th className={styles.centered}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>

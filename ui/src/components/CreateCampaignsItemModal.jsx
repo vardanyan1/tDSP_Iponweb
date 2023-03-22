@@ -15,13 +15,14 @@ const CreateCampaignsItemModal = React.memo(
       budget: false,
     });
 
-  const [configure, setConfigure] = useState([]);
+    const [configure, setConfigure] = useState([]);
 
-  const { isLoading, isError } = useFetchGetData(
-    "/game/configure/",
-    setConfigure
-  );
-console.log(isLoading, isError);
+    const { isLoading, isError } = useFetchGetData(
+      "/game/configure/",
+      setConfigure
+    );
+
+    console.log(isLoading, isError);
 
     useEffect(() => {
       const handleOutsideClick = (event) => {
