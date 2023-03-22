@@ -31,7 +31,7 @@ const CreativesTableItems = ({ item, handleRemove }) => {
           {item.url}
         </a>
       </td>
-      <td>
+      <td className={styles.centered}>
         <div className={styles.removeBtnWrapper}>
           <Button handleClick={() => handleRemove(item.id)} text="Remove" />
         </div>

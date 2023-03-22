@@ -13,10 +13,15 @@ const TableItems = React.memo(
         <td>
           <span>{item.budget}</span>
         </td>
-        <td>
-          <input type="checkbox" checked={item.is_active} onChange={(e) => handleCheckboxChange(e, item)} />
+        <td className={styles.centered}>
+          <input
+            type="checkbox"
+            className={styles.customCheckbox}
+            checked={item.is_active}
+            onChange={(e) => handleCheckboxChange(e, item)}
+          />
         </td>
-        <td>
+        <td className={styles.centered}>
           <div className={styles.removeBtnWrapper}>
             <Button handleClick={() => handleRemove(item.id)} text="Remove" />
           </div>
@@ -28,6 +33,5 @@ const TableItems = React.memo(
     prevProps.item.id === nextProps.item.id &&
     prevProps.item.is_active === nextProps.item.is_active
 );
-
 
 export default TableItems;

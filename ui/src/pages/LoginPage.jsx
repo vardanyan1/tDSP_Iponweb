@@ -29,7 +29,7 @@ const LoginPage = () => {
 
       const response = await axios.post("/api/token/", loginData);
 
-      localStorage.setItem("access", response.data.access);
+      localStorage.setItem("token", response.data.access);
       localStorage.setItem("refresh", response.data.refresh);
 
       navigate("/ui/campaigns");

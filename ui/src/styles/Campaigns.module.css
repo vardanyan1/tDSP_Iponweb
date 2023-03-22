@@ -103,6 +103,11 @@
   font-size: 14px;
 }
 
+.table td.centered,
+.table th.centered {
+  text-align: center;
+}
+
 .removeBtnWrapper > button {
   border: none;
   outline: none;
@@ -112,4 +117,22 @@
   border-radius: 4px;
   font-weight: 600;
   width: 60px;
+}
+
+.customCheckbox {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  background-color: #ff4545;
+}
+
+.customCheckbox:checked {
+  background-color: #4ff345;
 }

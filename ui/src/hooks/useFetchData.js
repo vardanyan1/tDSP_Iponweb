@@ -8,7 +8,7 @@ export const useFetchGetData = (url, setData) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const access_token = localStorage.getItem("access");
+        const access_token = localStorage.getItem("token");
 
         if (!access_token) {
             navigate("/ui/");

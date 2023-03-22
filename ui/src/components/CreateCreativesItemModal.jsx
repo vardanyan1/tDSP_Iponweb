@@ -5,7 +5,10 @@ import ImageUploadButton from "./ImageUploadButton";
 import Input from "./Input";
 import ModalButtons from "./ModalButtons";
 
-const CreateCreativesItemModal = ({ handleToggleModal, handleCreateCreativesItem }) => {
+const CreateCreativesItemModal = ({
+  handleToggleModal,
+  handleCreateCreativesItem,
+}) => {
   const [newItem, setNewItem] = useState({
     name: "",
     external_id: "",
@@ -55,22 +58,22 @@ const CreateCreativesItemModal = ({ handleToggleModal, handleCreateCreativesItem
   };
 
   const handleBlur = (event) => {
-  const { name, value } = event.target;
-  const categoriesRegex = /^IAB\d{1,2}(-\d{1,2})?\s*(IAB\d{1,2}(-\d{1,2})?\s*)*$/;
+    const { name, value } = event.target;
+    const categoriesRegex =
+      /^IAB\d{1,2}(-\d{1,2})?\s*(IAB\d{1,2}(-\d{1,2})?\s*)*$/;
 
-  if (name === "categories") {
-    setErrorType((prevState) => ({
-      ...prevState,
-      categories: !categoriesRegex.test(value),
-    }));
-  } else {
-    setErrorType((prevState) => ({
-      ...prevState,
-      [name]: !value,
-    }));
-  }
-};
-
+    if (name === "categories") {
+      setErrorType((prevState) => ({
+        ...prevState,
+        categories: !categoriesRegex.test(value),
+      }));
+    } else {
+      setErrorType((prevState) => ({
+        ...prevState,
+        [name]: !value,
+      }));
+    }
+  };
 
   const handleChooseImage = (e) => {
     const file = e.target.files[0];
@@ -92,7 +95,9 @@ const CreateCreativesItemModal = ({ handleToggleModal, handleCreateCreativesItem
 
   const handleSelectChange = (event) => {
     const { value } = event.target;
-    const selectedCampaign = campaigns.find((campaign) => campaign.name === value);
+    const selectedCampaign = campaigns.find(
+      (campaign) => campaign.name === value
+    );
 
     setNewItem((prevItem) => ({
       ...prevItem,

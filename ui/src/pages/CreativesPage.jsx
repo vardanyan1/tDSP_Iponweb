@@ -5,7 +5,9 @@ import CreateCreativesItemModal from "../components/CreateCreativesItemModal";
 import Header from "../components/Header/Header";
 import Button from "../components/Button/Button";
 import { useFetchGetData } from "../hooks/useFetchData";
-import axios from '../axios-instance';
+import axios from "../axios-instance";
+import Spinner from "../components/Spinner/Spinner";
+import Error from "../components/Error/Error";
 
 const CreativesPage = () => {
   const [creatives, setCreatives] = useState([]);
@@ -17,18 +19,20 @@ const CreativesPage = () => {
   );
 
   const handleRemove = useCallback((id) => {
-  const access_token = localStorage.getItem('access');
+    const access_token = localStorage.getItem("token");
 
-  axios
-    .delete(`/api/creatives/${id}`, { headers: { Authorization: `Bearer ${access_token}` } })
-    .then((response) => {
-      setCreatives((prevCreatives) =>
-        prevCreatives.filter((creative) => creative.id !== id)
-      );
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    axios
+      .delete(`/api/creatives/${id}`, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((response) => {
+        setCreatives((prevCreatives) =>
+          prevCreatives.filter((creative) => creative.id !== id)
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
   const handleToggleModal = useCallback(
@@ -38,20 +42,21 @@ const CreativesPage = () => {
 
   const handleCreateCreativesItem = useCallback(
     (categories, newItem) => {
-
-    const formattedCategories = categories
+      const formattedCategories = categories
         .trim()
         .split(" ")
         .map((category) => ({ code: category }));
 
-    const item = {...newItem, categories: formattedCategories};
-    const access_token = localStorage.getItem('access');
+      const item = { ...newItem, categories: formattedCategories };
+      const access_token = localStorage.getItem("token");
 
-    axios
-     .post('/api/creatives/', item, { headers: { Authorization: `Bearer ${access_token}` } })
-     .then((response) => {
-          setCreatives((prevCreatives) => [...prevCreatives,  response.data ]);
-     });
+      axios
+        .post("/api/creatives/", item, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((response) => {
+          setCreatives((prevCreatives) => [...prevCreatives, response.data]);
+        });
 
       handleToggleModal();
     },
@@ -67,8 +72,8 @@ const CreativesPage = () => {
         </div>
         <div className={styles.row}>
           <div className={styles.tableWrapper}>
-            {isError && <div>Error loading data.</div>}
-            {isLoading && <div>Loading...</div>}
+            {isLoading && <Spinner />}
+            {isError && <Error />}
             {!isError && !isLoading && (
               <table className={styles.table}>
                 <thead>
@@ -79,7 +84,7 @@ const CreativesPage = () => {
                     <th>Categories</th>
                     <th>Campaign</th>
                     <th>Url</th>
-                    <th>Actions</th>
+                    <th className={styles.centered}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
