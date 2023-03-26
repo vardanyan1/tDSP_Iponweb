@@ -43,17 +43,20 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'django_prometheus',
 ]
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 ROOT_URLCONF = 'tdsp.urls'
@@ -145,13 +148,16 @@ SIMPLE_JWT = {
 }
 
 LOGIN_REDIRECT_URL = '/'
+
+# CSRF_TRUSTED_ORIGINS = ["http://localhost:5555", "http://localhost:3000"]
+# CSRF_COOKIE_HTTPONLY = True
+# CSRF_COOKIE_SECURE = True
+
 #
 CORS_ORIGIN_WHITELIST = (
     "http://localhost:3000",
     "http://localhost:8000",
 )
-
-CSRF_TRUSTED_ORIGINS = ["http://localhost:5555", "http://localhost:3000"]
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
@@ -173,5 +179,3 @@ CORS_ALLOW_METHODS = [
     "POST",
     "PUT",
 ]
-CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SECURE = True
