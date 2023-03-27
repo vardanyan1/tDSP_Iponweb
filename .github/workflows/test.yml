@@ -33,7 +33,8 @@ jobs:
 
       - name: Lint
         working-directory: django/src
-        run: PYTHONPATH="." DJANGO_SETTINGS_MODULE=tdsp.settings pylint --load-plugins pylint_django **/*.py
+        run: PYTHONPATH="." DJANGO_SETTINGS_MODULE=tdsp.settings USE_SQLITE=True pylint --load-plugins pylint_django **/*.py
+
 
   test:
     runs-on: ubuntu-latest

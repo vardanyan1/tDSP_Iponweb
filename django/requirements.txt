@@ -24,3 +24,4 @@ requests
 tzdata
 boto3
 coverage
+django-prometheus
