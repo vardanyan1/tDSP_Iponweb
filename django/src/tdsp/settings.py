@@ -83,14 +83,15 @@ WSGI_APPLICATION = 'tdsp.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    "default": {
         'ENGINE': 'django.db.backends.sqlite3' if os.environ.get('USE_SQLITE', '').lower() == 'true'
         else 'django.db.backends.postgresql',
-        'NAME': ':memory:' if os.environ.get('USE_SQLITE', '').lower() == 'true' else os.environ.get('DB_NAME', ''),
-        'USER': os.environ.get('DB_USER', ''),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': os.environ.get('DB_HOST', ''),
-        'PORT': os.environ.get('DB_PORT', ''),
+        'NAME': ':memory:' if os.environ.get('USE_SQLITE', '').lower() == 'true'
+        else os.environ.get('POSTGRES_NAME', ''),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT'),
     }
 }
 
