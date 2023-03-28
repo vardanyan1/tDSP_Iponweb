@@ -27,12 +27,7 @@ services:
       - image_server_flask
     volumes:
       - ./django/src:/code/src
-    command:
-      - /bin/sh
-      - -c
-      - |
-        cd src/
-        python manage.py runserver
+    command: python3 /code/src/manage.py runserver 0.0.0.0:8000
 
   postgres:
     image: postgres:alpine
