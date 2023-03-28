@@ -30,7 +30,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pylint pytest pytest-cov pylint-django
           pip install pipenv
-          pipenv install --dev --deploy
+          pipenv install --system --deploy
 
       - name: Lint
         working-directory: django/src
