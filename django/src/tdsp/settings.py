@@ -85,9 +85,9 @@ WSGI_APPLICATION = 'tdsp.wsgi.application'
 DATABASES = {
     "default": {
         'ENGINE': 'django.db.backends.sqlite3' if os.environ.get('USE_SQLITE', '').lower() == 'true'
-        else 'django.db.backends.postgresql',
+        else 'django_prometheus.db.backends.postgresql',
         'NAME': ':memory:' if os.environ.get('USE_SQLITE', '').lower() == 'true'
-        else os.environ.get('POSTGRES_NAME', ''),
+        else os.environ.get('POSTGRES_DB', ''),
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
         'HOST': os.environ.get('POSTGRES_HOST'),

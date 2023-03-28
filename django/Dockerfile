@@ -2,7 +2,6 @@ FROM python:3-alpine
 
 RUN apk update && apk add netcat-openbsd libjpeg-turbo-dev zlib-dev libpq
 
-
 ## Prevents Python from writing pyc files to disc
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -10,7 +9,17 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /code
-COPY requirements.txt /code/
-RUN pip install -r requirements.txt
+
+# Install pipenv
+RUN pip install pipenv
+
+# Copy Pipfile and Pipfile.lock
+COPY Pipfile Pipfile.lock /code/
+
+# Install packages using Pipenv
+RUN pipenv install --system --deploy
+
+# Copy the rest of the application code
 COPY . /code/
+
 ENTRYPOINT ["/code/entrypoint.sh"]

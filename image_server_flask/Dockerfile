@@ -2,8 +2,14 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install pipenv
+RUN pip install pipenv
+
+# Copy Pipfile and Pipfile.lock
+COPY Pipfile Pipfile.lock ./
+
+# Install packages using Pipenv
+RUN pipenv install --system --deploy
 
 COPY app.py .
 
