@@ -53,6 +53,7 @@ jobs:
       POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
 
       LOCAL_HOST: ${{ secrets.LOCALHOST }}
+      SSP_HOST: ${{ secrets.SSP_HOST }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

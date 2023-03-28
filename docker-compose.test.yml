@@ -19,6 +19,7 @@ services:
       - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME}
       - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD}
       - DEBUG=${DEBUG}
+      - SSP_HOST=${SSP_HOST}
     ports:
       - "8000:8000"
     depends_on:
