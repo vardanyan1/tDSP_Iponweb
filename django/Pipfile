@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+django-cors-headers = "*"
+django-environ = "*"
+django-prometheus = "*"
+djangorestframework = "*"
+djangorestframework-simplejwt = "*"
+psycopg2-binary = "*"
+gunicorn = "*"
+pillow = "*"
+openpyxl = "*"
+requests = "*"
+coverage = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"
