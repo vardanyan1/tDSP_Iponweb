@@ -1,13 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "react-query";
 import axios from "../axios-instance";
 import styles from "../styles/Login.module.css";
 
 const LoginPage = () => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
   const [error, setError] = useState(false);
+  const navigate = useNavigate();
+
+  const loginMutation = useMutation(
+    (loginData) => axios.post("/api/token/", loginData),
+    {
+      onSuccess: (data) => {
+        localStorage.setItem("token", data.data.access);
+        localStorage.setItem("refresh", data.data.refresh);
+        navigate("/ui/campaigns");
+      },
+      onError: (error) => {
+        console.error("ERROR", error);
+        setError(true);
+      },
+    }
+  );
 
   const handleLoginInputChange = (e) => {
     const { name, value } = e.target;
@@ -18,25 +34,15 @@ const LoginPage = () => {
     }
   };
 
-  const handleLoginSubmit = async (e) => {
+  const handleLoginSubmit = (e) => {
     e.preventDefault();
 
-    try {
-      const loginData = {
-        username: login,
-        password: password,
-      };
+    const loginData = {
+      username: login,
+      password: password,
+    };
 
-      const response = await axios.post("/api/token/", loginData);
-
-      localStorage.setItem("token", response.data.access);
-      localStorage.setItem("refresh", response.data.refresh);
-
-      navigate("/ui/campaigns");
-    } catch (error) {
-      console.error("ERROR", error);
-      setError(true);
-    }
+    loginMutation.mutate(loginData);
   };
 
   return (
@@ -78,6 +84,7 @@ const LoginPage = () => {
           className={styles.loginSubmitInput}
           type="submit"
           value="Sign In"
+          disabled={loginMutation.isLoading}
         />
       </form>
     </div>

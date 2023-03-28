@@ -1,9 +1,18 @@
+import React, { useCallback } from "react";
 import styles from "../styles/Creatives.module.css";
 import Button from "./Button/Button";
 
-const CreativesTableItems = ({ item, handleRemove }) => {
+const CreativesTableItems = React.memo(({ item, handleRemove }) => {
+  const memoizedHandleRemove = useCallback(() => {
+    handleRemove(item.id);
+  }, [handleRemove, item.id]);
+
+  const itemCategories = item.categories
+    .map((item, index) => (index > 0 ? ", " + item.code : item.code))
+    .join("");
+
   return (
-    <tr>
+    <tr className={styles.itemsWrapper}>
       <th scope="row">{item.id}</th>
       <td>
         <span>{item.external_id}</span>
@@ -12,11 +21,7 @@ const CreativesTableItems = ({ item, handleRemove }) => {
         <span>{item.name}</span>
       </td>
       <td>
-        {item.categories.map((item, index) => (
-          <span key={item.code}>
-            {index > 0 ? ", " + item.code : item.code}
-          </span>
-        ))}
+        <span>{itemCategories}</span>
       </td>
       <td>
         <span>{item.campaign.name}</span>
@@ -33,11 +38,14 @@ const CreativesTableItems = ({ item, handleRemove }) => {
       </td>
       <td className={styles.centered}>
         <div className={styles.removeBtnWrapper}>
-          <Button handleClick={() => handleRemove(item.id)} text="Remove" />
+          <Button
+            handleClick={() => memoizedHandleRemove(item.id)}
+            text="Remove"
+          />
         </div>
       </td>
     </tr>
   );
-};
+});
 
 export default CreativesTableItems;

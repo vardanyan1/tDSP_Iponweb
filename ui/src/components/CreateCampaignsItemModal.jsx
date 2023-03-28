@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import styles from "../styles/CampaignsItemModal.module.css";
-import Input from "./Input";
+import axios from "../axios-instance";
+import { useQuery } from "react-query";
+import Input from "./Input/Input";
 import ModalButtons from "./ModalButtons";
-import { useFetchGetData } from "../hooks/useFetchData";
+import styles from "../styles/CampaignsItemModal.module.css";
+import Spinner from "./Spinner/Spinner";
+import Error from "./Error/Error";
 
 const CreateCampaignsItemModal = React.memo(
-  ({ handleToggleModal, handleCreateCampaignsItem, handleSetConfigure }) => {
+  ({ handleToggleModal, handleCreateCampaignsItem }) => {
     const [newItem, setNewItem] = useState({
       name: "",
       budget: "",
@@ -15,14 +18,20 @@ const CreateCampaignsItemModal = React.memo(
       budget: false,
     });
 
-    const [configure, setConfigure] = useState([]);
-
-    const { isLoading, isError } = useFetchGetData(
-      "/game/configure/",
-      setConfigure
+    const {
+      isLoading,
+      isError,
+      data: configure = [],
+    } = useQuery(
+      "configure",
+      async () => {
+        const { data } = await axios.get("/game/configure/");
+        return data;
+      },
+      {
+        refetchOnWindowFocus: false, // disable automatic refetching
+      }
     );
-
-    console.log(isLoading, isError);
 
     useEffect(() => {
       const handleOutsideClick = (event) => {
@@ -65,7 +74,9 @@ const CreateCampaignsItemModal = React.memo(
 
     const handleSubmit = (event) => {
       event.preventDefault();
+
       const { name, budget } = newItem;
+
       if (!name || !budget) {
         setErrorType({
           name: !name,
@@ -73,8 +84,26 @@ const CreateCampaignsItemModal = React.memo(
         });
         return;
       }
+
+      if (budget && +budget > configure[0]?.budget) {
+        setErrorType({
+          ...errorType,
+          budget: true,
+        });
+        return;
+      }
+
       handleCreateCampaignsItem(newItem, configure);
+      handleToggleModal();
     };
+
+    if (isLoading) {
+      return <Spinner />;
+    }
+
+    if (isError) {
+      return <Error />;
+    }
 
     return (
       <div>
@@ -86,8 +115,6 @@ const CreateCampaignsItemModal = React.memo(
             >
               <div className={styles.inputsWrapper}>
                 <Input
-                  type="text"
-                  id="name"
                   name="name"
                   placeholder="Campaign name"
                   value={newItem.name}
@@ -96,8 +123,6 @@ const CreateCampaignsItemModal = React.memo(
                   onChange={handleInputChange}
                 />
                 <Input
-                  type="text"
-                  id="budget"
                   name="budget"
                   placeholder="Budget"
                   value={newItem.budget}
@@ -106,6 +131,11 @@ const CreateCampaignsItemModal = React.memo(
                   onChange={handleInputChange}
                 />
               </div>
+              <p className={styles.errorText}>
+                {errorType.budget &&
+                  +newItem.budget > +configure[0]?.budget &&
+                  `Max budget is ${+configure[0]?.budget}`}
+              </p>
               <ModalButtons handleToggleModal={handleToggleModal} />
             </form>
           </div>

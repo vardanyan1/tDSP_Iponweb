@@ -1,16 +1,13 @@
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import styles from "../styles/Navbar.module.css";
 import Button from "./Button/Button";
+import { useLogout } from "../hooks/useLogout";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleClick = () => {
-    localStorage.setItem("token", "");
-    localStorage.setItem("refresh", "");
-    navigate("/ui/");
-  };
+  const { handleLogout } = useLogout();
 
   const links = [
     { id: 1, to: "/ui/campaigns", text: "Campaigns" },
@@ -33,7 +30,7 @@ const Navbar = () => {
       <div></div>
       <div className={styles.navigationLinksWrapper}>{linkElements}</div>
       <div className={styles.logoutWrapper}>
-        <Button handleClick={handleClick} text="Logout" />
+        <Button handleClick={handleLogout} text="Logout" />
       </div>
     </div>
   );

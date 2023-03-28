@@ -1,113 +1,73 @@
 import { useState, useCallback } from "react";
-import styles from "../styles/Creatives.module.css";
+import { useCreatives } from "../hooks/useCreatives";
 import CreativesTableItems from "../components/CreativesTableItems";
 import CreateCreativesItemModal from "../components/CreateCreativesItemModal";
 import Header from "../components/Header/Header";
 import Button from "../components/Button/Button";
-import { useFetchGetData } from "../hooks/useFetchData";
-import axios from "../axios-instance";
 import Spinner from "../components/Spinner/Spinner";
 import Error from "../components/Error/Error";
+import styles from "../styles/Creatives.module.css";
 
 const CreativesPage = () => {
-  const [creatives, setCreatives] = useState([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const { isLoading, isError, creatives, removeCreative, createCreative } =
+    useCreatives();
 
-  const { isLoading, isError } = useFetchGetData(
-    "/api/creatives/",
-    setCreatives
-  );
-
-  const handleRemove = useCallback((id) => {
-    const access_token = localStorage.getItem("token");
-
-    axios
-      .delete(`/api/creatives/${id}`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((response) => {
-        setCreatives((prevCreatives) =>
-          prevCreatives.filter((creative) => creative.id !== id)
-        );
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const toggleModal = useCallback(() => {
+    setIsOpenModal((isOpenModal) => !isOpenModal);
   }, []);
 
-  const handleToggleModal = useCallback(
-    () => setIsOpenModal(!isOpenModal),
-    [isOpenModal]
-  );
+  if (isLoading) {
+    return <Spinner />;
+  }
 
-  const handleCreateCreativesItem = useCallback(
-    (categories, newItem) => {
-      const formattedCategories = categories
-        .trim()
-        .split(" ")
-        .map((category) => ({ code: category }));
-
-      const item = { ...newItem, categories: formattedCategories };
-      const access_token = localStorage.getItem("token");
-
-      axios
-        .post("/api/creatives/", item, {
-          headers: { Authorization: `Bearer ${access_token}` },
-        })
-        .then((response) => {
-          setCreatives((prevCreatives) => [...prevCreatives, response.data]);
-        });
-
-      handleToggleModal();
-    },
-    [handleToggleModal]
-  );
+  if (isError) {
+    return <Error />;
+  }
 
   return (
     <div className={styles.creativesWrapper}>
       <div className={styles.container}>
         <Header text="Creatives" />
         <div className={styles.createButtonWrapper}>
-          <Button handleClick={handleToggleModal} text="Create" />
+          <Button handleClick={toggleModal} text="Create" />
         </div>
         <div className={styles.row}>
           <div className={styles.tableWrapper}>
-            {isLoading && <Spinner />}
-            {isError && <Error />}
-            {!isError && !isLoading && (
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>External ID</th>
-                    <th>Name</th>
-                    <th>Categories</th>
-                    <th>Campaign</th>
-                    <th>Url</th>
-                    <th className={styles.centered}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {creatives.map((item) => {
-                    return (
-                      <CreativesTableItems
-                        key={item.id}
-                        item={item}
-                        handleRemove={handleRemove}
-                      />
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>External ID</th>
+                  <th>Name</th>
+                  <th>Categories</th>
+                  <th>Campaign</th>
+                  <th>Url</th>
+                  <th className={styles.centered}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {creatives.map((item) => {
+                  return (
+                    <CreativesTableItems
+                      key={item.id}
+                      item={item}
+                      handleRemove={() => removeCreative.mutate(item.id)}
+                    />
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
 
       {isOpenModal && (
         <CreateCreativesItemModal
-          handleToggleModal={handleToggleModal}
-          handleCreateCreativesItem={handleCreateCreativesItem}
+          handleToggleModal={toggleModal}
+          handleCreateCreativesItem={(formValues) =>
+            createCreative.mutate(formValues)
+          }
         />
       )}
     </div>

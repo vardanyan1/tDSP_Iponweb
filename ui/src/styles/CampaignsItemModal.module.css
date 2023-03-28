@@ -55,3 +55,10 @@
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(5px);
 }
+
+.errorText {
+  height: 20px;
+  font-size: 12px;
+  margin-top: 4px;
+  color: rgb(255, 89, 167);
+}
