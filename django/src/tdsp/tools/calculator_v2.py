@@ -1,6 +1,7 @@
 from django.db.models import Q
 from typing import Optional, Tuple, List
 
+from .ads_txt_check import ssp_check
 from .image_server_tools import send_image, generate_image
 from ..dsp.models.bid_request_model import BidRequestModel
 from ..dsp.models.campaign_model import CampaignModel
@@ -108,9 +109,13 @@ def calculate_expected_revenue(bid_request: BidRequestModel, game_config: Config
     :return float: The expected revenue.
     """
     if game_config.game_goal == "revenue":
+        # SSP Ads.txt check
+        if ssp_check(bid_request.ssp_id, bid_request.site_domain):
+            impression_revenue = float(game_config.impression_revenue)
+        else:
+            impression_revenue = 0
         click_revenue = float(game_config.click_revenue) * bid_request.click_probability
         conversion_revenue = float(game_config.conversion_revenue) * bid_request.conversion_probability
-        impression_revenue = float(game_config.impression_revenue)
         expected_revenue = click_revenue + conversion_revenue + impression_revenue
     elif game_config.game_goal == "cpc":
         expected_revenue = float(game_config.click_revenue) * bid_request.click_probability
