@@ -1,129 +1,97 @@
-import { useCallback, useState } from "react";
-import styles from "../styles/Campaigns.module.css";
+import { useState, useCallback } from "react";
+import { useCampaigns } from "../hooks/useCampaigns";
 import CreateCampaignsItemModal from "../components/CreateCampaignsItemModal";
 import CampaignsTableItems from "../components/CampaignsTableItems";
-import Header from "../components/Header/Header";
 import Button from "../components/Button/Button";
-import { useFetchGetData } from "../hooks/useFetchData";
-import axios from "../axios-instance";
+import Input from "../components/Input/Input";
+import Header from "../components/Header/Header";
 import Spinner from "../components/Spinner/Spinner";
 import Error from "../components/Error/Error";
+import styles from "../styles/Campaigns.module.css";
 
 const CampaignsPage = () => {
-  const [campaigns, setCampaigns] = useState([]);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [minBid, setMinBid] = useState();
 
-  const { isLoading, isError } = useFetchGetData(
-    "/api/campaigns/",
-    setCampaigns
-  );
+  const {
+    isLoading,
+    isError,
+    campaigns,
+    removeCampaign,
+    createCampaign,
+    handleCheckboxChange,
+  } = useCampaigns();
 
-  const handleRemove = useCallback((id) => {
-    const access_token = localStorage.getItem("token");
-
-    axios
-      .delete(`/api/campaigns/${id}`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((response) => {
-        setCampaigns((prevCampaigns) =>
-          prevCampaigns.filter((campaign) => campaign.id !== id)
-        );
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const toggleModal = useCallback(() => {
+    setIsOpenModal((isOpenModal) => !isOpenModal);
   }, []);
 
-  const handleToggleModal = useCallback(
-    () => setIsOpenModal(!isOpenModal),
-    [isOpenModal]
-  );
+  if (isLoading) {
+    return <Spinner />;
+  }
 
-  const handleCreateCampaignsItem = useCallback(
-    (formValues, configure) => {
-      if (+configure.budget >= formValues.budget) {
-        const access_token = localStorage.getItem("token");
+  if (isError) {
+    return <Error />;
+  }
 
-        axios
-          .post("/api/campaigns/", formValues, {
-            headers: { Authorization: `Bearer ${access_token}` },
-          })
-          .then((response) => {
-            setCampaigns((prevCampaigns) => [...prevCampaigns, response.data]);
-          });
+  const handleInputChange = (e) => {
+    setMinBid(e.target.value)
+  }
 
-        handleToggleModal();
-      }
-    },
-    [handleToggleModal]
-  );
+  const submitMinBid = () => {
+    axios.put('/api/campaigns/', ).then()
+  }
 
-  const handleCheckboxChange = (e, item) => {
-    const access_token = localStorage.getItem("token");
-
-    axios
-      .put(
-        `/api/campaigns/${item.id}/`,
-        { ...item, is_active: e.target.checked },
-        { headers: { Authorization: `Bearer ${access_token}` } }
-      )
-      .then((response) => {
-        setCampaigns((prevCampaigns) => {
-          return prevCampaigns.map((campaign) => {
-            if (campaign.id === item.id) {
-              return { ...campaign, is_active: response.data.is_active };
-            } else {
-              return campaign;
-            }
-          });
-        });
-      });
-  };
   return (
     <div className={styles.campaignsWrapper}>
       <div className={styles.container}>
         <Header text="Campaigns" />
         <div className={styles.createButtonWrapper}>
-          <Button handleClick={handleToggleModal} text="Create" />
+          <Button handleClick={toggleModal} text="Create" />
         </div>
         <div className={styles.row}>
           <div className={styles.tableWrapper}>
-            {isLoading && <Spinner />}
-            {isError && <Error />}
-            {!isError && !isLoading && (
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Budget</th>
-                    <th className={styles.centered}>Active</th>
-                    <th className={styles.centered}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {campaigns.map((item) => {
-                    return (
-                      <CampaignsTableItems
-                        key={item.id}
-                        item={item}
-                        handleRemove={handleRemove}
-                        handleCheckboxChange={handleCheckboxChange}
-                      />
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Budget</th>
+                  <th>
+                    <Input value={minBid} onChange={handleInputChange} />
+                    <Button onClick={submitMinBid} />
+                  </th>
+                  <th className={styles.centered}>Active</th>
+                  <th className={styles.centered}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {campaigns.map((item) => {
+                  return (
+                    <CampaignsTableItems
+                      key={item.id}
+                      item={item}
+                      handleRemove={() => removeCampaign.mutate(item.id)}
+                      handleCheckboxChange={(item) =>
+                        handleCheckboxChange.mutate(item)
+                      }
+                    />
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
 
       {isOpenModal && (
         <CreateCampaignsItemModal
-          handleToggleModal={handleToggleModal}
-          handleCreateCampaignsItem={handleCreateCampaignsItem}
+          handleToggleModal={toggleModal}
+          handleCreateCampaignsItem={(formValues, configure) => {
+            if (+configure[0].budget >= formValues.budget) {
+              createCampaign.mutate(formValues);
+            }
+          }}
         />
       )}
     </div>

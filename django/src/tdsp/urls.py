@@ -21,6 +21,7 @@ from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .api.bid_request_api import BidViewSet
+from .api.logout_api import LogoutView
 from .api.notifications_api import NotificationViewSet
 from .api.user_group_api import UserViewSet
 from .api.game_config_api import ConfigViewSet
@@ -50,4 +51,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/logout/', LogoutView.as_view(), name='auth_logout'),
 ] + staticfiles_urlpatterns()

@@ -1,141 +1,160 @@
-import { useEffect, useState } from "react";
-import { useFetchGetData } from "../hooks/useFetchData";
+import React, { useEffect, useState } from "react";
+import axios from "../axios-instance";
+import { useQuery } from "react-query";
 import styles from "../styles/CreativesItemModal.module.css";
 import ImageUploadButton from "./ImageUploadButton";
-import Input from "./Input";
+import Input from "./Input/Input";
 import ModalButtons from "./ModalButtons";
+import Spinner from "../components/Spinner/Spinner";
+import Error from "../components/Error/Error";
 
-const CreateCreativesItemModal = ({
-  handleToggleModal,
-  handleCreateCreativesItem,
-}) => {
-  const [newItem, setNewItem] = useState({
-    name: "",
-    external_id: "",
-    categories: [],
-    campaign: null,
-    file: "",
-  });
-  const [errorType, setErrorType] = useState({
-    name: false,
-    external_id: false,
-    categories: false,
-    campaign: false,
-    file: false,
-  });
-  const [campaigns, setCampaigns] = useState([]);
-
-  const { isLoading, isError } = useFetchGetData(
-    "/api/campaigns/",
-    setCampaigns
-  );
-
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (event.target.id === "overlay") {
-        handleToggleModal();
+const CreateCreativesItemModal = React.memo(
+  ({ handleToggleModal, handleCreateCreativesItem }) => {
+    const [newItem, setNewItem] = useState({
+      name: "",
+      external_id: "",
+      categories: [],
+      campaign: null,
+      file: "",
+    });
+    const [errorType, setErrorType] = useState({
+      name: false,
+      external_id: false,
+      categories: false,
+      campaign: false,
+      file: false,
+    });
+    const {
+      isLoading,
+      isError,
+      data: campaigns = [],
+    } = useQuery(
+      "campaigns",
+      async () => {
+        const { data } = await axios.get("/api/campaigns/");
+        return data;
+      },
+      {
+        refetchOnWindowFocus: false, // disable automatic refetching
       }
-    };
+    );
 
-    document.addEventListener("click", handleOutsideClick);
+    useEffect(() => {
+      const handleOutsideClick = (event) => {
+        if (event.target.id === "overlay") {
+          handleToggleModal();
+        }
+      };
 
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
-  }, [handleToggleModal]);
+      document.addEventListener("click", handleOutsideClick);
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
+      return () => {
+        document.removeEventListener("click", handleOutsideClick);
+      };
+    }, [handleToggleModal]);
 
-    setNewItem((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-    setErrorType((prevState) => ({
-      ...prevState,
-      [name]: !value,
-    }));
-  };
+    const handleInputChange = (event) => {
+      const { name, value } = event.target;
 
-  const handleBlur = (event) => {
-    const { name, value } = event.target;
-    const categoriesRegex =
-      /^IAB\d{1,2}(-\d{1,2})?\s*(IAB\d{1,2}(-\d{1,2})?\s*)*$/;
-
-    if (name === "categories") {
-      setErrorType((prevState) => ({
+      setNewItem((prevState) => ({
         ...prevState,
-        categories: !categoriesRegex.test(value),
+        [name]: value,
       }));
-    } else {
       setErrorType((prevState) => ({
         ...prevState,
         [name]: !value,
       }));
-    }
-  };
+    };
 
-  const handleChooseImage = (e) => {
-    const file = e.target.files[0];
+    const handleBlur = (event) => {
+      const { name, value } = event.target;
+      const categoriesRegex =
+        /^IAB\d{1,2}(-\d{1,2})?\s*(IAB\d{1,2}(-\d{1,2})?\s*)*$/;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const file = event.target.result;
+      if (name === "categories") {
+        setErrorType((prevState) => ({
+          ...prevState,
+          categories: !categoriesRegex.test(value),
+        }));
+      } else {
+        setErrorType((prevState) => ({
+          ...prevState,
+          [name]: !value,
+        }));
+      }
+    };
 
-      setNewItem((prevState) => ({ ...prevState, file }));
+    const handleChooseImage = (e) => {
+      const file = e.target.files[0];
 
-      setErrorType((prevState) => ({
-        ...prevState,
-        file: !file,
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const file = event.target.result;
+
+        setNewItem((prevState) => ({ ...prevState, file }));
+
+        setErrorType((prevState) => ({
+          ...prevState,
+          file: !file,
+        }));
+      };
+
+      reader.readAsDataURL(file);
+    };
+
+    const handleSelectChange = (event) => {
+      const { value } = event.target;
+      const selectedCampaign = campaigns.find(
+        (campaign) => campaign.name === value
+      );
+
+      setNewItem((prevItem) => ({
+        ...prevItem,
+        campaign: { id: selectedCampaign.id },
+      }));
+      setErrorType((prevItem) => ({
+        ...prevItem,
+        campaign: !value,
       }));
     };
 
-    reader.readAsDataURL(file);
-  };
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      const { name, external_id, categories, campaign, file } = newItem;
 
-  const handleSelectChange = (event) => {
-    const { value } = event.target;
-    const selectedCampaign = campaigns.find(
-      (campaign) => campaign.name === value
-    );
+      if (
+        !name ||
+        !external_id ||
+        !categories.length ||
+        !campaign?.id ||
+        !file
+      ) {
+        setErrorType({
+          name: !name,
+          external_id: !external_id,
+          categories: !categories.length,
+          campaign: !campaign?.id,
+          file: !file,
+        });
+        return;
+      }
 
-    setNewItem((prevItem) => ({
-      ...prevItem,
-      campaign: { id: selectedCampaign.id },
-    }));
-    setErrorType((prevItem) => ({
-      ...prevItem,
-      campaign: !value,
-    }));
-  };
+      handleCreateCreativesItem(newItem);
+      handleToggleModal();
+    };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const { name, external_id, categories, campaign, file } = newItem;
-
-    if (!name || !external_id || !categories.length || !campaign || !file) {
-      setErrorType({
-        name: !name,
-        external_id: !external_id,
-        categories: !categories.length,
-        campaign: !campaign,
-        file: !file,
-      });
-      return;
+    if (isLoading) {
+      return <Spinner />;
     }
 
-    handleCreateCreativesItem(categories, newItem);
-  };
+    if (isError) {
+      return <Error />;
+    }
 
-  return (
-    <div>
-      <div id="modal" className={styles.modal}>
-        <div className={styles.modalContent}>
-          {isLoading ? (
-            <p>Loading...</p>
-          ) : isError ? (
-            <p>Error: {isError}</p>
-          ) : (
+    return (
+      <div>
+        <div id="modal" className={styles.modal}>
+          <div className={styles.modalContent}>
             <form
               onSubmit={handleSubmit}
               className={styles.createCreativesModal}
@@ -203,12 +222,12 @@ const CreateCreativesItemModal = ({
               </div>
               <ModalButtons handleToggleModal={handleToggleModal} />
             </form>
-          )}
+          </div>
         </div>
+        <div id="overlay" className={styles.overlay}></div>
       </div>
-      <div id="overlay" className={styles.overlay}></div>
-    </div>
-  );
-};
+    );
+  }
+);
 
 export default CreateCreativesItemModal;

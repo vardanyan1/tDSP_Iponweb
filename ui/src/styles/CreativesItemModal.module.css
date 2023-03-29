@@ -19,8 +19,8 @@
   outline: none;
   border: 1px solid #45f3ff;
   border-radius: 4px;
-  background-color: inherit;
-  color: #ffffff;
+  background-color: #28292d;
+  color: #ffffff !important;
 }
 
 .inputsWrapper > input::placeholder {

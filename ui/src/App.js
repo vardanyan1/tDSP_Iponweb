@@ -1,81 +1,59 @@
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Route, Routes, useLocation, Navigate, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useMemo } from 'react';
-import jwt_decode from 'jwt-decode';
-import Navbar from './components/Navbar';
 import routes from './routes';
+import Navbar from './components/Navbar';
 import Spinner from './components/Spinner/Spinner';
+import { validateToken } from './helpers/auth';
 
-function App() {
+const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isValidToken, setIsValidToken] = useState(false);
+
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [isValidToken, setIsValidToken] = useState(false);
-  const [shouldRenderRoutes, setShouldRenderRoutes] = useState(false);
+  const handleValidateToken = useCallback(async () => {
+    const tokenValid = await validateToken();
+    setIsValidToken(tokenValid);
 
-  const validateToken = async () => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      setIsValidToken(false);
-      setIsLoading(false);
-      return Promise.resolve(false);
-    }
-
-    try {
-      const decoded = jwt_decode(token);
-      const currentTime = Date.now() / 1000;
-
-      if (decoded.exp && decoded.exp > currentTime) {
-        setIsValidToken(true);
-      } else {
-        setIsValidToken(false);
-        localStorage.removeItem('token');
-      }
-    } catch (error) {
-      setIsValidToken(false);
-      localStorage.removeItem('token');
+    if (tokenValid && (pathname === '/ui' || pathname === '/' || pathname === '/ui/')) {
+      navigate('/ui/campaigns');
     }
 
     setIsLoading(false);
-    return Promise.resolve(true);
-  };
+  }, [pathname, navigate]);
 
   useEffect(() => {
-    validateToken().then((isValidToken) => {
-      if (isValidToken && (pathname === '/ui' || pathname === '/' || pathname === '/ui/')) {
-        navigate('/ui/campaigns');
-      }
-      setShouldRenderRoutes(true);
-    });
-  }, [pathname, navigate]);
+    handleValidateToken();
+  }, [handleValidateToken]);
 
   const shouldShowNavbar = useMemo(() => {
     return routes.some(route => route.isPrivate && route.path === pathname);
   }, [pathname]);
 
+  if (isLoading) {
+    return <Spinner />;
+  }
+
   return (
     <>
       {shouldShowNavbar && <Navbar />}
-      {shouldRenderRoutes && (
-        <Routes>
-          <Route path="/" element={<Navigate to="/ui/" />} />
-          {routes.map(({ path, element, isPrivate }) => (
-            <Route
-              key={path}
-              path={path}
-              element={
-                isPrivate && !isValidToken ? (
-                  <Navigate to="/ui/" />
-                ) : (
-                  element
-                )
-              }
-            />
-          ))}
-        </Routes>
-      )}
-      {isLoading && <Spinner />}
+      <Routes>
+        <Route path="/" element={<Navigate to="/ui/" />} />
+        {routes.map(({ path, element, isPrivate }) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              isPrivate && !isValidToken ? (
+                <Navigate to="/ui/" />
+              ) : (
+                element
+              )
+            }
+          />
+        ))}
+      </Routes>
     </>
   );
 }

@@ -57,7 +57,7 @@ class CampaignModelAdmin(admin.ModelAdmin):
     config(obj: CampaignModel) -> int:
         Returns the ID of the related ConfigModel instance.
     """
-    list_display = ('id', 'name', 'budget', 'is_active', 'config')
+    list_display = ('id', 'name', 'budget', 'is_active', 'min_bid', 'config')
     search_fields = ('name',)
 
     def config(self, obj):
