@@ -137,7 +137,7 @@ def calculate_bid_amount(expected_revenue, campaign: CampaignModel, rounds_left)
     """
 
     budget = float(campaign.budget)
-    min_bid = float(campaign.min_bid)
+    min_bid = campaign.min_bid
 
     # Calculate the average budget per round
     budget_per_round = budget / rounds_left
@@ -146,7 +146,7 @@ def calculate_bid_amount(expected_revenue, campaign: CampaignModel, rounds_left)
     bid_amount = min(expected_revenue, budget_per_round)
 
     if min_bid:
-        bid_amount = min(budget, min_bid)
+        bid_amount = min(budget, float(min_bid))
 
     return bid_amount
 
