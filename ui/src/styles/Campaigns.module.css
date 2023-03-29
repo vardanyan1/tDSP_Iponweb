@@ -136,3 +136,30 @@
 .customCheckbox:checked {
   background-color: #4ff345;
 }
+
+.minBidWrapper {
+  display: flex;
+  justify-content: center;
+  column-gap: 10px;
+}
+
+.minBidInput {
+  padding: 6px;
+  outline: none;
+  border: 1px solid #45f3ff;
+  border-radius: 4px;
+  background-color: inherit;
+  color: #ffffff;
+  max-width: 60px;
+}
+
+.minBidButton {
+  border: none;
+  outline: none;
+  padding: 5px 0px;
+  background: #45f3ff;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 600;
+  width: 60px;
+}

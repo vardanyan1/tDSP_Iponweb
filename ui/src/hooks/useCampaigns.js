@@ -21,6 +21,17 @@ export const useCampaigns = () => {
         },
     });
 
+    const setMinBid = useMutation(
+        (campaign) => {
+            console.log(campaign);
+            return axios.put(`/api/campaigns/${campaign.id}/`, campaign)
+        }, {
+        onSuccess: () => {
+            queryClient.invalidateQueries("campaigns");
+        },
+    }
+    );
+
     const createCampaign = useMutation(
         (formValues) => axios.post("/api/campaigns/", formValues),
         {
@@ -50,6 +61,7 @@ export const useCampaigns = () => {
         isLoading,
         isError,
         removeCampaign,
+        setMinBid,
         createCampaign,
         handleCheckboxChange,
     };

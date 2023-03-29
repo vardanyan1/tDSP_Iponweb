@@ -1,31 +1,13 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Route, Routes, useLocation, Navigate, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import routes from './routes';
 import Navbar from './components/Navbar';
 import Spinner from './components/Spinner/Spinner';
-import { validateToken } from './helpers/auth';
+import { useTokenValidation } from './hooks/useTokenValidation';
 
 const App = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isValidToken, setIsValidToken] = useState(false);
-
   const { pathname } = useLocation();
-  const navigate = useNavigate();
-
-  const handleValidateToken = useCallback(async () => {
-    const tokenValid = await validateToken();
-    setIsValidToken(tokenValid);
-
-    if (tokenValid && (pathname === '/ui' || pathname === '/' || pathname === '/ui/')) {
-      navigate('/ui/campaigns');
-    }
-
-    setIsLoading(false);
-  }, [pathname, navigate]);
-
-  useEffect(() => {
-    handleValidateToken();
-  }, [handleValidateToken]);
+  const { isLoading, isError, isValid: isValidToken } = useTokenValidation();
 
   const shouldShowNavbar = useMemo(() => {
     return routes.some(route => route.isPrivate && route.path === pathname);
@@ -33,6 +15,11 @@ const App = () => {
 
   if (isLoading) {
     return <Spinner />;
+  }
+
+  if (isError) {
+    // Handle the error case, e.g. redirect to login page
+    return <Navigate to="/login" />;
   }
 
   return (
