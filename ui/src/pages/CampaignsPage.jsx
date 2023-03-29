@@ -3,6 +3,7 @@ import { useCampaigns } from "../hooks/useCampaigns";
 import CreateCampaignsItemModal from "../components/CreateCampaignsItemModal";
 import CampaignsTableItems from "../components/CampaignsTableItems";
 import Button from "../components/Button/Button";
+import Input from "../components/Input/Input";
 import Header from "../components/Header/Header";
 import Spinner from "../components/Spinner/Spinner";
 import Error from "../components/Error/Error";
@@ -10,6 +11,8 @@ import styles from "../styles/Campaigns.module.css";
 
 const CampaignsPage = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [minBid, setMinBid] = useState();
+
   const {
     isLoading,
     isError,
@@ -31,6 +34,14 @@ const CampaignsPage = () => {
     return <Error />;
   }
 
+  const handleInputChange = (e) => {
+    setMinBid(e.target.value)
+  }
+
+  const submitMinBid = () => {
+    axios.put('/api/campaigns/', ).then()
+  }
+
   return (
     <div className={styles.campaignsWrapper}>
       <div className={styles.container}>
@@ -46,6 +57,10 @@ const CampaignsPage = () => {
                   <th>ID</th>
                   <th>Name</th>
                   <th>Budget</th>
+                  <th>
+                    <Input value={minBid} onChange={handleInputChange} />
+                    <Button onClick={submitMinBid} />
+                  </th>
                   <th className={styles.centered}>Active</th>
                   <th className={styles.centered}>Actions</th>
                 </tr>
