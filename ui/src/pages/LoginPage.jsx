@@ -1,29 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useMutation } from "react-query";
-import axios from "../axios-instance";
+import { useLogin } from "../hooks/useLogin";
 import styles from "../styles/Login.module.css";
 
 const LoginPage = () => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
-  const navigate = useNavigate();
-
-  const loginMutation = useMutation(
-    (loginData) => axios.post("/api/token/", loginData),
-    {
-      onSuccess: (data) => {
-        localStorage.setItem("token", data.data.access);
-        localStorage.setItem("refresh", data.data.refresh);
-        navigate("/ui/campaigns");
-      },
-      onError: (error) => {
-        console.error("ERROR", error);
-        setError(true);
-      },
-    }
-  );
+  const { handleLogin, error, isLoading } = useLogin();
 
   const handleLoginInputChange = (e) => {
     const { name, value } = e.target;
@@ -42,7 +24,7 @@ const LoginPage = () => {
       password: password,
     };
 
-    loginMutation.mutate(loginData);
+    handleLogin(loginData);
   };
 
   return (
@@ -84,7 +66,7 @@ const LoginPage = () => {
           className={styles.loginSubmitInput}
           type="submit"
           value="Sign In"
-          disabled={loginMutation.isLoading}
+          disabled={isLoading}
         />
       </form>
     </div>
