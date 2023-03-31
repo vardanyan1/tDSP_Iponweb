@@ -32,6 +32,7 @@ class BidRequestModel(models.Model):
     user_id = models.CharField(max_length=255)
     blocked_categories = models.ManyToManyField(CategoryModel, blank=True, related_name="blocked_bid_requests")
     config = models.ForeignKey(ConfigModel, null=True, on_delete=models.CASCADE, limit_choices_to={'current': True})
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         """

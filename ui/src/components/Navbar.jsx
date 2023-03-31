@@ -1,15 +1,36 @@
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import styles from "../styles/Navbar.module.css";
 import Button from "./Button/Button";
+import axios from "../axios-instance";
+import { useMutation } from "react-query";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleClick = () => {
-    localStorage.setItem("token", "");
-    localStorage.setItem("refresh", "");
-    navigate("/ui/");
+  const logoutMutation = useMutation(
+    () => {
+      const refresh = {
+        refresh_token: localStorage.getItem("refresh"),
+        };
+      if (refresh) {
+        return axios.post("/api/logout/", refresh);
+      }
+    },
+    {
+      onSuccess: () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("refresh");
+        navigate("/ui/");
+      },
+      onError: (error) => {
+        console.error("ERROR", error);
+      },
+    }
+  );
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
   };
 
   const links = [
@@ -33,7 +54,7 @@ const Navbar = () => {
       <div></div>
       <div className={styles.navigationLinksWrapper}>{linkElements}</div>
       <div className={styles.logoutWrapper}>
-        <Button handleClick={handleClick} text="Logout" />
+        <Button handleClick={handleLogout} text="Logout" />
       </div>
     </div>
   );

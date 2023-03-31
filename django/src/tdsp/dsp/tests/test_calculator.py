@@ -95,20 +95,19 @@ class CalculatorTestCase(TestCase):
         self.assertIsInstance(expected_revenue, float)
 
     def test_calculate_bid_amount(self):
+        self.activate_config(self.config_revenue)
         # Test calculate_bid_amount with different budgets, rounds left, and expected revenues
-        budget = 100
         rounds_left = 10
         expected_revenue = 10
 
-        bid_amount = calculate_bid_amount(expected_revenue, budget, rounds_left)
+        bid_amount = calculate_bid_amount(expected_revenue, self.creative.campaign, rounds_left)
         self.assertEqual(bid_amount, expected_revenue)
 
-        budget = 100
         rounds_left = 5
         expected_revenue = 30
 
-        bid_amount = calculate_bid_amount(expected_revenue, budget, rounds_left)
-        self.assertEqual(bid_amount, 20)
+        bid_amount = calculate_bid_amount(expected_revenue, self.creative.campaign, rounds_left)
+        self.assertEqual(bid_amount, 30)
 
     def test_create_new_free_campaign_and_creative(self):
         self.activate_config(self.config_free)

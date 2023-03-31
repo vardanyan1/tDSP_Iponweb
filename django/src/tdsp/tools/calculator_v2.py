@@ -1,6 +1,7 @@
 from django.db.models import Q
 from typing import Optional, Tuple, List
 
+from .ads_txt_check import ssp_check
 from .image_server_tools import send_image, generate_image
 from ..dsp.models.bid_request_model import BidRequestModel
 from ..dsp.models.campaign_model import CampaignModel
@@ -51,7 +52,7 @@ def calculate_bid_price(bid_request: BidRequestModel) -> Tuple[Optional[float], 
     bid_amounts = [
         calculate_bid_amount(
             expected_revenue,
-            float(creative.campaign.budget),
+            creative.campaign,
             game_config.rounds_left
         )
         for creative in filtered_creatives
@@ -108,9 +109,13 @@ def calculate_expected_revenue(bid_request: BidRequestModel, game_config: Config
     :return float: The expected revenue.
     """
     if game_config.game_goal == "revenue":
+        # SSP Ads.txt check
+        if ssp_check(bid_request.ssp_id, bid_request.site_domain):
+            impression_revenue = float(game_config.impression_revenue)
+        else:
+            impression_revenue = 0
         click_revenue = float(game_config.click_revenue) * bid_request.click_probability
         conversion_revenue = float(game_config.conversion_revenue) * bid_request.conversion_probability
-        impression_revenue = float(game_config.impression_revenue)
         expected_revenue = click_revenue + conversion_revenue + impression_revenue
     elif game_config.game_goal == "cpc":
         expected_revenue = float(game_config.click_revenue) * bid_request.click_probability
@@ -120,26 +125,33 @@ def calculate_expected_revenue(bid_request: BidRequestModel, game_config: Config
     return expected_revenue
 
 
-def calculate_bid_amount(expected_revenue, budget, rounds_left):
+def calculate_bid_amount(expected_revenue, campaign: CampaignModel, rounds_left):
     """
     Calculates the bid amount based on the expected revenue, budget, and remaining rounds.
 
     :param    expected_revenue: (float) The expected revenue for the bid.
-    :param    budget: (float) The remaining budget for the campaign.
+    :param    campaign: (Campaign) Campaign of specific creative.
     :param    rounds_left: (int) The number of rounds left in the auction.
 
     :return float: The calculated bid amount.
     """
+
+    budget = float(campaign.budget)
+    min_bid = campaign.min_bid
+
     # Calculate the average budget per round
     budget_per_round = budget / rounds_left
 
     # Calculate the bid amount
     bid_amount = min(expected_revenue, budget_per_round)
 
+    if min_bid:
+        bid_amount = min(budget, float(min_bid))
+
     return bid_amount
 
 
-def create_new_free_campaign_and_creative(config):
+def create_new_free_campaign_and_creative(config: ConfigModel):
     """
     Create a new free campaign and creative, and return the creative
     """
