@@ -3,6 +3,7 @@ services:
   web:
     build:
       context: ./django
+      dockerfile: Dockerfile.test
     environment:
       - DEPLOYMENT=api
       - LC_CTYPE=en_US.UTF-8
