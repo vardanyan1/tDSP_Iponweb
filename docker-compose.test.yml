@@ -3,6 +3,7 @@ services:
   web:
     build:
       context: ./django
+      dockerfile: Dockerfile.test
     environment:
       - DEPLOYMENT=api
       - LC_CTYPE=en_US.UTF-8
@@ -26,7 +27,6 @@ services:
       - image_server_flask
     volumes:
       - ./django:/code
-    command: python3 /code/src/manage.py runserver 0.0.0.0:8000
 
   postgres:
     image: postgres:alpine

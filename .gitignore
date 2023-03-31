@@ -129,9 +129,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/django/src/tdsp/DSP/migrations/
 /django/src/xlsx_importer/migrations/
-/django/categories/initiated.txt
 /django/categories/initiated.txt
 /image_server/src/image_server/server/migrations/
 /image_server/src/media/

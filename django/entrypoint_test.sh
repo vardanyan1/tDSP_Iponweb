@@ -23,4 +23,7 @@ else
     echo "Migrations for dsp app already applied. Skipping and migrate."
 fi
 
-exec /bin/sh -c "cd src/ && gunicorn --bind 0.0.0.0:8000 tdsp.wsgi"
+# Run tests and generate coverage report
+echo "Running tests and generating coverage report..."
+coverage run src/manage.py test tdsp.dsp.tests
+coverage xml -o /code/src/coverage.xml
