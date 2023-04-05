@@ -20,9 +20,6 @@ class BidRequestTests(APITestCase):
     Methods:
         setUp(): Initializes the test case with test data.
         test_create_bid_with_valid_data(): Tests creating a bid with valid data.
-
-    TODO: after creating logic for price change to comparing with real price
-    TODO: add tests for No Bid
     """
     def setUp(self):
         """
@@ -85,7 +82,7 @@ class BidRequestTests(APITestCase):
                 "domain": "www.example.com"
             },
             "ssp": {
-                "id": "0938831"
+                "id": "none"
             },
             "user": {
                 "id": "u_cq_001_87311"
@@ -110,3 +107,117 @@ class BidRequestTests(APITestCase):
             f"{BidResponseModel.objects.first().image_url}?w={bid_request_data['imp']['banner']['w']}"
             f"&h={bid_request_data['imp']['banner']['h']}",
             response.data['image_url'])
+
+    def test_bid_request_no_appropriate_creative(self):
+        """
+        Ensure that a bid request returns a no-bid response when there is no appropriate creative available.
+        """
+        # Create a bid request with a non-existent category in the 'bcat' field
+        bid_request_data = {
+            "id": "some_id1",
+            "imp": {
+                "banner": {
+                    "w": 300,
+                    "h": 250
+                },
+            },
+            "click": {
+                "prob": "0.1"
+            },
+            "conv": {
+                "prob": "0.89"
+            },
+            "site": {
+                "domain": "www.example.com"
+            },
+            "ssp": {
+                "id": "none"
+            },
+            "user": {
+                "id": "u_cq_001_87311"
+            },
+            "bcat": [
+                str(self.category1.code),
+                str(self.category2.code)
+            ]
+        }
+
+        response = self.client.post(self.bid_request_url, bid_request_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_bid_request_zero_bid_price(self):
+        """
+        Ensure that a bid request returns a no-bid response when the bid price is zero.
+        """
+        # Create a bid request with very low probabilities, so the bid price is zero
+        bid_request_data = {
+            "id": "some_id1",
+            "imp": {
+                "banner": {
+                    "w": 300,
+                    "h": 250
+                },
+            },
+            "click": {
+                "prob": "0.0001"
+            },
+            "conv": {
+                "prob": "0.0001"
+            },
+            "site": {
+                "domain": "www.example.com"
+            },
+            "ssp": {
+                "id": "none"
+            },
+            "user": {
+                "id": "u_cq_001_87311"
+            },
+            "bcat": [
+                str(self.category1.code),
+                str(self.category2.code)
+            ]
+        }
+
+        response = self.client.post(self.bid_request_url, bid_request_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_bid_request_no_rounds_left(self):
+        """
+        Ensure that a bid request returns an error when the game has no rounds left.
+        """
+        # Set the rounds_left to 0
+        self.config.rounds_left = 0
+        self.config.save()
+
+        bid_request_data = {
+            "id": "some_id1",
+            "imp": {
+                "banner": {
+                    "w": 300,
+                    "h": 250
+                },
+            },
+            "click": {
+                "prob": "0.1"
+            },
+            "conv": {
+                "prob": "0.89"
+            },
+            "site": {
+                "domain": "www.example.com"
+            },
+            "ssp": {
+                "id": "none"
+            },
+            "user": {
+                "id": "u_cq_001_87311"
+            },
+            "bcat": [
+                str(self.category1.code)
+            ]
+        }
+
+        response = self.client.post(self.bid_request_url, bid_request_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, {"error": "No rounds left."})

@@ -11,15 +11,23 @@ datasources:
 - name: PostgreSQL
   type: postgres
   url: postgres:5432
-  database: $POSTGRES_DB
   user: $POSTGRES_USER
   editable: true
   secureJsonData:
     password: $POSTGRES_PASSWORD
   jsonData:
+    database: tdsp
     sslmode: "disable" # disable/require/verify-ca/verify-full
     maxOpenConns: 0         # Grafana v5.4+
     maxIdleConns: 2         # Grafana v5.4+
     connMaxLifetime: 14400  # Grafana v5.4+
     postgresVersion: 1200 # 903=9.3, 904=9.4, 905=9.5, 906=9.6, 1000=10
     timescaledb: false
+
+- name: Loki
+  type: loki
+  access: proxy
+  url: http://loki:3100
+  version: 1
+  editable: false
+  isDefault: false

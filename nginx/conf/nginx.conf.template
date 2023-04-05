@@ -5,6 +5,7 @@ events {
 }
 
 http {
+    limit_req_zone $binary_remote_addr zone=mylimit:10m rate=10r/s;
     set_real_ip_from 0.0.0.0/0;
     real_ip_header X-Forwarded-For;
     real_ip_recursive on;
@@ -33,6 +34,7 @@ http {
         listen 80;
 
         location /ui {
+            limit_req zone=mylimit burst=5 nodelay;
             proxy_pass         http://ui:80;
             proxy_redirect     off;
             proxy_set_header   Host $host;
@@ -42,6 +44,7 @@ http {
         }
 
         location /images {
+            limit_req zone=mylimit burst=5 nodelay;
             proxy_pass         http://image_server_flask:8080/images;
             proxy_redirect     off;
             proxy_set_header   Host $host;
@@ -73,6 +76,7 @@ http {
         }
 
         location / {
+            limit_req zone=mylimit burst=5 nodelay;
             set $client_ip $proxy_add_x_forwarded_for;
             allow "$ALLOWED_HOST";
             deny all;
