@@ -20,9 +20,6 @@ class BidRequestTests(APITestCase):
     Methods:
         setUp(): Initializes the test case with test data.
         test_create_bid_with_valid_data(): Tests creating a bid with valid data.
-
-    TODO: after creating logic for price change to comparing with real price
-    TODO: add tests for No Bid
     """
     def setUp(self):
         """
