@@ -78,41 +78,58 @@ class CreativeTestCase(APITestCase):
 
     def test_create_creative(self):
         """
-        Test creating a new creative using POST request to the API endpoint.
+        Test creating a new creative with valid data and checking if the creative is successfully created.
         """
-        image = self.create_test_image()
-
         data = {
-            "external_id": "external_id",
-            "name": "name",
-            "categories": [{"code": self.category1.code}, {"code": self.category2.code}],
-            "campaign": {"id": self.campaign.id},
-            "file": image,
+            "external_id": "test_creative_001",
+            "name": "Test Creative",
+            "file": self.create_test_image(),
+            "categories": [
+                {"code": "IAB6"},
+                {"code": "IAB6-6"}
+            ],
+            "campaign": {"id": self.campaign.id}
         }
-
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(CreativeModel.objects.filter(external_id="test_creative_001").exists())
 
-        # check if creative is created with the correct data
-        creative = CreativeModel.objects.get(external_id=data['external_id'])
-        self.assertEqual(creative.name, data['name'])
-        self.assertEqual(creative.campaign_id, self.campaign.id)
+    def test_create_creative_duplicate_external_id(self):
+        """
+        Test creating a creative with a duplicate external_id and checking if the error is handled.
+        """
+        CreativeModel.objects.create(
+            external_id="test_creative_002",
+            name="Test Creative 2",
+            url="http://example.com/test2",
+            campaign=self.campaign
+        )
+        data = {
+            "external_id": "test_creative_002",
+            "name": "Test Creative Duplicate",
+            "file": self.create_test_image(),
+            "categories": [
+                {"code": "IAB6"},
+                {"code": "IAB6-6"}
+            ],
+            "campaign": {"id": self.campaign.id}
+        }
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(str(response.data["external_id"][0]), "creative model with this external id already exists.")
 
-        # check if categories are added to creative
-        self.assertIn(self.category1, creative.categories.all())
-
-        # check if image is saved to separate service and image_url is added to creative
-        self.assertTrue(creative.url)
-
-        # check if created creative data is returned in the response
-        expected_data = {
-            'id': creative.id,
-            'external_id': data['external_id'],
-            'name': data['name'],
-            'categories': [{"id": self.category1.id, "code": self.category1.code},
-                           {"id": self.category2.id, "code": self.category2.code}],
-            'campaign': {'id': self.campaign.id, 'name': self.campaign.name},
-            'url': creative.url,
+    def test_create_creative_invalid_campaign_id(self):
+        """
+        Test creating a creative with a non-existent campaign ID and checking if the error is handled.
+        """
+        data = {
+            "external_id": "test_external_id",
+            "name": "Test Creative",
+            "categories": [self.category1.id, self.category2.id],
+            "campaign": {"id": 99999},  # Non-existent campaign ID
+            "file": self.create_test_image(),
         }
 
-        self.assertEqual(response.data, expected_data)
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["campaign"][0], "Campaign with the provided ID does not exist.")

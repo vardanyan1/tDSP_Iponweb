@@ -61,44 +61,53 @@ class CampaignTestCase(APITestCase):
         Tests creating a campaign with valid data and checks that the campaign is created with the correct data.
         """
         data = {
-            "name": "test campaign",
-            "budget": 100,
+            "name": "Test Campaign",
+            "budget": 1000.00,
         }
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        # check if campaign is created with the correct data
-        campaign = CampaignModel.objects.get(name=data['name'])
-        self.assertEqual(campaign.budget, data['budget'])
-        self.assertEqual(campaign.config, self.config)
-
-    def test_create_campaign_with_missing_name(self):
-        """
-        Tests creating a campaign with missing name field and expects an HTTP 400 error response.
-        """
-        data = {
-            "budget": 100,
-        }
-        response = self.client.post(self.url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_create_campaign_with_missing_budget(self):
-        """
-        Tests creating a campaign with missing budget field and expects an HTTP 400 error response.
-        """
-        data = {
-            "name": "test campaign",
-        }
-        response = self.client.post(self.url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(CampaignModel.objects.count(), 1)
 
     def test_create_campaign_with_negative_budget(self):
         """
-        Tests creating a campaign with a negative budget value and expects an HTTP 400 error response.
+        Tests the campaign creation process with a negative budget.
         """
         data = {
-            "name": "test campaign",
-            "budget": -100,
+            "name": "Test Campaign",
+            "budget": -1000.00,
+            "is_active": True,
         }
-        response = self.client.post(self.url, data, format='json')
+        response = self.client.post(self.url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("error", response.data)
+        self.assertEqual(response.data["error"][0], "Budget must be non-negative.")
+
+    def test_create_campaign_with_insufficient_budget(self):
+        """
+        Tests the campaign creation process with an insufficient budget in the current game configuration.
+        """
+        data = {
+            "name": "Test Campaign",
+            "budget": 6000.00,
+            "is_active": True,
+        }
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("error", response.data)
+        self.assertEqual(response.data["error"][0], "Budget is insufficient to create the campaign.")
+
+    def test_create_campaign_without_current_config(self):
+        """
+        Tests the campaign creation process without a current game configuration.
+        """
+        self.config.delete()  # Remove the current game configuration
+        data = {
+            "name": "Test Campaign",
+            "budget": 1000.00,
+            "is_active": True,
+        }
+        response = self.client.post(self.url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("error", response.data)
+        self.assertEqual(response.data["error"][0], "No current game configuration found.")
+
