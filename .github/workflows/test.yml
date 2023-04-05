@@ -51,6 +51,8 @@ jobs:
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
       POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+      PAGINATION: ${{ secrets.PAGINATION }}
+      IMAGE_SERVER: ${{ secrets.IMAGE_SERVER }}
 
       LOCAL_HOST: ${{ secrets.LOCALHOST }}
       SSP_HOST: ${{ secrets.SSP_HOST }}
