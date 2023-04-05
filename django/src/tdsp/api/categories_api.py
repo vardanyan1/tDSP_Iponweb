@@ -1,3 +1,4 @@
+import os
 from rest_framework import viewsets, pagination
 
 from ..dsp.models.categories_model import CategoryModel
@@ -16,4 +17,4 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     queryset = CategoryModel.objects.all()
     pagination_class = pagination.PageNumberPagination
-    pagination_class.page_size = 10
+    pagination_class.page_size = os.environ.get('PAGINATION', 10)

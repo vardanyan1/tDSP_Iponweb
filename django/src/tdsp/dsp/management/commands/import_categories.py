@@ -25,6 +25,11 @@ class Command(BaseCommand):
         """
         Handle the management command.
         """
+        # Check if categories already exist
+        if CategoryModel.objects.count() > 0:
+            self.stdout.write(self.style.WARNING('Categories and subcategories already exist. Skipping import.'))
+            return
+
         file_path = options['file_path']
         workbook = openpyxl.load_workbook(filename=file_path, read_only=True, data_only=True)
         worksheet = workbook['Sheet1']
@@ -40,13 +45,13 @@ class Command(BaseCommand):
             name = category['name']
 
             if '-' not in code:
-                category, _ = CategoryModel.objects.get_or_create(code=code, name=name)
+                category, _ = CategoryModel.objects.create(code=code, name=name)
 
             elif '-' in code:
                 parent_code, _ = code.split('-')
                 parent_category = CategoryModel.objects.get(code=parent_code)
 
-                subcategory, _ = CategoryModel.objects.get_or_create(
+                subcategory, _ = CategoryModel.objects.create(
                     code=code, name=name, parent=parent_category)
 
         self.stdout.write(self.style.SUCCESS('Successfully imported categories and subcategories'))
