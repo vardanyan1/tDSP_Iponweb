@@ -45,13 +45,13 @@ class Command(BaseCommand):
             name = category['name']
 
             if '-' not in code:
-                category, _ = CategoryModel.objects.create(code=code, name=name)
+                category = CategoryModel.objects.create(code=code, name=name)
 
             elif '-' in code:
                 parent_code, _ = code.split('-')
                 parent_category = CategoryModel.objects.get(code=parent_code)
 
-                subcategory, _ = CategoryModel.objects.create(
+                subcategory = CategoryModel.objects.create(
                     code=code, name=name, parent=parent_category)
 
         self.stdout.write(self.style.SUCCESS('Successfully imported categories and subcategories'))

@@ -68,6 +68,22 @@ class CampaignTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(CampaignModel.objects.count(), 1)
 
+    def test_update_campaign(self):
+        """
+        Tests the campaign update process.
+        """
+        campaign = CampaignModel.objects.create(name="Test Campaign", budget=1000.00, config=self.config)
+        url = reverse("api-campaign-detail", kwargs={"pk": campaign.pk})
+        data = {
+            "name": "Updated Campaign",
+            "budget": 1200.00,
+        }
+
+        response = self.client.patch(url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["name"], "Updated Campaign")
+        self.assertEqual(response.data["budget"], 1200)
+
     def test_create_campaign_with_negative_budget(self):
         """
         Tests the campaign creation process with a negative budget.
