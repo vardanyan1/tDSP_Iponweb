@@ -51,8 +51,10 @@ jobs:
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
       POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+      PAGINATION: ${{ secrets.PAGINATION }}
+      IMAGE_SERVER: ${{ secrets.IMAGE_SERVER }}
 
-      LOCAL_HOST: ${{ secrets.LOCALHOST }}
+      LOCAL_HOST: ${{ secrets.LOCAL_HOST }}
       SSP_HOST: ${{ secrets.SSP_HOST }}
     steps:
       - name: Checkout code

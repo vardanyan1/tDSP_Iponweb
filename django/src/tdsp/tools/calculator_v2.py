@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, Count
 from typing import Optional, Tuple, List
 
 from .ads_txt_check import ssp_check
@@ -28,13 +28,21 @@ def calculate_bid_price(bid_request: BidRequestModel) -> Tuple[Optional[float], 
     if not selected_creatives:
         return None, None
 
+    # Get the count of user impressions for each campaign
+    user_impressions = UserImpression.objects.filter(
+        user_id=user_id,
+        campaign_id__in=[creative.campaign_id for creative in selected_creatives],
+    ).values('campaign_id').annotate(
+        impressions_count=Count('id', filter=Q(user_id=user_id)),
+    )
+
+    # Convert the user_impressions queryset to a dictionary
+    campaign_impression_counts = {entry['campaign_id']: entry['impressions_count'] for entry in user_impressions}
+
     # Filter out creatives based on frequency_capping
     filtered_creatives = [
         creative for creative in selected_creatives
-        if (
-                   UserImpression.objects.filter(user_id=user_id, campaign_id=creative.campaign_id).first() or
-                   UserImpression(impressions=0)
-           ).impressions < game_config.frequency_capping
+        if campaign_impression_counts.get(creative.campaign_id, 0) < game_config.frequency_capping
     ]
 
     # If there's no filtered creative, and it's a free mode game, create new campaign and creative

@@ -73,7 +73,6 @@ class NotificationTests(APITestCase):
             "file": image,
         }
         self.client.post(self.creative_url, creative_data, format='json')
-
         # Create Bid Request
         bid_request_data = {
             "id": "some_id1",

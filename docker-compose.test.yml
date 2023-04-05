@@ -20,6 +20,8 @@ services:
       - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD}
       - DEBUG=${DEBUG}
       - SSP_HOST=${SSP_HOST}
+      - IMAGE_SERVER=${IMAGE_SERVER}
+      - PAGINATION=${PAGINATION}
     ports:
       - "8000:8000"
     depends_on:

@@ -29,27 +29,12 @@ class CampaignViewSet(viewsets.ModelViewSet):
         Raises:
             HTTPError: If the request is not valid.
         """
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        # If the budget is valid
-        if serializer.validated_data['budget'] < 0:
-            return Response({"error": "Budget must be non-negative."},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        # Check if the current game configuration exists
+        # Retrieve the current game configuration
         current_config = ConfigModel.objects.filter(current=True).first()
-        if not current_config:
-            return Response({"error": "No current game configuration found."},
-                            status=status.HTTP_400_BAD_REQUEST)
 
-        # Calculate remaining budget in the current configuration
-        remaining_budget = current_config.budget - serializer.validated_data['budget']
-
-        # If the remaining budget is less than 0
-        if remaining_budget < 0:
-            return Response({"error": "Budget is insufficient to create the campaign."},
-                            status=status.HTTP_400_BAD_REQUEST)
+        # Initialize the serializer with the context containing the current game configuration
+        serializer = self.get_serializer(data=request.data, context={'current_config': current_config})
+        serializer.is_valid(raise_exception=True)
 
         # Set the 'config' field to the current game configuration
         serializer.validated_data['config'] = current_config
@@ -58,6 +43,7 @@ class CampaignViewSet(viewsets.ModelViewSet):
         campaign_instance = CampaignModel.objects.create(**serializer.validated_data)
 
         # Update the budget in the current configuration
+        remaining_budget = current_config.budget - serializer.validated_data['budget']
         ConfigModel.objects.filter(current=True).update(budget=remaining_budget)
 
         headers = self.get_success_headers(serializer.data)
@@ -96,3 +82,35 @@ class CampaignViewSet(viewsets.ModelViewSet):
         campaign.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def update(self, request, *args, **kwargs):
+        """
+        Update a campaign object with the provided data.
+
+        Args:
+            request (Request): The request object containing the campaign data.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            Response: The response object containing the serialized CampaignModel data or an error response if the request is invalid.
+
+        Raises:
+            HTTPError: If the request is not valid.
+        """
+        # Retrieve the current game configuration
+        current_config = ConfigModel.objects.filter(current=True).first()
+
+        # Retrieve the campaign object to update
+        campaign = self.get_object()
+
+        # Initialize the serializer with the context containing the current game configuration
+        serializer = self.get_serializer(campaign, data=request.data, context={'current_config': current_config},
+                                         partial=True)
+        serializer.is_valid(raise_exception=True)
+
+        # Save the updated campaign object
+        campaign = serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+

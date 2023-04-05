@@ -1,5 +1,5 @@
 import base64
-
+import os
 import imghdr
 from io import BytesIO
 from PIL import Image as Pil
@@ -35,7 +35,7 @@ def send_image_to_flask_server(base64_image: str) -> str:
     """
     image_file = decode_image_file(base64_image)
 
-    url = "http://image_server_flask:8080/upload"
+    url = f"http://{os.environ.get('IMAGE_SERVER')}/upload"
 
     files = {'file': image_file}
     response = requests.post(url, files=files)
