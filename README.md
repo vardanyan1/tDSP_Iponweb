@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/vardanyan1/tDSP_Iponweb/branch/development/graph/badge.svg?token=JNV37UGX2P)](https://codecov.io/gh/vardanyan1/tDSP_Iponweb)
 ![GitHub CI](https://github.com/vardanyan1/tDSP_Iponweb/actions/workflows/test.yml/badge.svg)
 
-This project aims to build a toy Demand-Side Platform (tDSP) for participating in Real-Time Bidding (RTB) auctions, competing with other DSPs for ad impressions. The tDSP will interact with a toy Supply-Side Platform (tSSP) and adhere to the specifications provided.
+This project aims to build a toy Demand-Side Platform (tDSP) for participating in Real-Time Bidding (RTB) auctions, competing with other DSPs for ad impressions. The tDSP will interact with a toy Supply-Side Platform (tSSP).
 ## Table of Contents
 
 - [Overview](#Overview)
@@ -74,7 +74,5 @@ This data can help you make informed decisions about optimizing your bidding str
 
 
 ## License
-
-Include the license for your project, for example:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

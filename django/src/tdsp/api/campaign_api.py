@@ -24,7 +24,8 @@ class CampaignViewSet(viewsets.ModelViewSet):
             **kwargs: Arbitrary keyword arguments.
 
         Returns:
-            Response: The response object containing the serialized CampaignModel data or an error response if the request is invalid.
+            Response: The response object containing the serialized CampaignModel data or an error response
+                    if the request is invalid.
 
         Raises:
             HTTPError: If the request is not valid.

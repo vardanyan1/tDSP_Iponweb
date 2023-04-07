@@ -25,6 +25,10 @@ class CampaignSerializer(serializers.ModelSerializer):
         Raises:
             serializers.ValidationError: If the data is not valid.
         """
+        # Skip validation if this is an update (PUT) operation
+        if self.instance:
+            return data
+
         # If the budget is valid
         if data['budget'] < 0:
             raise serializers.ValidationError({"error": "Budget must be non-negative."})
