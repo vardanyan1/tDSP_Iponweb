@@ -13,7 +13,7 @@ export const useLogin = () => {
             onSuccess: (data) => {
                 localStorage.setItem("token", data.data.access);
                 localStorage.setItem("refresh", data.data.refresh);
-                navigate("/ui/campaigns/");
+                navigate("/ui/campaigns");
             },
             onError: () => {
                 setError(true);

@@ -19,7 +19,7 @@ const App = () => {
 
   if (isError) {
     // Handle the error case, e.g. redirect to login page
-    return <Navigate to="/login" />;
+    return <Navigate to="/ui/" />;
   }
 
   return (
