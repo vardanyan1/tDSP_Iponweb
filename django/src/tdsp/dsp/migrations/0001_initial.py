@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
             name='CampaignModel',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30)),
+                ('name', models.CharField(max_length=128)),
                 ('budget', models.DecimalField(decimal_places=2, max_digits=10)),
                 ('is_active', models.BooleanField(default=True)),
                 ('min_bid', models.DecimalField(decimal_places=2, default=None, max_digits=10, null=True)),
