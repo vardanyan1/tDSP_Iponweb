@@ -17,7 +17,7 @@ COPY . .
 RUN yarn build
 
 # Serve stage
-FROM nginx:stable-alpine
+FROM nginx:1.24-alpine3.17
 
 # Copy the production build files from the build stage
 COPY --from=build /ui/build /usr/share/nginx/html
